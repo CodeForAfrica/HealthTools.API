@@ -1,13 +1,14 @@
 from bs4 import BeautifulSoup
-from healthtools_api.config import NURSING_COUNCIL_URL
+from config import NURSING_COUNCIL_URL
 import requests
 import json
 
 nurse_fields = ["name", "licence_no", "valid_till"]
 
 
-def find_nurse(query):
+def find_nurse(event, context):
     try:
+        query = event["query"]
         if len(query) < 1:
             return json.dumps({
                               "error": "Query cannot be empty.",
