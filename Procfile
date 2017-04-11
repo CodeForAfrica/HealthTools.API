@@ -1,1 +1,1 @@
-web gunicorn nurses:app
+web python nurses.py
