@@ -11,7 +11,7 @@ app = Flask(__name__)
 nurse_fields = ["name", "licence_no", "valid_till"]
 
 
-@app.route('/api/find_nurse', methods=['GET'])
+@app.route('/find_nurse', methods=['GET'])
 def find_nurse():
     try:
         query = request.args.get('q')
