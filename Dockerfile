@@ -1,4 +1,5 @@
 FROM python:2.7.13
-WORKDIR .
+COPY . /api-healthtools
+WORKDIR /api-healthtools
 RUN pip install -r requirements.txt
 CMD ["python", "nurses.py"]
