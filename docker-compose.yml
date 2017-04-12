@@ -1,0 +1,5 @@
+memcached:
+  image: memcached
+  ports:
+    - "11211:11211"
+  command: memcached

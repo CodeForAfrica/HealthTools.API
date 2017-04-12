@@ -45,7 +45,6 @@ def find_nurse():
 
         cached_result = cache.get(query)
         if cached_result:
-            print "Getting from cache"
             return cached_result
 
         url = NURSING_COUNCIL_URL.format(query)
