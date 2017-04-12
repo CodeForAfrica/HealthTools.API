@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
-from config import NURSING_COUNCIL_URL
-from flask import Flask, request, jsonify
+from config import NURSING_COUNCIL_URL, MEMCACHED_URL
+from flask import Flask, request, jsonify, make_response
 from werkzeug.exceptions import HTTPException, default_exceptions
 import requests
 import memcache
 
 
 app = Flask(__name__)
-cache = memcache.Client([('0.0.0.0', 11211)], debug=True)  # cache server
+cache = memcache.Client([(MEMCACHED_URL)], debug=True)  # cache server
 
 nurse_fields = ["name", "licence_no", "valid_till"]
 
@@ -45,7 +45,9 @@ def find_nurse():
 
         cached_result = cache.get(query)
         if cached_result:
-            return cached_result
+            response = make_response(cached_result)
+            response.headers["X-Retrieved-From-Cache"] = True
+            return response
 
         url = NURSING_COUNCIL_URL.format(query)
         response = requests.get(url)
