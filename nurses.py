@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
-from config import NURSING_COUNCIL_URL, MEMCACHED_URL
-from flask import Flask, request, jsonify, make_response
+from config import NURSING_COUNCIL_URL, MEMCACHED_URL, GA_TRACKING_ID
+from flask import Flask, request, jsonify, make_response, json
 from werkzeug.exceptions import HTTPException, default_exceptions
 import requests
 import memcache
@@ -22,7 +22,7 @@ def home():
         "authentication": [],
         "endpoints": {
             "/": {"methods": ["GET"]},
-            "/find_nurse": {
+            "/nurses": {
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
@@ -33,9 +33,9 @@ def home():
     return jsonify(msg)
 
 
-@app.route('/find_nurse', methods=['GET'])
+@app.route('/nurses', methods=['GET'])
 def find_nurse():
-    try:
+    if True:
         query = request.args.get('q')
         if not query or len(query) < 1:
             return jsonify({
@@ -45,6 +45,10 @@ def find_nurse():
 
         cached_result = cache.get(query)
         if cached_result:
+            print cached_result.data
+            num_cached_results = len(json.loads(cached_result.data)["data"]["nurses"])
+            track_event(GA_TRACKING_ID, 'Nurse', 'search',
+                        request.remote_addr, label=query, value=num_cached_results)
             response = make_response(cached_result)
             response.headers["X-Retrieved-From-Cache"] = True
             return response
@@ -53,7 +57,12 @@ def find_nurse():
         response = requests.get(url)
 
         if "No results" in response.content:
-            return jsonify({"results": "No nurse by that name found."})
+            track_event(GA_TRACKING_ID, 'Nurse', 'search',
+                        request.remote_addr, label=query, value=0)
+            return jsonify({
+                           "status": "success",
+                           "message": "No nurse by that name found."
+                           })
 
         # make soup for parsing out of response and get the table
         soup = BeautifulSoup(response.content, "html.parser")
@@ -70,15 +79,47 @@ def find_nurse():
 
             entry = dict(zip(nurse_fields, columns))
             entries.append(entry)
-        results = jsonify({"results": entries})
+
+        # send action to google analytics
+        track_event(GA_TRACKING_ID, 'Nurse', 'search',
+                    request.remote_addr, label=query, value=len(entries))
+        results = jsonify({"status": "success", "data": {"nurses": entries}})
         cache.set(query, results, time=345600)  # expire after 4 days
         return results
 
-    except Exception as err:
-        return jsonify({
-            "error": str(err),
-            "results": ""
-        })
+    # except Exception as err:
+    #     return jsonify({
+    #         "status": "error",
+    #         "message": str(err),
+    #     })
+
+
+def track_event(tracking_id, category, action, cid, label=None, value=0):
+    '''
+    Posts Tracking in info to Google Analytics using measurement protocol.
+    Args:
+        tracking_id: The tracking ID of the Google Analytics account in which these data is associated with.
+        category: The name assigned to the group of similar events to track.
+        action: The Specific action being tracked.
+        cid: Anonymous Client Identifier. Ideally, this should be a UUID that is associated with particular user, device
+        label: Label of the event.
+        value: Value of event in this case number of results obtained
+    Returns:
+        No return value # If the request fails, it will raise a RequestException. .
+    '''
+    data = {
+        'v': '1',
+        'tid': tracking_id,
+        'cid': cid,
+        't': 'event',
+        'ec': category,
+        'ea': action,
+        'el': label,
+        'ev': value,
+    }
+    response = requests.post(
+        'http://www.google-analytics.com/collect', data=data)
+    response.raise_for_status()
 
 
 def handle_error(error):
