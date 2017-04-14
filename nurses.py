@@ -44,8 +44,7 @@ def find_nurse():
             })
 
         cached_result = cache.get(query)
-        if cached_result:
-            print cached_result.data
+        try:
             num_cached_results = len(json.loads(cached_result.data)["data"]["nurses"])
             track_event(GA_TRACKING_ID, 'Nurse', 'search',
                         request.remote_addr, label=query, value=num_cached_results)
@@ -87,11 +86,11 @@ def find_nurse():
         cache.set(query, results, time=345600)  # expire after 4 days
         return results
 
-    # except Exception as err:
-    #     return jsonify({
-    #         "status": "error",
-    #         "message": str(err),
-    #     })
+    except Exception as err:
+        return jsonify({
+            "status": "error",
+            "message": str(err),
+        })
 
 
 def track_event(tracking_id, category, action, cid, label=None, value=0):
