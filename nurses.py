@@ -35,7 +35,7 @@ def home():
 
 @app.route('/nurses', methods=['GET'])
 def find_nurse():
-    if True:
+    try:
         query = request.args.get('q')
         if not query or len(query) < 1:
             return jsonify({
@@ -44,7 +44,7 @@ def find_nurse():
             })
 
         cached_result = cache.get(query)
-        try:
+        if cached_result:
             num_cached_results = len(json.loads(cached_result.data)["data"]["nurses"])
             track_event(GA_TRACKING_ID, 'Nurse', 'search',
                         request.remote_addr, label=query, value=num_cached_results)
