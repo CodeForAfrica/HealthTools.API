@@ -138,4 +138,4 @@ for code in default_exceptions.keys():
     app.errorhandler(code)(handle_error)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5555)
+    app.run(port=5555)
