@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from config import NURSING_COUNCIL_URL, MEMCACHED_URL, GA_TRACKING_ID
+from api_healthtools_ke.config import NURSING_COUNCIL_URL, MEMCACHED_URL, GA_TRACKING_ID
 from flask import Flask, request, jsonify, make_response, json
 from werkzeug.exceptions import HTTPException, default_exceptions
 import requests
