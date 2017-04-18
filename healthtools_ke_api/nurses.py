@@ -1,19 +1,20 @@
-from bs4 import BeautifulSoup
-from api_healthtools_ke.config import NURSING_COUNCIL_URL, MEMCACHED_URL, GA_TRACKING_ID
-from flask import Flask, request, jsonify, make_response, json
-from werkzeug.exceptions import HTTPException, default_exceptions
 import requests
-import memcache
 
+from bs4 import BeautifulSoup
+from flask import Blueprint, request, jsonify, make_response, json
+from werkzeug.exceptions import HTTPException, default_exceptions
+from memcache import Client
 
-app = Flask(__name__)
-cache = memcache.Client([(MEMCACHED_URL)], debug=True)  # cache server
+from healthtools_ke_api.config import *
+from healthtools_ke_api.analytics import track_event
 
+nurses_api = Blueprint('nurses_api', __name__)
 nurse_fields = ["name", "licence_no", "valid_till"]
+cache = Client([(MEMCACHED_URL)], debug=True)
 
 
-@app.route('/', methods=['GET'])
-def home():
+@nurses_api.route('/', methods=['GET'])
+def index():
     '''
     Landing endpoint
     '''
@@ -21,8 +22,8 @@ def home():
         "name": "Nursing Council of Kenya API",
         "authentication": [],
         "endpoints": {
-            "/": {"methods": ["GET"]},
-            "/nurses": {
+            "/nurses": {"methods": ["GET"]},
+            "/nurses/search.json": {
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
@@ -33,8 +34,8 @@ def home():
     return jsonify(msg)
 
 
-@app.route('/nurses', methods=['GET'])
-def find_nurse():
+@nurses_api.route('/search.json', methods=['GET'])
+def search():
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:
@@ -79,11 +80,16 @@ def find_nurse():
             entry = dict(zip(nurse_fields, columns))
             entries.append(entry)
 
-        # send action to google analytics
-        track_event(GA_TRACKING_ID, 'Nurse', 'search',
-                    request.remote_addr, label=query, value=len(entries))
-        results = jsonify({"status": "success", "data": {"nurses": entries}})
+        # Cache the results
         cache.set(query, results, time=345600)  # expire after 4 days
+
+        # Send action to google analytics
+        track_event(
+                GA_TRACKING_ID, 'Nurse', 'search', request.remote_addr,
+                label=query, value=len(entries))
+
+        results = jsonify({"status": "success", "data": {"nurses": entries}})
+
         return results
 
     except Exception as err:
@@ -91,34 +97,6 @@ def find_nurse():
             "status": "error",
             "message": str(err),
         })
-
-
-def track_event(tracking_id, category, action, cid, label=None, value=0):
-    '''
-    Posts Tracking in info to Google Analytics using measurement protocol.
-    Args:
-        tracking_id: The tracking ID of the Google Analytics account in which these data is associated with.
-        category: The name assigned to the group of similar events to track.
-        action: The Specific action being tracked.
-        cid: Anonymous Client Identifier. Ideally, this should be a UUID that is associated with particular user, device
-        label: Label of the event.
-        value: Value of event in this case number of results obtained
-    Returns:
-        No return value # If the request fails, it will raise a RequestException. .
-    '''
-    data = {
-        'v': '1',
-        'tid': tracking_id,
-        'cid': cid,
-        't': 'event',
-        'ec': category,
-        'ea': action,
-        'el': label,
-        'ev': value,
-    }
-    response = requests.post(
-        'http://www.google-analytics.com/collect', data=data)
-    response.raise_for_status()
 
 
 def handle_error(error):
@@ -135,7 +113,4 @@ def handle_error(error):
 
 # change error handler for all http exceptions to return json instead of html
 for code in default_exceptions.keys():
-    app.errorhandler(code)(handle_error)
-
-if __name__ == "__main__":
-    app.run(port=5555)
+    nurses_api.errorhandler(code)(handle_error)
