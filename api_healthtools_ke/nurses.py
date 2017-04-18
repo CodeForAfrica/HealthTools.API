@@ -1,18 +1,19 @@
 from bs4 import BeautifulSoup
-from api_healthtools_ke.config import NURSING_COUNCIL_URL, MEMCACHED_URL, GA_TRACKING_ID
-from api_healthtools_ke import app
+from api_healthtools_ke.config import MEMCACHED_URL, GA_TRACKING_ID
 from api_healthtools_ke.analytics import track_event
-from flask import Flask, request, jsonify, make_response, json
+from flask import Flask, Blueprint, request, jsonify, make_response, json
 import requests
 import memcache
 
 
+nurses_api = Blueprint('nurses_api', __name__)
 cache = memcache.Client([(MEMCACHED_URL)], debug=True)  # cache server
 
 nurse_fields = ["name", "licence_no", "valid_till"]
+NURSING_COUNCIL_URL = "http://nckenya.com/services/search.php?p=1&s={}"
 
 
-@app.route('/', methods=['GET'])
+@nurses_api.route('/', methods=['GET'])
 def home():
     '''
     Landing endpoint
@@ -33,7 +34,7 @@ def home():
     return jsonify(msg)
 
 
-@app.route('/nurses', methods=['GET'])
+@nurses_api.route('/search.json', methods=['GET'])
 def find_nurse():
     try:
         query = request.args.get('q')
@@ -92,7 +93,3 @@ def find_nurse():
             "status": "error",
             "message": str(err),
         })
-
-
-if __name__ == "__main__":
-    app.run(port=5555)

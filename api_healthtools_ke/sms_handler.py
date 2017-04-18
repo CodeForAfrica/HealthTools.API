@@ -1,4 +1,3 @@
-from api_healthtools_ke import app
 from api_healthtools_ke.config import SMS_PASS, SMS_SHORTCODE, SMS_USER, SMS_SEND_URL, GA_TRACKING_ID
 from api_healthtools_ke.analytics import track_event
 import requests
