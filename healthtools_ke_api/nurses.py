@@ -12,6 +12,8 @@ nurses_api = Blueprint('nurses_api', __name__)
 nurse_fields = ["name", "licence_no", "valid_till"]
 cache = Client([(MEMCACHED_URL)], debug=True)
 
+NURSING_COUNCIL_URL = 'http://nckenya.com/services/search.php?p=1&s={}'
+
 
 @nurses_api.route('/', methods=['GET'])
 def index():
