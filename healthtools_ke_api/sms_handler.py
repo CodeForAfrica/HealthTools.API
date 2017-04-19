@@ -18,7 +18,7 @@ DOC_KEYWORDS = ['doc', 'daktari', 'doctor', 'oncologist', 'dr']
 CO_KEYWORDS = ['CO', 'clinical officer',
                'clinic officer', 'clinical', 'clinical oficer', ]
 NO_KEYWORDS = ['nurse', 'no', 'nursing officer',
-               'mhuguzi', 'RN', 'Registered Nurse']
+               'mhuguzi', 'muuguzi', 'RN', 'Registered Nurse']
 NHIF_KEYWORDS = ['nhif', 'bima', 'insurance',
                  'insurance fund', 'health insurance', 'hospital fund']
 HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
@@ -80,8 +80,8 @@ def build_query_response(query):
         search_terms = find_keyword_in_query(query, NO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
         r = requests.get(NURSE_SEARCH_URL, params={'q': query})
-        print r.json()
-        msg = construct_nurse_response(r.json()["data"]["nurses"][:SMS_RESULT_COUNT])
+        data = r.json()['data']
+        msg = construct_nurse_response(data["nurses"][:SMS_RESULT_COUNT])
         print msg
         return [msg, r.json()]
     # Looking for clinical officers Keywords
