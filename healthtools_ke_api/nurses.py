@@ -46,7 +46,7 @@ def find_nurse():
                 "results": ""
             })
 
-        cached_result = cache.get(query)
+        cached_result = cache.get(query.replace(" ",""))
         if cached_result:
             num_cached_results = len(json.loads(
                 cached_result.data)["data"]["nurses"])
@@ -87,7 +87,7 @@ def find_nurse():
         track_event(GA_TRACKING_ID, 'Nurse', 'search',
                     request.remote_addr, label=query, value=len(entries))
         results = jsonify({"status": "success", "data": {"nurses": entries}})
-        cache.set(query, results, time=345600)  # expire after 4 days
+        cache.set(query.replace(" ",""), results, time=345600)  # expire after 4 days
         return results
 
     except Exception as err:

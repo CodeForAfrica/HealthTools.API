@@ -80,7 +80,7 @@ def build_query_response(query):
     elif find_keyword_in_query(query, NO_KEYWORDS):
         search_terms = find_keyword_in_query(query, NO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(NURSE_SEARCH_URL, params={'q': query.strip()})
+        r = requests.get(NURSE_SEARCH_URL, params={'q': query})
         print r.json()
         msg = construct_nurse_response(r.json()["data"]["nurses"][:SMS_RESULT_COUNT])
         print msg
