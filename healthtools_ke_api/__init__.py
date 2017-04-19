@@ -17,7 +17,10 @@ def handle_error(error):
         status_code = error.code
     response["status_code"] = status_code
     response["error"] = str(error)
-    response['description'] = error.description
+    try:
+        response['description'] = error.description
+    except Exception as err:
+        print error
     return jsonify(response), status_code
 
 

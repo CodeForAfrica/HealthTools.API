@@ -9,7 +9,7 @@ import re
 
 SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
 DOCTORS_SEARCH_URL = "https://6ujyvhcwe6.execute-api.eu-west-1.amazonaws.com/prod"
-NURSE_SEARCH_URL = "https://api.healthtools.codeforafrica.org/nurses"
+NURSE_SEARCH_URL = "https://api.healthtools.codeforafrica.org/nurses/search.json"
 CO_SEARCH_URL = "https://vfblk3b8eh.execute-api.eu-west-1.amazonaws.com/prod"
 NHIF_SEARCH_URL = "https://t875kgqahj.execute-api.eu-west-1.amazonaws.com/prod"
 HF_SEARCH_URL = "https://187mzjvmpd.execute-api.eu-west-1.amazonaws.com/prod"
@@ -27,11 +27,10 @@ HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
 sms_handler = Blueprint('sms_handler', __name__)
 
 
-@sms_handler.route("/sms", methods=['POST'])
+@sms_handler.route("/sms", methods=['GET'])
 def sms():
-    payload = request.json
-    name = payload["message"]
-    phone_number = payload["phoneNumber"]
+    name = request.args.get("message")
+    phone_number = request.args.get("phoneNumber")
     # Track Event SMS RECEIVED
     track_event(GA_TRACKING_ID, 'smsquery', 'receive',
                 encode_cid(phone_number), label='lambda', value=2)

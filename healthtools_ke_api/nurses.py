@@ -64,7 +64,8 @@ def find_nurse():
                         request.remote_addr, label=query, value=0)
             return jsonify({
                            "status": "success",
-                           "message": "No nurse by that name found."
+                           "message": "No nurse by that name found.",
+                           "data": {}
                            })
 
         # make soup for parsing out of response and get the table
@@ -94,4 +95,5 @@ def find_nurse():
         return jsonify({
             "status": "error",
             "message": str(err),
+            "data": {}
         })
