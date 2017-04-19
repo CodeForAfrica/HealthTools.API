@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
-from api_healthtools_ke.config import MEMCACHED_URL, GA_TRACKING_ID
-from api_healthtools_ke.analytics import track_event
-from flask import Flask, Blueprint, request, jsonify, make_response, json
+from flask import Blueprint, request, jsonify, make_response, json
+
+from healthtools_ke_api.config import MEMCACHED_URL, GA_TRACKING_ID
+from healthtools_ke_api.analytics import track_event
+
 import requests
 import memcache
 

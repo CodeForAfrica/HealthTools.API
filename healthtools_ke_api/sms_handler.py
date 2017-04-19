@@ -1,14 +1,15 @@
-from api_healthtools_ke.config import SMS_PASS, SMS_SHORTCODE, SMS_USER, SMS_SEND_URL, GA_TRACKING_ID
-from api_healthtools_ke.analytics import track_event
+from flask import Blueprint, request
+
+from healthtools_ke_api.config import SMS_PASS, SMS_SHORTCODE, SMS_USER, GA_TRACKING_ID
+from healthtools_ke_api.analytics import track_event
+
 import requests
 import re
 
 
-SECRET_KEY = ''
-SMS_PROVIDER_USERNAME = ''
-SMS_PROVIDER_KEY = ''
+SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
 DOCTORS_SEARCH_URL = "https://6ujyvhcwe6.execute-api.eu-west-1.amazonaws.com/prod"
-NURSE_SEARCH_URL = "https://52ien7p95b.execute-api.eu-west-1.amazonaws.com/prod"
+NURSE_SEARCH_URL = "https://api.healthtools.codeforafrica.org/nurses"
 CO_SEARCH_URL = "https://vfblk3b8eh.execute-api.eu-west-1.amazonaws.com/prod"
 NHIF_SEARCH_URL = "https://t875kgqahj.execute-api.eu-west-1.amazonaws.com/prod"
 HF_SEARCH_URL = "https://187mzjvmpd.execute-api.eu-west-1.amazonaws.com/prod"
@@ -23,10 +24,14 @@ NHIF_KEYWORDS = ['nhif', 'bima', 'insurance',
 HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
                'hospitali', 'sanatorium', 'health centre']
 
+sms_handler = Blueprint('sms_handler', __name__)
 
-def lambda_handler(event, context):
-    name = event.get("message", "")
-    phone_number = event.get("phoneNumber", "")
+
+@sms_handler.route("/sms", methods=['POST'])
+def sms():
+    payload = request.json
+    name = payload["message"]
+    phone_number = payload["phoneNumber"]
     # Track Event SMS RECEIVED
     track_event(GA_TRACKING_ID, 'smsquery', 'receive',
                 encode_cid(phone_number), label='lambda', value=2)
@@ -75,8 +80,9 @@ def build_query_response(query):
     elif find_keyword_in_query(query, NO_KEYWORDS):
         search_terms = find_keyword_in_query(query, NO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(NURSE_SEARCH_URL, params={'q': query})
-        msg = construct_nurse_response(parse_cloud_search_results(r))
+        r = requests.get(NURSE_SEARCH_URL, params={'q': query.strip()})
+        print r.json()
+        msg = construct_nurse_response(r.json()["data"]["nurses"][:SMS_RESULT_COUNT])
         print msg
         return [msg, r.json()]
     # Looking for clinical officers Keywords
@@ -175,7 +181,7 @@ def construct_nurse_response(nurse_list):
     msg_items = []
     for nurse in nurse_list:
         status = " ".join([str(count) + ".", nurse['name'] +
-                           ",", "VALID TO", nurse['valid_until']])
+                           ",", "VALID TO", nurse['valid_till']])
         msg_items.append(status)
         count = count + 1
     if len(nurse_list) > 1:

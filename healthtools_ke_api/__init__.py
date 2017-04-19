@@ -1,9 +1,12 @@
 from flask import Flask, jsonify
 from werkzeug.exceptions import HTTPException, default_exceptions
-from api_healthtools_ke.nurses import nurses_api
+from healthtools_ke_api.nurses import nurses_api
+from healthtools_ke_api.sms_handler import sms_handler
+
 
 app = Flask(__name__)
 app.register_blueprint(nurses_api, url_prefix='/nurses')
+app.register_blueprint(sms_handler)
 
 
 def handle_error(error):
