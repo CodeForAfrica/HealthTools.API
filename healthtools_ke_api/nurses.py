@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
-from flask import Blueprint, request, jsonify, make_response, json
+from flask import Blueprint, request, jsonify, make_response, json, current_app
 
-from healthtools_ke_api.config import MEMCACHED_URL, GA_TRACKING_ID
 from healthtools_ke_api.analytics import track_event
+from healthtools_ke_api.settings import MEMCACHED_URL
 
 import requests
 import memcache
@@ -47,11 +47,11 @@ def find_nurse():
                 "data": {"nurses": []}
             })
 
-        cached_result = cache.get(query.replace(" ",""))
+        cached_result = cache.get(query.replace(" ", ""))
         if cached_result:
             num_cached_results = len(json.loads(
                 cached_result.data)["data"]["nurses"])
-            track_event(GA_TRACKING_ID, 'Nurse', 'search',
+            track_event(current_app.config.get('GA_TRACKING_ID'), 'Nurse', 'search',
                         request.remote_addr, label=query, value=num_cached_results)
             response = make_response(cached_result)
             response.headers["X-Retrieved-From-Cache"] = True
@@ -61,7 +61,7 @@ def find_nurse():
         response = requests.get(url)
 
         if "No results" in response.content:
-            track_event(GA_TRACKING_ID, 'Nurse', 'search',
+            track_event(current_app.config.get('GA_TRACKING_ID'), 'Nurse', 'search',
                         request.remote_addr, label=query, value=0)
             return jsonify({
                            "status": "success",
@@ -86,10 +86,11 @@ def find_nurse():
             entries.append(entry)
 
         # send action to google analytics
-        track_event(GA_TRACKING_ID, 'Nurse', 'search',
+        track_event(current_app.config.get('GA_TRACKING_ID'), 'Nurse', 'search',
                     request.remote_addr, label=query, value=len(entries))
         results = jsonify({"status": "success", "data": {"nurses": entries}})
-        cache.set(query.replace(" ",""), results, time=345600)  # expire after 4 days
+        cache.set(query.replace(" ", ""), results,
+                  time=345600)  # expire after 4 days
         return results
 
     except Exception as err:

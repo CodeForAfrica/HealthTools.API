@@ -1,10 +1,20 @@
 from flask import Flask, jsonify
 from werkzeug.exceptions import HTTPException, default_exceptions
+
 from healthtools_ke_api.nurses import nurses_api
 from healthtools_ke_api.sms_handler import sms_handler
 
+import os
+import sys
+
 
 app = Flask(__name__)
+try:
+    app.config.from_object(os.getenv('CONFIG'))
+except KeyError:
+    print "No config has been specified for use in the environment variables."
+    sys.exit()
+
 app.register_blueprint(nurses_api, url_prefix='/nurses')
 app.register_blueprint(sms_handler)
 
@@ -20,7 +30,7 @@ def handle_error(error):
     try:
         response['description'] = error.description
     except Exception as err:
-        print error
+        print err
     return jsonify(response), status_code
 
 

@@ -1,6 +1,5 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 
-from healthtools_ke_api.config import SMS_PASS, SMS_SHORTCODE, SMS_USER, GA_TRACKING_ID
 from healthtools_ke_api.analytics import track_event
 
 import requests
@@ -8,11 +7,6 @@ import re
 
 
 SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
-DOCTORS_SEARCH_URL = "https://6ujyvhcwe6.execute-api.eu-west-1.amazonaws.com/prod"
-NURSE_SEARCH_URL = "https://api.healthtools.codeforafrica.org/nurses/search.json"
-CO_SEARCH_URL = "https://vfblk3b8eh.execute-api.eu-west-1.amazonaws.com/prod"
-NHIF_SEARCH_URL = "https://t875kgqahj.execute-api.eu-west-1.amazonaws.com/prod"
-HF_SEARCH_URL = "https://187mzjvmpd.execute-api.eu-west-1.amazonaws.com/prod"
 SMS_RESULT_COUNT = 4  # Number of results to be send via sms
 DOC_KEYWORDS = ['doc', 'daktari', 'doctor', 'oncologist', 'dr']
 CO_KEYWORDS = ['CO', 'clinical officer',
@@ -32,12 +26,12 @@ def sms():
     name = request.args.get("message")
     phone_number = request.args.get("phoneNumber")
     # Track Event SMS RECEIVED
-    track_event(GA_TRACKING_ID, 'smsquery', 'receive',
+    track_event(current_app.config.get('GA_TRACKING_ID'), 'smsquery', 'receive',
                 encode_cid(phone_number), label='lambda', value=2)
     msg = build_query_response(name)
     resp = send_sms(phone_number, msg[0])
     # Track Event SMS SENT
-    track_event(GA_TRACKING_ID, 'smsquery', 'send',
+    track_event(current_app.config.get('GA_TRACKING_ID'), 'smsquery', 'send',
                 encode_cid(phone_number), label='lambda', value=2)
     # Full url with params for sending sms, print should trigger cloudwatch
     # log on aws
@@ -49,10 +43,10 @@ def sms():
 
 def send_sms(phone_number, msg):
     params = {
-        'user': SMS_USER,
-        'pass': SMS_PASS,
+        'user': current_app.config.get('SMS_USER'),
+        'pass': current_app.config.get('SMS_PASS'),
         'messageID': 0,
-        'shortCode': SMS_SHORTCODE,
+        'shortCode': current_app.config.get('SMS_SHORTCODE'),
         'MSISDN': phone_number,
         'MESSAGE': msg
     }
@@ -71,7 +65,7 @@ def build_query_response(query):
     if find_keyword_in_query(query, DOC_KEYWORDS):
         search_terms = find_keyword_in_query(query, DOC_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(DOCTORS_SEARCH_URL, params={'q': query})
+        r = requests.get(current_app.config.get('DOCTORS_SEARCH_URL'), params={'q': query})
         msg = construct_docs_response(parse_cloud_search_results(r))
         print msg
         return [msg, r.json()]
@@ -79,7 +73,7 @@ def build_query_response(query):
     elif find_keyword_in_query(query, NO_KEYWORDS):
         search_terms = find_keyword_in_query(query, NO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(NURSE_SEARCH_URL, params={'q': query})
+        r = requests.get(current_app.config.get('NURSE_SEARCH_URL'), params={'q': query})
         data = r.json()['data']
         msg = construct_nurse_response(data["nurses"][:SMS_RESULT_COUNT])
         print msg
@@ -88,7 +82,7 @@ def build_query_response(query):
     elif find_keyword_in_query(query, CO_KEYWORDS):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(CO_SEARCH_URL, params={'q': query})
+        r = requests.get(current_app.config.get('CO_SEARCH_URL'), params={'q': query})
         msg = construct_co_response(parse_cloud_search_results(r))
         print msg
         return [msg, r.json()]
@@ -96,7 +90,7 @@ def build_query_response(query):
     elif find_keyword_in_query(query, NHIF_KEYWORDS):
         search_terms = find_keyword_in_query(query, NHIF_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(NHIF_SEARCH_URL, params={'q': query})
+        r = requests.get(current_app.config.get('NHIF_SEARCH_URL'), params={'q': query})
         msg = construct_nhif_response(parse_cloud_search_results(r))
         print msg
         return [msg, r.json()]
@@ -104,7 +98,7 @@ def build_query_response(query):
     elif find_keyword_in_query(query, HF_KEYWORDS):
         search_terms = find_keyword_in_query(query, HF_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(HF_SEARCH_URL, params={'q': query})
+        r = requests.get(current_app.config.get('HF_SEARCH_URL'), params={'q': query})
         msg = construct_hf_response(parse_cloud_search_results(r))
         print msg
         return [msg, r.json()]
