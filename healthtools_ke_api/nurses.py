@@ -47,6 +47,7 @@ def find_nurse():
                 "data": {"nurses": []}
             })
 
+        # try to get queried result first
         cached_result = cache.get(query.replace(" ", ""))
         if cached_result:
             num_cached_results = len(json.loads(
@@ -57,38 +58,21 @@ def find_nurse():
             response.headers["X-Retrieved-From-Cache"] = True
             return response
 
-        url = NURSING_COUNCIL_URL.format(query)
-        response = requests.get(url)
-
-        if "No results" in response.content:
-            track_event(current_app.config.get('GA_TRACKING_ID'), 'Nurse', 'search',
-                        request.remote_addr, label=query, value=0)
-            return jsonify({
-                           "status": "success",
-                           "message": "No nurse by that name found.",
-                           "data": {"nurses": []},
-                           })
-
-        # make soup for parsing out of response and get the table
-        soup = BeautifulSoup(response.content, "html.parser")
-        table = soup.find('table', {"class": "zebra"}).find("tbody")
-        rows = table.find_all("tr")
-
-        entries = []
-
-        # parse table for the nurses data
-        for row in rows:
-            # only the columns we want
-            columns = row.find_all("td")[:len(nurse_fields)]
-            columns = [text.text.strip() for text in columns]
-
-            entry = dict(zip(nurse_fields, columns))
-            entries.append(entry)
+        # get nurses by that name from nursing council site
+        response = {}
+        nurses = get_nurses_from_nc_registry(query)
+        if not nurses:
+            response["message"] = "No nurse by that name found."
 
         # send action to google analytics
-        track_event(current_app.config.get('GA_TRACKING_ID'), 'Nurse', 'search',
-                    request.remote_addr, label=query, value=len(entries))
-        results = jsonify({"status": "success", "data": {"nurses": entries}})
+        track_event(current_app.config.get('GA_TRACKING_ID'),
+                    'Nurse', 'search',
+                    request.remote_addr, label=query, value=len(nurses))
+
+        response["data"] = {"nurses": nurses}
+        response["status"] = "success"
+
+        results = jsonify(response)
         cache.set(query.replace(" ", ""), results,
                   time=345600)  # expire after 4 days
         return results
@@ -99,3 +83,31 @@ def find_nurse():
             "message": str(err),
             "data": {"nurses": []}
         })
+
+
+def get_nurses_from_nc_registry(query):
+    '''
+    Get nurses from the nursing council of Kenya registry
+    '''
+    url = NURSING_COUNCIL_URL.format(query)
+    response = requests.get(url)
+    nurses = []
+
+    if "No results" in response.content:
+        return nurses
+
+    # make soup for parsing out of response and get the table
+    soup = BeautifulSoup(response.content, "html.parser")
+    table = soup.find('table', {"class": "zebra"}).find("tbody")
+    rows = table.find_all("tr")
+
+    # parse table for the nurses data
+    for row in rows:
+        # only the columns we want
+        columns = row.find_all("td")[:len(nurse_fields)]
+        columns = [text.text.strip() for text in columns]
+
+        entry = dict(zip(nurse_fields, columns))
+        nurses.append(entry)
+
+    return nurses

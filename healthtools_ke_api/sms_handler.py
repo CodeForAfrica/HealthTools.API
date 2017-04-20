@@ -1,6 +1,7 @@
 from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
+from healthtools_ke_api.nurses import get_nurses_from_nc_registry
 
 import requests
 import re
@@ -73,11 +74,10 @@ def build_query_response(query):
     elif find_keyword_in_query(query, NO_KEYWORDS):
         search_terms = find_keyword_in_query(query, NO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(current_app.config.get('NURSE_SEARCH_URL'), params={'q': query})
-        data = r.json()['data']
-        msg = construct_nurse_response(data["nurses"][:SMS_RESULT_COUNT])
+        nurses = get_nurses_from_nc_registry(query)
+        msg = construct_nurse_response(nurses[:SMS_RESULT_COUNT])
         print msg
-        return [msg, r.json()]
+        return [msg]
     # Looking for clinical officers Keywords
     elif find_keyword_in_query(query, CO_KEYWORDS):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
