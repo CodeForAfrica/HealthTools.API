@@ -6,6 +6,7 @@ MEMCACHED_URL = os.getenv("MEMCACHED_URL")
 
 class Config(object):
     DEBUG = True
+    THREADED = True
     # Google Analytics tracking id
     GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID')
 
@@ -23,6 +24,5 @@ class Config(object):
 
 # development config
 class DevConfig(Config):
-    THREADED = True
     PORT = 5555
     NURSE_SEARCH_URL = "http://0.0.0.0:5555/nurses/search.json"
