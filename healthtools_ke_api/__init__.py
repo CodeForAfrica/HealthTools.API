@@ -18,6 +18,7 @@ except KeyError:
 app.register_blueprint(nurses_api, url_prefix='/nurses')
 app.register_blueprint(sms_handler)
 
+
 @app.route("/")
 def index():
     '''
@@ -33,6 +34,7 @@ def index():
     }
     return jsonify(msg)
 
+
 def handle_error(error):
     '''Generic error handlers for all http exceptions'''
     response = {}
@@ -46,6 +48,7 @@ def handle_error(error):
     except Exception as err:
         print err
     return jsonify(response), status_code
+
 
 # change error handler for all http exceptions to return json instead of html
 for code in default_exceptions.keys():

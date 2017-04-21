@@ -23,5 +23,4 @@ class Config(object):
 
 # development config
 class DevConfig(Config):
-    PORT = 5555
-    SERVER_NAME = "http://127.0.0.1:5555"
+    SERVER_NAME = "127.0.0.1:5555"

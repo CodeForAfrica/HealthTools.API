@@ -26,6 +26,8 @@ sms_handler = Blueprint('sms_handler', __name__)
 def sms():
     name = request.args.get("message")
     phone_number = request.args.get("phoneNumber")
+    if not name or not phone_number:
+        return "The url parameters 'message' and 'phoneNumber' are required."
     # Track Event SMS RECEIVED
     track_event(current_app.config.get('GA_TRACKING_ID'), 'smsquery', 'receive',
                 encode_cid(phone_number), label='lambda', value=2)
