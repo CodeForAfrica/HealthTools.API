@@ -16,7 +16,7 @@ NURSING_COUNCIL_URL = "http://nckenya.com/services/search.php?p=1&s={}"
 
 
 @nurses_api.route('/', methods=['GET'])
-def home():
+def index():
     '''
     Landing endpoint
     '''
@@ -25,7 +25,7 @@ def home():
         "authentication": [],
         "endpoints": {
             "/": {"methods": ["GET"]},
-            "/nurses": {
+            "/nurses/search.json": {
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
@@ -37,7 +37,7 @@ def home():
 
 
 @nurses_api.route('/search.json', methods=['GET'])
-def find_nurse():
+def search():
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:
