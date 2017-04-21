@@ -1,6 +1,6 @@
 from unittest import TestCase
 from healthtools_ke_api import app
-from healthtools_ke_api.nurses import get_nurses_from_nc_registry
+from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
 
 
 class TestNursesAPI(TestCase):

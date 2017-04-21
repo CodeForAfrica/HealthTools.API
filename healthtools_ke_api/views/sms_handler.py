@@ -1,7 +1,7 @@
 from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
-from healthtools_ke_api.nurses import get_nurses_from_nc_registry
+from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
 
 import requests
 import re
