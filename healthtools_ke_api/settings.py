@@ -5,7 +5,6 @@ MEMCACHED_URL = os.getenv("MEMCACHED_URL")
 
 
 class Config(object):
-    SERVER_NAME = "127.0.0.1:8000"
     # Google Analytics tracking id
     GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID')
 
