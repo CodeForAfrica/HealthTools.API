@@ -1,18 +1,18 @@
-import requests
-
 from bs4 import BeautifulSoup
-from flask import Blueprint, request, jsonify, make_response, json
-from werkzeug.exceptions import HTTPException, default_exceptions
-from memcache import Client
+from flask import Blueprint, request, jsonify, make_response, json, current_app
 
-from healthtools_ke_api.config import *
 from healthtools_ke_api.analytics import track_event
+from healthtools_ke_api.settings import MEMCACHED_URL
+
+import requests
+import memcache
+
 
 nurses_api = Blueprint('nurses_api', __name__)
-nurse_fields = ["name", "licence_no", "valid_till"]
-cache = Client([(MEMCACHED_URL)], debug=True)
+cache = memcache.Client([(MEMCACHED_URL)], debug=True)  # cache server
 
-NURSING_COUNCIL_URL = 'http://nckenya.com/services/search.php?p=1&s={}'
+nurse_fields = ["name", "licence_no", "valid_till"]
+NURSING_COUNCIL_URL = "http://nckenya.com/services/search.php?p=1&s={}"
 
 
 @nurses_api.route('/', methods=['GET'])
@@ -24,7 +24,7 @@ def index():
         "name": "Nursing Council of Kenya API",
         "authentication": [],
         "endpoints": {
-            "/nurses": {"methods": ["GET"]},
+            "/": {"methods": ["GET"]},
             "/nurses/search.json": {
                 "methods": ["GET"],
                 "args": {
@@ -43,76 +43,71 @@ def search():
         if not query or len(query) < 1:
             return jsonify({
                 "error": "A query is required.",
-                "results": ""
+                "results": "",
+                "data": {"nurses": []}
             })
 
-        cached_result = cache.get(query)
+        # try to get queried result first
+        cached_result = cache.get(query.replace(" ", ""))
         if cached_result:
-            num_cached_results = len(json.loads(cached_result.data)["data"]["nurses"])
-            track_event(GA_TRACKING_ID, 'Nurse', 'search',
+            num_cached_results = len(json.loads(
+                cached_result.data)["data"]["nurses"])
+            track_event(current_app.config.get('GA_TRACKING_ID'), 'Nurse', 'search',
                         request.remote_addr, label=query, value=num_cached_results)
             response = make_response(cached_result)
             response.headers["X-Retrieved-From-Cache"] = True
             return response
 
-        url = NURSING_COUNCIL_URL.format(query)
-        response = requests.get(url)
+        # get nurses by that name from nursing council site
+        response = {}
+        nurses = get_nurses_from_nc_registry(query)
+        if not nurses:
+            response["message"] = "No nurse by that name found."
 
-        if "No results" in response.content:
-            track_event(GA_TRACKING_ID, 'Nurse', 'search',
-                        request.remote_addr, label=query, value=0)
-            return jsonify({
-                           "status": "success",
-                           "message": "No nurse by that name found."
-                           })
+        # send action to google analytics
+        track_event(current_app.config.get('GA_TRACKING_ID'),
+                    'Nurse', 'search',
+                    request.remote_addr, label=query, value=len(nurses))
 
-        # make soup for parsing out of response and get the table
-        soup = BeautifulSoup(response.content, "html.parser")
-        table = soup.find('table', {"class": "zebra"}).find("tbody")
-        rows = table.find_all("tr")
+        response["data"] = {"nurses": nurses}
+        response["status"] = "success"
 
-        entries = []
-
-        # parse table for the nurses data
-        for row in rows:
-            # only the columns we want
-            columns = row.find_all("td")[:len(nurse_fields)]
-            columns = [text.text.strip() for text in columns]
-
-            entry = dict(zip(nurse_fields, columns))
-            entries.append(entry)
-
-        # Cache the results
-        cache.set(query, results, time=345600)  # expire after 4 days
-
-        # Send action to google analytics
-        track_event(
-                GA_TRACKING_ID, 'Nurse', 'search', request.remote_addr,
-                label=query, value=len(entries))
-
-        results = jsonify({"status": "success", "data": {"nurses": entries}})
-
+        results = jsonify(response)
+        cache.set(query.replace(" ", ""), results,
+                  time=345600)  # expire after 4 days
         return results
 
     except Exception as err:
         return jsonify({
             "status": "error",
             "message": str(err),
+            "data": {"nurses": []}
         })
 
 
-def handle_error(error):
-    '''Generic error handlers for all http exceptions'''
-    response = {}
-    status_code = 500
-    if isinstance(error, HTTPException):
-        status_code = error.code
-    response["status_code"] = status_code
-    response["error"] = str(error)
-    response['description'] = error.description
-    return jsonify(response), status_code
+def get_nurses_from_nc_registry(query):
+    '''
+    Get nurses from the nursing council of Kenya registry
+    '''
+    url = NURSING_COUNCIL_URL.format(query)
+    response = requests.get(url)
+    nurses = []
 
+    if "No results" in response.content:
+        return nurses
 
-# change error handler for all http exceptions to return json instead of html
-for code in default_exceptions.keys():
-    nurses_api.errorhandler(code)(handle_error)
+    # make soup for parsing out of response and get the table
+    soup = BeautifulSoup(response.content, "html.parser")
+    table = soup.find('table', {"class": "zebra"}).find("tbody")
+    rows = table.find_all("tr")
+
+    # parse table for the nurses data
+    for row in rows:
+        # only the columns we want
+        columns = row.find_all("td")[:len(nurse_fields)]
+        columns = [text.text.strip() for text in columns]
+
+        entry = dict(zip(nurse_fields, columns))
+        nurses.append(entry)
+
+    return nurses

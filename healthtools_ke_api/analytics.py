@@ -12,7 +12,8 @@ def track_event(tracking_id, category, action, cid, label=None, value=0):
         label: Label of the event.
         value: Value of event in this case number of results obtained
     Returns:
-        No return value # If the request fails, it will raise a RequestException. .
+        No return value # If the request fails, it will raise a 
+        RequestException. .
     '''
     data = {
         'v': '1',
