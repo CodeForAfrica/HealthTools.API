@@ -34,7 +34,9 @@ def index():
         "authentication": [],
         "endpoints": {
             "/": {"methods": ["GET"]},
-            "/nurses": {"methods": ["GET"]}
+            "/nurses": {"methods": ["GET"]},
+            "/doctors": {"methods": ["GET"]},
+            "/clinical-officers": {"methods": ["GET"]}
         }
     }
     return jsonify(msg)
