@@ -2,6 +2,8 @@ from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
+from healthtools_ke_api.views.doctors import get_doctors_from_cloudsearch
+from healthtools_ke_api.views.clinical_officers import get_clinical_officers_from_cloudsearch
 
 import requests
 import re
@@ -68,10 +70,10 @@ def build_query_response(query):
     if find_keyword_in_query(query, DOC_KEYWORDS):
         search_terms = find_keyword_in_query(query, DOC_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(current_app.config.get('DOCTORS_SEARCH_URL'), params={'q': query})
-        msg = construct_docs_response(parse_cloud_search_results(r))
+        doctors = get_doctors_from_cloudsearch(query)
+        msg = construct_docs_response(doctors[:SMS_RESULT_COUNT])
         print msg
-        return [msg, r.json()]
+        return [msg]
     # Looking for Nurses keywords
     elif find_keyword_in_query(query, NO_KEYWORDS):
         search_terms = find_keyword_in_query(query, NO_KEYWORDS)
@@ -84,10 +86,10 @@ def build_query_response(query):
     elif find_keyword_in_query(query, CO_KEYWORDS):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(current_app.config.get('CO_SEARCH_URL'), params={'q': query})
-        msg = construct_co_response(parse_cloud_search_results(r))
+        clinical_officers = get_clinical_officers_from_cloudsearch(query)
+        msg = construct_co_response(clinical_officers[:SMS_RESULT_COUNT])
         print msg
-        return [msg, r.json()]
+        return [msg]
     # Looking for nhif hospitals
     elif find_keyword_in_query(query, NHIF_KEYWORDS):
         search_terms = find_keyword_in_query(query, NHIF_KEYWORDS)
@@ -125,8 +127,9 @@ def construct_co_response(co_list):
     count = 1
     msg_items = []
     for co in co_list:
+        co = co["fields"]
         status = " ".join(
-            [str(count) + ".", co['name'], "-", co['qualification']])
+            [str(count) + ".", "".join(co['name']), "-", "".join(co['qualifications'])])
         msg_items.append(status)
         count = count + 1
     if len(co_list) > 1:
@@ -193,13 +196,14 @@ def construct_docs_response(docs_list):
     msg_items = []
 
     for doc in docs_list:
+        doc = doc["fields"]
         # Ignore speciality if not there, dont display none
-        if doc['specialty'] == "None":
-            status = " ".join([str(count) + ".", doc['name'], "-",
-                               doc['registration_number'], "-", doc['qualification']])
+        if doc['speciality'] == "None":
+            status = " ".join([str(count) + ".", "".join(doc['name']), "-",
+                               "".join(doc['reg_no']), "-", "".join(doc['qualifications'])])
         else:
-            status = " ".join([str(count) + ".", doc['name'], "-", doc[
-                              'registration_number'], "-", doc['qualification'], doc['specialty']])
+            status = " ".join([str(count) + ".", "".join(doc['name']), "-", "".join(doc[
+                              'reg_no']), "-", "".join(doc['qualifications']), "".join(doc['speciality'])])
         msg_items.append(status)
         count = count + 1
     if len(docs_list) > 1:
