@@ -70,9 +70,9 @@ def build_query_response(query):
     if find_keyword_in_query(query, DOC_KEYWORDS):
         search_terms = find_keyword_in_query(query, DOC_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
+        print query
         doctors = get_doctors_from_cloudsearch(query)
         msg = construct_docs_response(doctors[:SMS_RESULT_COUNT])
-        print msg
         return [msg]
     # Looking for Nurses keywords
     elif find_keyword_in_query(query, NO_KEYWORDS):
@@ -80,15 +80,14 @@ def build_query_response(query):
         query = query[:search_terms.start()] + query[search_terms.end():]
         nurses = get_nurses_from_nc_registry(query)
         msg = construct_nurse_response(nurses[:SMS_RESULT_COUNT])
-        print msg
         return [msg]
     # Looking for clinical officers Keywords
     elif find_keyword_in_query(query, CO_KEYWORDS):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
+        print query
         clinical_officers = get_clinical_officers_from_cloudsearch(query)
         msg = construct_co_response(clinical_officers[:SMS_RESULT_COUNT])
-        print msg
         return [msg]
     # Looking for nhif hospitals
     elif find_keyword_in_query(query, NHIF_KEYWORDS):
