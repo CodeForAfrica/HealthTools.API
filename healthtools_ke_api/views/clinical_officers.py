@@ -5,24 +5,24 @@ from healthtools_ke_api.analytics import track_event
 from healthtools_ke_api.settings import AWS_CONFIGS
 
 
-doctors_api = Blueprint('doctors_api', __name__)
-DOCTORS_CLOUDSEARCH_ENDPOINT = "http://doc-cfa-healthtools-ke-doctors-m34xee6byjmzcgzmovevkjpffy.eu-west-1.cloudsearch.amazonaws.com/"
+clinical_officers_api = Blueprint('clinical_officers_api', __name__)
+COS_CLOUDSEARCH_ENDPOINT = "http://doc-cfa-healthtools-ke-cos-nhxtw3w5goufkzram4er7sciz4.eu-west-1.cloudsearch.amazonaws.com/"
 cloudsearch_client = boto3.client("cloudsearchdomain",
-                                  endpoint_url=DOCTORS_CLOUDSEARCH_ENDPOINT,
+                                  endpoint_url=COS_CLOUDSEARCH_ENDPOINT,
                                   **AWS_CONFIGS)
 
 
-@doctors_api.route('/', methods=['GET'])
+@clinical_officers_api.route('/', methods=['GET'])
 def index():
     '''
     Landing endpoint
     '''
     msg = {
-        "name": "API to the Kenyan doctors registry",
+        "name": "API to Kenyan Clinical Officers registry",
         "authentication": [],
         "endpoints": {
             "/": {"methods": ["GET"]},
-            "/doctors/search.json": {
+            "/clinical-officers/search.json": {
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
@@ -33,7 +33,7 @@ def index():
     return jsonify(msg)
 
 
-@doctors_api.route('/search.json', methods=['GET'])
+@clinical_officers_api.route('/search.json', methods=['GET'])
 def search():
     try:
         query = request.args.get('q')
@@ -41,19 +41,20 @@ def search():
             return jsonify({
                 "error": "A query is required.",
                 "results": "",
-                "data": {"doctors": []}
+                "data": {"clinical_officers": []}
             })
 
-        # get doctors by that name from aws
+        # get clinical_officers by that name from aws
         response = {}
-        doctors = get_doctors_from_cloudsearch(query)
+        clinical_officers = get_clinical_officers_from_cloudsearch(query)
 
-        if not doctors:
-            response["message"] = "No doctor by that name found."
+        if not clinical_officers:
+            response["message"] = "No clinical officer by that name found."
 
-        track_event(current_app.config.get('GA_TRACKING_ID'), 'Doctor', 'search',
-                        request.remote_addr, label=query, value=len(doctors))
-        response["data"] = {"doctors": doctors}
+        track_event(current_app.config.get('GA_TRACKING_ID'),
+                    'Clinical-Officers', 'search', request.remote_addr,
+                    label=query, value=len(clinical_officers))
+        response["data"] = {"clinical_officers": clinical_officers}
         response["status"] = "success"
 
         results = jsonify(response)
@@ -62,13 +63,13 @@ def search():
         return jsonify({
             "status": "error",
             "message": str(err),
-            "data": {"doctors": []}
+            "data": {"clinical_officers": []}
         })
 
 
-def get_doctors_from_cloudsearch(query):
+def get_clinical_officers_from_cloudsearch(query):
     '''
-    Get doctors from AWS cloudsearch
+    Get clinical officers from AWS cloudsearch
     '''
     results = cloudsearch_client.search(query=query, size=10000)
     return results["hits"]["hit"]

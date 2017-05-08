@@ -3,7 +3,7 @@ from healthtools_ke_api import app
 from healthtools_ke_api.views.doctors import get_doctors_from_cloudsearch
 
 
-class TestNursesAPI(TestCase):
+class TestDoctorsAPI(TestCase):
     def setUp(self):
         self.client = app.test_client()
 
