@@ -12,9 +12,9 @@ Specification for the API is shown below. It is an open api and requires no auth
 
 | EndPoint                            | Allowed Methods  | Functionality                                            | Parameters |
 |-------------------------------------|------------------|----------------------------------------------------------|------------|
-| `/doctors/search.json`              | GET              | Search a doctor by the name                              | q=<name>   |
-| `/nurses/search.json`               | GET              | Search a nurse by the name                               | q=<name>   |
-| `/clinical-officers/search.json`    | GET              | Search a clinical officer by the name                    | q=<name>   |
+| `/doctors/search.json`              | GET              | Search a doctor by the name                              | q=[name]   |
+| `/nurses/search.json`               | GET              | Search a nurse by the name                               | q=[name]   |
+| `/clinical-officers/search.json`    | GET              | Search a clinical officer by the name                    | q=[name]   |
 
 
 ### Installation
