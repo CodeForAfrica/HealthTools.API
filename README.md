@@ -24,8 +24,13 @@ Change directory into package `$ cd HealthTools.KE-api`
 
 Install the dependencies by running `$ pip install requirements.txt`
 
+Install Memcached
+ * If on linux follow this [link](https://github.com/memcached/memcached/wiki/Install)
+ * On mac use `brew install memcached`
+
 You can set the required environment variables like so
 ```<>
+$ export MEMCACHED_URL=<memcache_url:port> # e.g '127.0.0.1:8000'
 $ export GA_TRACKING_ID=<google-analytics-tracking-id>
 $ export SMS_USER=<sms-provider-user-id>
 $ export SMS_PASS=<sms-provider-passcode>
@@ -34,13 +39,19 @@ $ export SMS_SEND_URL=<url-for-sms-provider>
 $ export CONFIG=<config-mode>  # eg. "healthtools_ke_api.settings.DevConfig"
 $ export AWS_ACCESS_KEY_ID=<aws-access-key-id>
 $ export AWS_SECRET_KEY=<aws-secret-key>
-$ export AWS_REGION="<aws-region>
+$ export AWS_REGION=<aws-region>
+$ export ES_HOST=<elasticsearch_host_endpoint>
 ```
+
+Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>`
 
 You can now run the server `$ python manage.py` or `gunicorn manage:app` for production.
 
 
+
 ## Running the tests
+
+Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>`
 
 Use nosetests to run tests (with stdout) like this:
 ```$ nosetests --nocapture```

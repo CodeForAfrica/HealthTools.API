@@ -1,15 +1,9 @@
-import boto3
 from flask import Blueprint, request, jsonify, current_app
 
 from healthtools_ke_api.analytics import track_event
-from healthtools_ke_api.settings import AWS_CONFIGS
-
+from elastic_search import Elastic
 
 doctors_api = Blueprint('doctors_api', __name__)
-DOCTORS_CLOUDSEARCH_ENDPOINT = "http://doc-cfa-healthtools-ke-doctors-m34xee6byjmzcgzmovevkjpffy.eu-west-1.cloudsearch.amazonaws.com/"
-cloudsearch_client = boto3.client("cloudsearchdomain",
-                                  endpoint_url=DOCTORS_CLOUDSEARCH_ENDPOINT,
-                                  **AWS_CONFIGS)
 
 
 @doctors_api.route('/', methods=['GET'])
@@ -26,10 +20,10 @@ def index():
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
-                }
-            },
+                    }
+                },
+            }
         }
-    }
     return jsonify(msg)
 
 
@@ -42,17 +36,18 @@ def search():
                 "error": "A query is required.",
                 "results": "",
                 "data": {"doctors": []}
-            })
+                })
 
         # get doctors by that name from aws
         response = {}
-        doctors = get_doctors_from_cloudsearch(query)
+        es = Elastic()
+        doctors = es.get_from_elasticsearch('doctors', query)
 
         if not doctors:
             response["message"] = "No doctor by that name found."
 
         track_event(current_app.config.get('GA_TRACKING_ID'), 'Doctor', 'search',
-                        request.remote_addr, label=query, value=len(doctors))
+                    request.remote_addr, label=query, value=len(doctors))
         response["data"] = {"doctors": doctors}
         response["status"] = "success"
 
@@ -63,12 +58,4 @@ def search():
             "status": "error",
             "message": str(err),
             "data": {"doctors": []}
-        })
-
-
-def get_doctors_from_cloudsearch(query):
-    '''
-    Get doctors from AWS cloudsearch
-    '''
-    results = cloudsearch_client.search(query=query, size=10000)
-    return results["hits"]["hit"]
+            })

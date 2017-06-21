@@ -1,15 +1,9 @@
-import boto3
 from flask import Blueprint, request, jsonify, current_app
 
+from elastic_search import Elastic
 from healthtools_ke_api.analytics import track_event
-from healthtools_ke_api.settings import AWS_CONFIGS
-
 
 clinical_officers_api = Blueprint('clinical_officers_api', __name__)
-COS_CLOUDSEARCH_ENDPOINT = "http://doc-cfa-healthtools-ke-cos-nhxtw3w5goufkzram4er7sciz4.eu-west-1.cloudsearch.amazonaws.com/"
-cloudsearch_client = boto3.client("cloudsearchdomain",
-                                  endpoint_url=COS_CLOUDSEARCH_ENDPOINT,
-                                  **AWS_CONFIGS)
 
 
 @clinical_officers_api.route('/', methods=['GET'])
@@ -26,10 +20,10 @@ def index():
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
-                }
-            },
+                    }
+                },
+            }
         }
-    }
     return jsonify(msg)
 
 
@@ -42,11 +36,12 @@ def search():
                 "error": "A query is required.",
                 "results": "",
                 "data": {"clinical_officers": []}
-            })
+                })
 
         # get clinical_officers by that name from aws
         response = {}
-        clinical_officers = get_clinical_officers_from_cloudsearch(query)
+        es = Elastic()
+        clinical_officers = es.get_from_elasticsearch('clinical-officers', query)
 
         if not clinical_officers:
             response["message"] = "No clinical officer by that name found."
@@ -64,12 +59,4 @@ def search():
             "status": "error",
             "message": str(err),
             "data": {"clinical_officers": []}
-        })
-
-
-def get_clinical_officers_from_cloudsearch(query):
-    '''
-    Get clinical officers from AWS cloudsearch
-    '''
-    results = cloudsearch_client.search(query=query, size=10000)
-    return results["hits"]["hit"]
+            })

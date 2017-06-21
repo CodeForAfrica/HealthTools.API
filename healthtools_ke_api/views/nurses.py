@@ -7,9 +7,8 @@ from healthtools_ke_api.settings import MEMCACHED_URL
 import requests
 import memcache
 
-
 nurses_api = Blueprint('nurses_api', __name__)
-cache = memcache.Client([(MEMCACHED_URL)], debug=True)  # cache server
+cache = memcache.Client([MEMCACHED_URL], debug=True)  # cache server
 
 nurse_fields = ["name", "licence_no", "valid_till"]
 NURSING_COUNCIL_URL = "http://nckenya.com/services/search.php?p=1&s={}"
@@ -29,10 +28,10 @@ def index():
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
-                }
-            },
+                    }
+                },
+            }
         }
-    }
     return jsonify(msg)
 
 
@@ -45,7 +44,7 @@ def search():
                 "error": "A query is required.",
                 "results": "",
                 "data": {"nurses": []}
-            })
+                })
 
         # try to get queried result first
         cached_result = cache.get(query.replace(" ", ""))
@@ -82,7 +81,7 @@ def search():
             "status": "error",
             "message": str(err),
             "data": {"nurses": []}
-        })
+            })
 
 
 def get_nurses_from_nc_registry(query):
