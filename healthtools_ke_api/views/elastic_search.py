@@ -13,15 +13,18 @@ class Elastic(object):
         # set up authentication credentials
         awsauth = AWS4Auth(AWS["aws_access_key_id"], AWS["aws_secret_access_key"], AWS["region_name"], 'es')
         # client host for aws elastic search service
-        self.es_client = Elasticsearch(
-            hosts=ES['host'],
-            port=443,
-            http_auth=awsauth,
-            use_ssl=True,
-            verify_certs=True,
-            connection_class=RequestsHttpConnection,
-            serializer=JSONSerializerPython2()
-            )
+        if ES['host']:
+            self.es_client = Elasticsearch(
+                hosts=ES['host'],
+                port=443,
+                http_auth=awsauth,
+                use_ssl=True,
+                verify_certs=True,
+                connection_class=RequestsHttpConnection,
+                serializer=JSONSerializerPython2()
+                )
+        else:
+            self.es_client = Elasticsearch('127.0.0.1')
 
     def get_from_elasticsearch(self, doc_type, query):
         """

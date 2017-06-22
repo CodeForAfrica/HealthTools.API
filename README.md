@@ -30,7 +30,7 @@ Install Memcached
 
 You can set the required environment variables like so
 ```<>
-$ export MEMCACHED_URL=<memcache_url:port> # e.g '127.0.0.1:8000'
+$ export MEMCACHED_URL=<memcache_url:port> # defaults to 127.0.0.1:8000
 $ export GA_TRACKING_ID=<google-analytics-tracking-id>
 $ export SMS_USER=<sms-provider-user-id>
 $ export SMS_PASS=<sms-provider-passcode>
@@ -40,10 +40,17 @@ $ export CONFIG=<config-mode>  # eg. "healthtools_ke_api.settings.DevConfig"
 $ export AWS_ACCESS_KEY_ID=<aws-access-key-id>
 $ export AWS_SECRET_KEY=<aws-secret-key>
 $ export AWS_REGION=<aws-region>
-$ export ES_HOST=<elasticsearch_host_endpoint>
+$ export ES_HOST=<elasticsearch_host_endpoint> (DO NOT SET THIS IF YOU WOULD LIKE TO USE ELASTIC SEARCH LOCALLY ON YOUR MACHINE)
 ```
+**If you want to use elasticsearch locally on your machine use the following instructions to set it up**
 
-Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>`
+For linux and windows users, follow instructions from this [link](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html)
+
+For mac users run `brew install elasticsearch` on your terminal
+
+Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>(default: 8000)`
+
+If you set up elasticsearch locally run it `$ elasticsearch`
 
 You can now run the server `$ python manage.py` or `gunicorn manage:app` for production.
 
@@ -51,7 +58,9 @@ You can now run the server `$ python manage.py` or `gunicorn manage:app` for pro
 
 ## Running the tests
 
-Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>`
+Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>(default: 8000)`
+
+_**make sure if you use elasticsearch locally, it's running**_
 
 Use nosetests to run tests (with stdout) like this:
 ```$ nosetests --nocapture```

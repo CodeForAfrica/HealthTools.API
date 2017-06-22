@@ -9,7 +9,7 @@ class TestDoctorsAPI(TestCase):
         self.es = Elastic()
 
     def test_gets_doctors_from_elasticsearch(self):
-        doctors = self.es.get_from_elasticsearch("doctors", "Marie")
+        doctors = self.es.get_from_elasticsearch("doctors", "BHATT")
         self.assertTrue(len(doctors) > 0)
 
     def test_doctors_endpoint_with_bad_query(self):
