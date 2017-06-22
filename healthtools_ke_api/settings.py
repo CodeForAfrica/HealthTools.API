@@ -1,14 +1,20 @@
 import os
 
 # Url of memcached server
-MEMCACHED_URL = os.getenv("MEMCACHED_URL")
+MEMCACHED_URL = os.getenv("MEMCACHED_URL", '127.0.0.1:8000')
 
 # Amazon Web Services configs
 AWS_CONFIGS = {
     "aws_access_key_id": os.getenv("AWS_ACCESS_KEY_ID"),
     "aws_secret_access_key": os.getenv("AWS_SECRET_KEY"),
-    "region_name": os.getenv("AWS_REGION"),
-}
+    "region_name": os.getenv("AWS_REGION", 'eu-west-1'),
+    }
+
+# Elastic Search configs
+ES = {
+    "host": os.getenv("ES_HOST", None),
+    "index": "healthtools"
+    }
 
 
 class Config(object):
