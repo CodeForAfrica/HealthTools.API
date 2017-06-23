@@ -2,12 +2,10 @@ from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
-from healthtools_ke_api.views.doctors import get_doctors_from_cloudsearch
-from healthtools_ke_api.views.clinical_officers import get_clinical_officers_from_cloudsearch
+from healthtools_ke_api.views.elastic_search import Elastic
 
 import requests
 import re
-
 
 SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
 SMS_RESULT_COUNT = 4  # Number of results to be send via sms
@@ -20,6 +18,7 @@ NHIF_KEYWORDS = ['nhif', 'bima', 'insurance',
                  'insurance fund', 'health insurance', 'hospital fund']
 HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
                'hospitali', 'sanatorium', 'health centre']
+es = Elastic()
 
 sms_handler = Blueprint('sms_handler', __name__)
 
@@ -54,7 +53,7 @@ def send_sms(phone_number, msg):
         'shortCode': current_app.config.get('SMS_SHORTCODE'),
         'MSISDN': phone_number,
         'MESSAGE': msg
-    }
+        }
     resp = requests.get(SMS_SEND_URL, params=params)
     return resp
 
@@ -71,7 +70,7 @@ def build_query_response(query):
         search_terms = find_keyword_in_query(query, DOC_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
         print query
-        doctors = get_doctors_from_cloudsearch(query)
+        doctors = es.get_from_elasticsearch('doctors', query)
         msg = construct_docs_response(doctors[:SMS_RESULT_COUNT])
         return [msg]
     # Looking for Nurses keywords
@@ -86,7 +85,7 @@ def build_query_response(query):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
         print query
-        clinical_officers = get_clinical_officers_from_cloudsearch(query)
+        clinical_officers = es.get_from_elasticsearch('clinical-officers', query)
         msg = construct_co_response(clinical_officers[:SMS_RESULT_COUNT])
         return [msg]
     # Looking for nhif hospitals
@@ -105,7 +104,7 @@ def build_query_response(query):
         msg = construct_hf_response(parse_cloud_search_results(r))
         print msg
         return [msg, r.json()]
-    # If we miss the keywords then reply with the prefered query formats
+    # If we miss the keywords then reply with the preferred query formats
     else:
         msg_items = []
         msg_items.append("We could not understand your query. Try these:")
@@ -202,7 +201,8 @@ def construct_docs_response(docs_list):
                                "".join(doc['reg_no']), "-", "".join(doc['qualifications'])])
         else:
             status = " ".join([str(count) + ".", "".join(doc['name']), "-", "".join(doc[
-                              'reg_no']), "-", "".join(doc['qualifications']), "".join(doc['speciality'])])
+                                                                                        'reg_no']), "-",
+                               "".join(doc['qualifications']), "".join(doc['speciality'])])
         msg_items.append(status)
         count = count + 1
     if len(docs_list) > 1:

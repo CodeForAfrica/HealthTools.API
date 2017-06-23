@@ -24,7 +24,7 @@ def track_event(tracking_id, category, action, cid, label=None, value=0):
         'ea': action,
         'el': label,
         'ev': value,
-    }
+        }
     response = requests.post(
         'http://www.google-analytics.com/collect', data=data)
     response.raise_for_status()
