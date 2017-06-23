@@ -3,7 +3,7 @@ from requests_aws4auth import AWS4Auth
 
 from healthtools_ke_api.settings import AWS_CONFIGS as AWS, ES
 from serializer import JSONSerializerPython2
-
+import re
 
 class Elastic(object):
     """
