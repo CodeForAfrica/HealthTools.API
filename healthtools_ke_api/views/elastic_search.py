@@ -50,7 +50,11 @@ class Elastic(object):
             body={
                 "query": {
                     "match": {
-                        "name": query
+                        "name": {
+                            "query": search_term,
+                            "fuzziness": "auto",
+                            "prefix_length": 1
+                            }
                         }
                     }
                 }
