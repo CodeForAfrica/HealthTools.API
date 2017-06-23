@@ -26,11 +26,24 @@ class Elastic(object):
         else:
             self.es_client = Elasticsearch('127.0.0.1')
 
+    @staticmethod
+    def remove_keyword(query):
+        """
+        Remove keyword from search term
+        """
+        query_formatted = query.strip().lower()
+        keywords = ['dr', 'dr.', 'doctor', 'nurse', 'co', 'c.o.', 'c.o', 'clinical officer']
+        for word in keywords:
+            regex = r'(?<![\w\d]){0}(?![\w\d])'.format(word)
+            query_formatted = re.sub(regex, "", query_formatted)
+        return query_formatted.strip()
+
     def get_from_elasticsearch(self, doc_type, query):
         """
         get data from elasticsearch
         :return: Query results from elasticsearch
         """
+        search_term = self.remove_keyword(query)
         results = self.es_client.search(
             index=ES['index'],
             doc_type=doc_type,
