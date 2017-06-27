@@ -10,13 +10,13 @@ class Elastic(object):
     Common class for elastic search client and methods
     """
     def __init__(self):
-        # set up authentication credentials
-        awsauth = AWS4Auth(AWS["aws_access_key_id"], AWS["aws_secret_access_key"], AWS["region_name"], 'es')
         # client host for aws elastic search service
-        if ES['host']:
+        if 'aws' in ES['host']:
+            # set up authentication credentials
+            awsauth = AWS4Auth(AWS["aws_access_key_id"], AWS["aws_secret_access_key"], AWS["region_name"], 'es')
             self.es_client = Elasticsearch(
                 hosts=ES['host'],
-                port=443,
+                port=ES['port'],
                 http_auth=awsauth,
                 use_ssl=True,
                 verify_certs=True,
@@ -24,7 +24,7 @@ class Elastic(object):
                 serializer=JSONSerializerPython2()
                 )
         else:
-            self.es_client = Elasticsearch('127.0.0.1')
+            self.es_client = Elasticsearch("{}:{}".format(ES['host'], ES['port']))
 
     @staticmethod
     def remove_keyword(query):

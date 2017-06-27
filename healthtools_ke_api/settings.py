@@ -12,7 +12,8 @@ AWS_CONFIGS = {
 
 # Elastic Search configs
 ES = {
-    "host": os.getenv("ES_HOST", None),
+    "host": os.getenv("ES_HOST", "127.0.0.1"),
+    "port": os.getenv("ES_PORT", "9200"),
     "index": "healthtools"
     }
 
