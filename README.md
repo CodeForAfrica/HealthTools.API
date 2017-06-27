@@ -22,7 +22,7 @@ Clone the repo from github `$ git clone git@github.com:RyanSept/HealthTools.KE-a
 
 Change directory into package `$ cd HealthTools.KE-api`
 
-Install the dependencies by running `$ pip install requirements.txt`
+Install the dependencies by running `$ pip install -r requirements.txt`
 
 Install Memcached
  * If on linux follow this [link](https://github.com/memcached/memcached/wiki/Install)
