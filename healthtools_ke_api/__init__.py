@@ -12,6 +12,7 @@ import sys
 
 
 app = Flask(__name__)
+
 try:
     app.config.from_object(os.getenv('CONFIG'))
 except KeyError:
