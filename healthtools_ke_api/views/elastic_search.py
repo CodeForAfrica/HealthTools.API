@@ -1,9 +1,10 @@
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 
-from healthtools_ke_api.settings import AWS_CONFIGS as AWS, ES
+from healthtools_ke_api.settings import AWS, ES
 from serializer import JSONSerializerPython2
 import re
+
 
 class Elastic(object):
     """
@@ -11,20 +12,20 @@ class Elastic(object):
     """
     def __init__(self):
         # client host for aws elastic search service
-        if 'aws' in ES['host']:
+        if "aws" in ES["host"]:
             # set up authentication credentials
-            awsauth = AWS4Auth(AWS["aws_access_key_id"], AWS["aws_secret_access_key"], AWS["region_name"], 'es')
+            awsauth = AWS4Auth(AWS["access_key"], AWS["secret_key"], AWS["region"], 'es')
             self.es_client = Elasticsearch(
-                hosts=ES['host'],
-                port=ES['port'],
+                hosts=ES["host"],
+                port=int(ES["port"]),
                 http_auth=awsauth,
                 use_ssl=True,
                 verify_certs=True,
                 connection_class=RequestsHttpConnection,
                 serializer=JSONSerializerPython2()
-                )
+            )
         else:
-            self.es_client = Elasticsearch("{}:{}".format(ES['host'], ES['port']))
+            self.es_client = Elasticsearch("{}:{}".format(ES["host"], ES["port"]))
 
     @staticmethod
     def remove_keyword(query):
@@ -54,9 +55,9 @@ class Elastic(object):
                             "query": search_term,
                             "fuzziness": "auto",
                             "prefix_length": 1
-                            }
                         }
                     }
                 }
-            )
+            }
+        )
         return results["hits"]["hits"]

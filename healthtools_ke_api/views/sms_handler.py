@@ -20,7 +20,7 @@ HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
                'hospitali', 'sanatorium', 'health centre']
 es = Elastic()
 
-sms_handler = Blueprint('sms_handler', __name__)
+sms_handler = Blueprint("sms_handler", __name__)
 
 
 @sms_handler.route("/sms", methods=['GET'])

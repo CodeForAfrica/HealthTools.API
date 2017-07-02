@@ -28,10 +28,10 @@ def index():
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
-                    }
-                },
-            }
+                }
+            },
         }
+    }
     return jsonify(msg)
 
 
@@ -81,7 +81,7 @@ def search():
             "status": "error",
             "message": str(err),
             "data": {"nurses": []}
-            })
+        })
 
 
 def get_nurses_from_nc_registry(query):
@@ -97,7 +97,7 @@ def get_nurses_from_nc_registry(query):
 
     # make soup for parsing out of response and get the table
     soup = BeautifulSoup(response.content, "html.parser")
-    table = soup.find('table', {"class": "zebra"}).find("tbody")
+    table = soup.find("table", {"class": "zebra"}).find("tbody")
     rows = table.find_all("tr")
 
     # parse table for the nurses data

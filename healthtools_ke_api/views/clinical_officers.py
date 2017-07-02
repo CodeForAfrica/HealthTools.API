@@ -15,15 +15,17 @@ def index():
         "name": "API to Kenyan Clinical Officers registry",
         "authentication": [],
         "endpoints": {
-            "/": {"methods": ["GET"]},
+            "/": {
+                "methods": ["GET"]
+            },
             "/clinical-officers/search.json": {
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
-                    }
-                },
-            }
+                }
+            },
         }
+    }
     return jsonify(msg)
 
 
@@ -36,7 +38,7 @@ def search():
                 "error": "A query is required.",
                 "results": "",
                 "data": {"clinical_officers": []}
-                })
+            })
 
         # get clinical_officers by that name from aws
         response = {}
@@ -59,4 +61,4 @@ def search():
             "status": "error",
             "message": str(err),
             "data": {"clinical_officers": []}
-            })
+        })

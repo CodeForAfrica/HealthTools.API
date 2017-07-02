@@ -20,10 +20,10 @@ def index():
                 "methods": ["GET"],
                 "args": {
                     "q": {"required": True}
-                    }
-                },
-            }
+                }
+            },
         }
+    }
     return jsonify(msg)
 
 
@@ -36,7 +36,7 @@ def search():
                 "error": "A query is required.",
                 "results": "",
                 "data": {"doctors": []}
-                })
+            })
 
         # get doctors by that name from aws
         response = {}
@@ -58,4 +58,4 @@ def search():
             "status": "error",
             "message": str(err),
             "data": {"doctors": []}
-            })
+        })
