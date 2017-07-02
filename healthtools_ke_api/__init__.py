@@ -12,11 +12,6 @@ import sys
 
 
 app = Flask(__name__)
-try:
-    app.config.from_object(os.getenv('CONFIG'))
-except KeyError:
-    print "No config has been specified for use in the environment variables."
-    sys.exit()
 
 app.register_blueprint(doctors_api, url_prefix='/doctors')
 app.register_blueprint(nurses_api, url_prefix='/nurses')
