@@ -38,7 +38,8 @@ Install Memcached
 
 You can set the required environment variables like so
 ```<>
-$ export APP_DEBUG=<False> # True or False
+$ export APP_DEBUG=<False> # Set to True for development as it is False by default
+$ export SECRET_KEY=<SECRET_KEY> # Set the secret key in your environment if you haven't already
 $ export MEMCACHED_URL=<memcache_url:port> # defaults to 127.0.0.1:8000
 $ export GA_TRACKING_ID=<google-analytics-tracking-id>
 $ export SMS_USER=<sms-provider-user-id>
