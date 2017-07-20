@@ -61,4 +61,12 @@ class Elastic(object):
                 }
             }
         )
-        return results['hits']['hits']
+        return self.get_source(results['hits']['hits'])
+
+    @staticmethod
+    def get_source(result):
+        '''Get remove data metadata from results'''
+        response = []
+        for data in result:
+            response.append(data['_source'])
+        return response
