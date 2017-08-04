@@ -16,13 +16,13 @@ AWS = {
 ES = {
     "host": os.getenv("ES_HOST", "127.0.0.1"),
     "port": os.getenv("ES_PORT", "9200"),
-    "index": "healthtools-ke"
+    "index": os.getenv("ES_INDEX", "healthtools-ke-dev")
 }
 
 # Google Analytics tracking id
-GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID')
+GA_TRACKING_ID = os.environ.get("GA_TRACKING_ID", "UA-44795600-33")
 
 # SMS provider credentials
-SMS_USER = os.environ.get('SMS_USER')
-SMS_PASS = os.environ.get('SMS_PASS')
-SMS_SHORTCODE = os.environ.get('SMS_SHORTCODE')
+SMS_USER = os.environ.get("SMS_USER")
+SMS_PASS = os.environ.get("SMS_PASS")
+SMS_SHORTCODE = os.environ.get("SMS_SHORTCODE")
