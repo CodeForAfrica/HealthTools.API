@@ -1,12 +1,19 @@
-# HealthTools.KE-api
-HealthTools Kenya API to retrieve, structure and return data being used by the health tools. It provides
-data on the following medical officer registries: 
+# HealthTools.API
+
+The HealthTools API. Providing actionable health information.
+
+Our data sources include: 
 
 - Doctors: http://medicalboard.co.ke/online-services/retention/
 - Foreign doctors: http://medicalboard.co.ke/online-services/foreign-doctors-license-register
 - Clinical officers: http://clinicalofficerscouncil.org/online-services/retention/
 
-### Specifications
+The scrapers for this data can be found here:
+
+- ?
+
+## Usage
+
 Specification for the API is shown below. It is an open api and requires no authentication to access.
 
 
@@ -17,7 +24,8 @@ Specification for the API is shown below. It is an open api and requires no auth
 | `/clinical-officers/search.json`    | GET              | Search a clinical officer by the name                    | q=[name]   |
 
 
-### Installation
+## Installation
+
 Clone the repo from github `$ git clone git@github.com:RyanSept/HealthTools.KE-api.git`
 
 Change directory into package `$ cd HealthTools.KE-api`
@@ -57,7 +65,7 @@ You can now run the server `$ python manage.py` or `gunicorn manage:app` for pro
 
 
 
-## Running the tests
+### Tests
 
 Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>(default: 8000)`
 
@@ -65,3 +73,15 @@ _**make sure if you use elasticsearch locally, it's running**_
 
 Use nosetests to run tests (with stdout) like this:
 ```$ nosetests --nocapture```
+
+
+
+## Contributing
+
+?
+
+---
+
+## License
+
+?
