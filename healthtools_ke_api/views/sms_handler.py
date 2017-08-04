@@ -93,7 +93,7 @@ def build_query_response(query):
         search_terms = find_keyword_in_query(query, NHIF_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
         r = requests.get(current_app.config.get('NHIF_SEARCH_URL'), params={'q': query})
-        msg = construct_nhif_response(parse_cloud_search_results(r))
+        msg = construct_nhif_response(parse_elastic_search_results(r))
         print msg
         return [msg, r.json()]
     # Looking for health facilities
@@ -101,7 +101,7 @@ def build_query_response(query):
         search_terms = find_keyword_in_query(query, HF_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
         r = requests.get(current_app.config.get('HF_SEARCH_URL'), params={'q': query})
-        msg = construct_hf_response(parse_cloud_search_results(r))
+        msg = construct_hf_response(parse_elastic_search_results(r))
         print msg
         return [msg, r.json()]
     # If we miss the keywords then reply with the preferred query formats
@@ -155,7 +155,7 @@ def construct_nhif_response(nhif_list):
 def construct_hf_response(hf_list):
     # Just incase we found ourselves here with an empty list
     if len(hf_list) < 1:
-        return "We could not find a health facilty in the location you provided."
+        return "We could not find a health facility in the location you provided."
     count = 1
     msg_items = []
     for hf in hf_list:
@@ -216,7 +216,7 @@ def clean_query(query):
     return query
 
 
-def parse_cloud_search_results(response):
+def parse_elastic_search_results(response):
     result_to_send_count = SMS_RESULT_COUNT
     data_dict = response.json()
     fields_dict = (data_dict['hits'])

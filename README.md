@@ -40,7 +40,8 @@ $ export SMS_SEND_URL=<url-for-sms-provider>
 $ export AWS_ACCESS_KEY=<aws-access-key-id>
 $ export AWS_SECRET_KEY=<aws-secret-key>
 $ export ES_HOST=<elasticsearch_host_endpoint> (DO NOT SET THIS IF YOU WOULD LIKE TO USE ELASTIC SEARCH LOCALLY ON YOUR MACHINE)
-$export ES_PORT=<elasticsearch_port>
+$ export ES_PORT=<elasticsearch_port>
+$ export ES_INDEX=<elasticsearch_index>
 ```
 **If you want to use elasticsearch locally on your machine use the following instructions to set it up**
 
