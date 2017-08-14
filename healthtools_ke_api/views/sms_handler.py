@@ -125,7 +125,8 @@ def construct_co_response(co_list):
     count = 1
     msg_items = []
     for co in co_list:
-        co = co["fields"]
+        # co = co["fields"]
+        co = co["_source"]
         status = " ".join(
             [str(count) + ".", "".join(co['name']), "-", "".join(co['qualifications'])])
         msg_items.append(status)
@@ -194,7 +195,8 @@ def construct_docs_response(docs_list):
     msg_items = []
 
     for doc in docs_list:
-        doc = doc["fields"]
+        # doc = doc["fields"]
+        doc = doc["_source"]
         # Ignore speciality if not there, dont display none
         if doc['speciality'] == "None":
             status = " ".join([str(count) + ".", "".join(doc['name']), "-",

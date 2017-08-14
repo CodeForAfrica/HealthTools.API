@@ -26,7 +26,7 @@ CHOOSING, TYPING_REPLY, QUERY = range(3)
 
 # Custom keyboard with reply options
 reply_keyboard = [["Clinical Officer", "Doctor", "Nurse"],
-                  ["Health Facility", "NHIF Hospital"]]
+                  ["Health Facility", "NHIF Accredited Hospital"]]
 
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
@@ -64,7 +64,6 @@ markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
 #     }
 #     return jsonify(msg)
-
 
 
 def facts_to_str(user_data):
@@ -144,7 +143,7 @@ def received_information(bot, update, user_data):
 
     # Now we fetch the data
     results = fetch_data(user_data)
-    update.message.reply_text("WE ARE HERE\n\t\t\t"
+    update.message.reply_text("Search Results"
                               "%s"
                               % results,
                               reply_markup=markup)
@@ -159,21 +158,31 @@ def fetch_data(user_data):
     """
     Fetch the data requested by the user
     """
+
+    # TO DO: How many results to fetch
+    # If many, pagination
+    # Use InlineQueryHandler
+
     query = user_data.keys()
 
     if query and len(query) == 1:
         keyword = str(query[0]).encode("utf-8")
         search_term = user_data[keyword]
 
-        keyword = keyword.lower()
+        if keyword == "NHIF Accredited Hospital":
+            keyword = "nhif"
+        elif keyword == "Health Facility":
+            keyword = "hf"
 
+        keyword = keyword.lower()
         query = keyword + " " + search_term
+
     else:
         pass
 
     # Sample input: "1. Doctors: DR. SAMUEL AMAI"
     msg = build_query_response(query)
-    
+
     print ("\n")
     print ("WE ARE HERE")
     print ("SMS_BUILDER MESSAGE")
@@ -188,6 +197,7 @@ def fetch_data(user_data):
     # user_data.clear()
 
     # return CHOOSING
+    return msg
 
 
 def cancel(bot, update):
@@ -220,7 +230,7 @@ def main():
         entry_points=[CommandHandler('start', start)],
 
         states={
-            CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Hospital)$',
+            CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)$',
                                     regular_choice,
                                     pass_user_data=True),
                        ],
@@ -250,7 +260,8 @@ def main():
     dp.add_error_handler(error)
 
     # Start the Bot
-    updater.start_polling()
+    # To avoid the readTimeoutError set timeout
+    updater.start_polling(poll_interval=1.0, timeout=20)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
