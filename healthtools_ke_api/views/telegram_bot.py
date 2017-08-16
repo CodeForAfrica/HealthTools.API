@@ -10,21 +10,19 @@ from telegram import ReplyKeyboardMarkup, ParseMode, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, ConversationHandler, Filters,
                           MessageHandler, RegexHandler)
 
-
 from healthtools_ke_api.views.build_query import BuildQuery
 from healthtools_ke_api.settings import DEBUG
-
 
 bq = BuildQuery()
 
 
 telegram_bot = Blueprint("telegram_bot", __name__)
 
-# Enable logging
+# Enable event logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                     level=logging.INFO)
 
-logger = logging.getLogger("telegram.bot")
+logger = logging.getLogger('telegram.bot')
 
 # States
 CHOOSING, TYPING_REPLY = range(2)
@@ -35,42 +33,70 @@ reply_keyboard = [["Clinical Officer", "Doctor", "Nurse"],
                       "NHIF Accredited Hospital: Outpatient"],
                   ["Health Facility"]]
 
-markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True,
+                             resize_keyboard=True)
 
 
-# import json
-# import logging
-# import os
-# import telepot
-# import requests
-
-# from flask import Blueprint, request, jsonify, current_app
-
-# from elastic_search import Elastic
-
-# telegram_bot = Blueprint('telegrambot', __name__)
-# logger = logging.getLogger('telegram.bot')
-
-
+@telegram_bot.route('/', methods=['GET'])
 # @telegram_bot.route('/telegram', methods=['GET'])
-# def handler():
-#     token = os.getenv("BOT_TOKEN")
-#     TelegramBot = telepot.Bot(token)
+def setup():
+    BOT_TOKEN = os.getenv('BOT_TOKEN')
+    updater = Updater(BOT_TOKEN)
 
-#     '''
-#     Landing endpoint
-#     '''
-#     msg = {
-#         "name": "Telegram Bot",
-#         "Bot Details": {
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
 
-#             # TelegramBot.getMe() Output contains first_name, id, username
-#             "details": TelegramBot.getMe(),
-#             "getUpdate": TelegramBot.getUpdates()
-#         },
+    # Add conversation handler with the states
+    conv_handler = ConversationHandler(
+        # Handler object to trigger the start of the conversation
+        entry_points=[CommandHandler('start', start)],
 
-#     }
-#     return jsonify(msg)
+        # Conversation states
+        states={
+            CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)',
+                                    regular_choice,
+                                    pass_user_data=True),
+                       ],
+
+            TYPING_REPLY: [MessageHandler(Filters.text,
+                                          received_information,
+                                          pass_user_data=True),
+                           ],
+
+        },
+
+        fallbacks=[CommandHandler('cancel', cancel)],
+
+        # Allow user can restart a conversation with an entry point
+        allow_reentry=True
+    )
+
+    dp.add_handler(conv_handler)
+    dp.add_handler(MessageHandler([Filters.command], unknown))
+    dp.add_handler(CommandHandler("help", help))
+
+    # TO DO: Add settings
+    # dp.add_handler(CommandHandler("settings", settings))
+
+    # log all errors
+    dp.add_error_handler(error)
+
+    # Start the Bot
+    # To avoid the readTimeoutError set timeout
+    updater.start_polling(poll_interval=1.0, timeout=20)
+    # if DEBUG:
+    #     updater.start_polling(poll_interval=1.0, timeout=20)
+    # else:
+    #     updater.start_webhook(listen='127.0.0.1',
+    #                           port=5000, url_path=BOT_TOKEN)
+    #     updater.bot.set_webhook(webhook_url='https://health.the-star.co.ke/%s' % BOT_TOKEN,
+    #                             # certificate=open('cert.pem', 'rb')
+    #                             )
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
 
 
 def facts_to_str(user_data):
@@ -83,10 +109,11 @@ def facts_to_str(user_data):
 
 
 def start(bot, update):
+    # id = update.message.from_user.id
     chat_id = update.message.chat_id
     user = update.message.from_user.first_name
 
-    logger.info("User %s started the conversation." % user)
+    logger.info("User %s started the conversation." % user.capitalize())
 
     welcome_msg = (
         "*Hello* %s.\n"
@@ -225,63 +252,63 @@ def error(bot, update, error):
     logger.warning("Update % s caused error % s" % (update, error))
 
 
-def main():
-    # Create the Updater and pass it your bot's token.
-    token = os.getenv("BOT_TOKEN")
-    updater = Updater(token)
+# def main():
+#     # Create the Updater and pass it your bot's token.
+#     TOKEN = current_app.config.get('BOT_TOKEN'),
+#     updater = Updater(TOKEN)
 
-    # Get the dispatcher to register handlers
-    dp = updater.dispatcher
+#     # Get the dispatcher to register handlers
+#     dp = updater.dispatcher
 
-    # Add conversation handler with the states
-    conv_handler = ConversationHandler(
-        # Handler object to trigger the start of the conversation
-        entry_points=[CommandHandler('start', start)],
+#     # Add conversation handler with the states
+#     conv_handler = ConversationHandler(
+#         # Handler object to trigger the start of the conversation
+#         entry_points=[CommandHandler('start', start)],
 
-        # Conversation states
-        states={
-            CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)',
-                                    regular_choice,
-                                    pass_user_data=True),
-                       ],
+#         # Conversation states
+#         states={
+#             CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)',
+#                                     regular_choice,
+#                                     pass_user_data=True),
+#                        ],
 
-            TYPING_REPLY: [MessageHandler(Filters.text,
-                                          received_information,
-                                          pass_user_data=True),
-                           ],
+#             TYPING_REPLY: [MessageHandler(Filters.text,
+#                                           received_information,
+#                                           pass_user_data=True),
+#                            ],
 
-        },
+#         },
 
-        fallbacks=[CommandHandler('cancel', cancel)],
+#         fallbacks=[CommandHandler('cancel', cancel)],
 
-        # Allow user can restart a conversation with an entry point
-        allow_reentry=True
-    )
+#         # Allow user can restart a conversation with an entry point
+#         allow_reentry=True
+#     )
 
-    dp.add_handler(conv_handler)
-    dp.add_handler(MessageHandler(Filters.command, unknown))
-    dp.add_handler(CommandHandler("help", help))
+#     dp.add_handler(conv_handler)
+#     dp.add_handler(MessageHandler([Filters.command], unknown))
+#     dp.add_handler(CommandHandler("help", help))
 
-    # TO DO: Add settings
-    # dp.add_handler(CommandHandler("settings", settings))
+#     # TO DO: Add settings
+#     # dp.add_handler(CommandHandler("settings", settings))
 
-    # log all errors
-    dp.add_error_handler(error)
+#     # log all errors
+#     dp.add_error_handler(error)
 
-    # Start the Bot
-    # To avoid the readTimeoutError set timeout
-    if DEBUG:
-        updater.start_polling(poll_interval=1.0, timeout=20)
-    else:
-        pass
-        # updater.start_webhook(listen="0.0.0.0", port=HEROKU_PORT, url_path=BOT_TOKEN,
-        #                       webhook_url=f"https://{HEROKU_APP_NAME}.herokuapp.com/{BOT_TOKEN}")
+#     # Start the Bot
+#     # To avoid the readTimeoutError set timeout
+#     if DEBUG:
+#         updater.start_polling(poll_interval=1.0, timeout=20)
+#     else:
+#         pass
+#         # updater.start_webhook(listen="0.0.0.0", port=HEROKU_PORT, url_path=BOT_TOKEN,
+#         #                       webhook_url=f"https://{HEROKU_APP_NAME}.herokuapp.com/{BOT_TOKEN}")
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+#     # Run the bot until you press Ctrl-C or the process receives SIGINT,
+#     # SIGTERM or SIGABRT. This should be used most of the time, since
+#     # start_polling() is non-blocking and will stop the bot gracefully.
+#     updater.idle()
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

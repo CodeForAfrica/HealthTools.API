@@ -225,63 +225,63 @@ def error(bot, update, error):
     logger.warning("Update % s caused error % s" % (update, error))
 
 
-def main():
-    # Create the Updater and pass it your bot's token.
-    token = os.getenv("BOT_TOKEN")
-    updater = Updater(token)
+# def main():
+#     # Create the Updater and pass it your bot's token.
+#     token = os.getenv("BOT_TOKEN")
+#     updater = Updater(token)
 
-    # Get the dispatcher to register handlers
-    dp = updater.dispatcher
+#     # Get the dispatcher to register handlers
+#     dp = updater.dispatcher
 
-    # Add conversation handler with the states
-    conv_handler = ConversationHandler(
-        # Handler object to trigger the start of the conversation
-        entry_points=[CommandHandler('start', start)],
+#     # Add conversation handler with the states
+#     conv_handler = ConversationHandler(
+#         # Handler object to trigger the start of the conversation
+#         entry_points=[CommandHandler('start', start)],
 
-        # Conversation states
-        states={
-            CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)',
-                                    regular_choice,
-                                    pass_user_data=True),
-                       ],
+#         # Conversation states
+#         states={
+#             CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)',
+#                                     regular_choice,
+#                                     pass_user_data=True),
+#                        ],
 
-            TYPING_REPLY: [MessageHandler(Filters.text,
-                                          received_information,
-                                          pass_user_data=True),
-                           ],
+#             TYPING_REPLY: [MessageHandler(Filters.text,
+#                                           received_information,
+#                                           pass_user_data=True),
+#                            ],
 
-        },
+#         },
 
-        fallbacks=[CommandHandler('cancel', cancel)],
+#         fallbacks=[CommandHandler('cancel', cancel)],
 
-        # Allow user can restart a conversation with an entry point
-        allow_reentry=True
-    )
+#         # Allow user can restart a conversation with an entry point
+#         allow_reentry=True
+#     )
 
-    dp.add_handler(conv_handler)
-    dp.add_handler(MessageHandler(Filters.command, unknown))
-    dp.add_handler(CommandHandler("help", help))
+#     dp.add_handler(conv_handler)
+#     dp.add_handler(MessageHandler(Filters.command, unknown))
+#     dp.add_handler(CommandHandler("help", help))
 
-    # TO DO: Add settings
-    # dp.add_handler(CommandHandler("settings", settings))
+#     # TO DO: Add settings
+#     # dp.add_handler(CommandHandler("settings", settings))
 
-    # log all errors
-    dp.add_error_handler(error)
+#     # log all errors
+#     dp.add_error_handler(error)
 
-    # Start the Bot
-    # To avoid the readTimeoutError set timeout
-    if DEBUG:
-        updater.start_polling(poll_interval=1.0, timeout=20)
-    else:
-        pass
-        # updater.start_webhook(listen="0.0.0.0", port=HEROKU_PORT, url_path=BOT_TOKEN,
-        #                       webhook_url=f"https://{HEROKU_APP_NAME}.herokuapp.com/{BOT_TOKEN}")
+#     # Start the Bot
+#     # To avoid the readTimeoutError set timeout
+#     if DEBUG:
+#         updater.start_polling(poll_interval=1.0, timeout=20)
+#     else:
+#         pass
+#         # updater.start_webhook(listen="0.0.0.0", port=HEROKU_PORT, url_path=BOT_TOKEN,
+#         #                       webhook_url=f"https://{HEROKU_APP_NAME}.herokuapp.com/{BOT_TOKEN}")
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+#     # Run the bot until you press Ctrl-C or the process receives SIGINT,
+#     # SIGTERM or SIGABRT. This should be used most of the time, since
+#     # start_polling() is non-blocking and will stop the bot gracefully.
+#     updater.idle()
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

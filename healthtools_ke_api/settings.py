@@ -16,7 +16,7 @@ AWS = {
 ES = {
     "host": os.getenv("ES_HOST", "127.0.0.1"),
     "port": os.getenv("ES_PORT", "9200"),
-    "index": os.getenv("ES_INDEX", "healthtools-ke")
+    "index": os.getenv("ES_INDEX", "healthtools-dev")
 }
 
 # Google Analytics tracking id
