@@ -1,6 +1,6 @@
 from unittest import TestCase
 from healthtools_ke_api import app
-from healthtools_ke_api.views.elastic_search import Elastic
+from healthtools_ke_api.views.search import Elastic
 
 
 class TestClinicalOfficersAPI(TestCase):
@@ -17,5 +17,5 @@ class TestClinicalOfficersAPI(TestCase):
         self.assertIn("A query is required.", response.data)
 
     def test_cos_endpoint_gets_doctors(self):
-        response = self.client.get("/clinical-officers/search.json?q=Marie")
+        response = self.client.get("/clinical-officers/search.json?q=Ann")
         self.assertIn("success", response.data)
