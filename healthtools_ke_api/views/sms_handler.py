@@ -42,11 +42,6 @@ def sms():
     # Track Event SMS SENT
     track_event(current_app.config.get('GA_TRACKING_ID'), 'smsquery', 'send',
                 encode_cid(phone_number), label='lambda', value=2)
-    # Full url with params for sending sms, print should trigger cloudwatch
-    # log on aws
-    print "SMS URL: ", resp.url
-    # Response from the above url, print should trigger cloudwatch log on aws
-    print "SMS PROVIDER RESPONSE", resp.text
     return msg[0]
 
 
