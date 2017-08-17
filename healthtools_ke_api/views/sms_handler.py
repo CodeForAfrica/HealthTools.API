@@ -253,28 +253,14 @@ def print_error(message):
                     "attachments":
                         [
                             {
-                                "author_name": "HealthTools API - Kenya",
-                                "color": "danger",
-                                "pretext": "[SCRAPER] New Alert for HealthTools API - Kenya SMS Endpoint",
+                                "author_name": "HealthTools API",
+                                "color": "warning",
+                                "pretext": "[SMS] Could not find a result for this SMS.",
                                 "fields": [
                                     {
                                         "title": "Message",
                                         "value": message,
                                         "short": False
-                                        },
-                                    {
-                                        "title": "Machine Location",
-                                        "value": "{}".format(getpass.getuser()),
-                                        "short": True
-                                        },
-                                    {
-                                        "title": "Time",
-                                        "value": "{}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-                                        "short": True},
-                                    {
-                                        "title": "Severity",
-                                        "value": message,
-                                        "short": True
                                         }
                                     ]
                                 }
