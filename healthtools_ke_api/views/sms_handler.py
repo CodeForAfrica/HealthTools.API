@@ -248,24 +248,18 @@ def print_error(message):
     if SLACK["url"]:
         response = requests.post(
             SLACK["url"],
-            data=json.dumps(
-                {
-                    "attachments":
-                        [
-                            {
-                                "author_name": "HealthTools API",
-                                "color": "warning",
-                                "pretext": "[SMS] Could not find a result for this SMS.",
-                                "fields": [
-                                    {
-                                        "title": "Message",
-                                        "value": message,
-                                        "short": False
-                                        }
-                                    ]
-                                }
-                            ]
-                    }),
+            data=json.dumps({
+                "attachments": [{
+                    "author_name": "HealthTools API",
+                    "color": "warning",
+                    "pretext": "[SMS] Could not find a result for this SMS.",
+                    "fields": [{
+                        "title": "Message",
+                        "value": message,
+                        "short": False
+                    }]
+                }]
+            }),
             headers={"Content-Type": "application/json"})
     return response
 
