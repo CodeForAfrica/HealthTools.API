@@ -20,11 +20,12 @@ PORT = TGBOT["TELEGRAM_PORT"]
 CERT_FILE = TGBOT["CERT_FILE"]
 KEY_FILE = TGBOT["KEY_FILE"]
 
+CONTEXT = (CERT_FILE, KEY_FILE)
+
 # WEBHOOK_URL = "https://api.telegram.org/bot{}/setWebhook?url={}".format(
 #     TOKEN, "https://3f3fb2d1.ngrok.io")
 
-# WEBHOOK_URL = "https://73365b89.ngrok.io"
-WEBHOOK_URL = "https://health.the-star.co.ke"
+WEBHOOK_URL = "https://265433f3.ngrok.io"
 
 
 # States
@@ -90,9 +91,6 @@ class Manager(object):
 
         time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
         self.updater.bot.set_webhook(url=webhook_url)
-        # self.bot.setWebhook(url=webhook_url,
-        #                     certificate=open(CERT_FILE, 'rb'))
-
         # Webhook info
         # print ("\nWebhook set % s: \n" % WebhookInfo(
         # url=WEBHOOK_URL, has_custom_certificate=True,
@@ -301,7 +299,3 @@ class Manager(object):
     def error(self, bot, update, error):
         self.logger.warning("Update % s caused error % s" % (update, error))
 
-
-
-manager = Manager(TOKEN)
-manager.setup()

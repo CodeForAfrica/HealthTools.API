@@ -20,11 +20,7 @@ PORT = TGBOT["TELEGRAM_PORT"]
 CERT_FILE = TGBOT["CERT_FILE"]
 KEY_FILE = TGBOT["KEY_FILE"]
 
-# WEBHOOK_URL = "https://api.telegram.org/bot{}/setWebhook?url={}".format(
-#     TOKEN, "https://3f3fb2d1.ngrok.io")
-
-# WEBHOOK_URL = "https://73365b89.ngrok.io"
-WEBHOOK_URL = "https://health.the-star.co.ke"
+WEBHOOK_URL = "https://api.telegram.org/bot{}/setWebhook?url=52.210.174.201".format(TOKEN)
 
 
 # States
@@ -67,14 +63,10 @@ class Manager(object):
         """
         # self.logger.debug('Start polling')
         self.logger.info('Start polling')
-
-        # Delete any webhook
-        self.updater.bot.set_webhook()
-
         self.updater.start_polling(poll_interval=1.0, timeout=20)
         self.updater.idle()
 
-    def start_webhook(self, webhook_url, listen, port, url_path, cert=None, key=None):
+    def start_webhook(self, webhook_url, listen, port, url_path, cert, key):
         """
         Activates schedulers of all setups, setups webhook, and
         starts small http server to listen for updates via this webhook.
@@ -82,23 +74,16 @@ class Manager(object):
         # self.logger.debug('Start webhook')
         self.logger.info('Start webhook')
 
-        # Delete any webhook to avoid Conflict: terminated by other setWebhook
-        self.updater.bot.set_webhook()
-        self.updater.start_webhook(listen=listen, port=port,
-                                   url_path=url_path, cert=cert, key=key,
-                                   webhook_url=webhook_url)
-
+        self.updater.start_webhook(
+            listen=listen, port=port, url_path=url_path, cert=cert, key=key)
         time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
+
         self.updater.bot.set_webhook(url=webhook_url)
-        # self.bot.setWebhook(url=webhook_url,
-        #                     certificate=open(CERT_FILE, 'rb'))
 
         # Webhook info
         # print ("\nWebhook set % s: \n" % WebhookInfo(
-        # url=WEBHOOK_URL, has_custom_certificate=True,
-        # pending_update_count=10))
-
-        print ("\nWebhook set: %s \n", self.bot.getWebhookInfo().url)
+                # url=WEBHOOK_URL, has_custom_certificate=True, pending_update_count=10))
+        print (self.bot.getWebhookInfo())
         self.updater.idle()
 
     def setup(self):
@@ -107,8 +92,7 @@ class Manager(object):
         else:
             self.start_webhook(
                 webhook_url=WEBHOOK_URL,
-                # listen=SERVER_IP,
-                listen="0.0.0.0",
+                listen="127.0.0.1",
                 port=int(PORT),
                 url_path=self.token,
                 cert=CERT_FILE,
@@ -302,6 +286,3 @@ class Manager(object):
         self.logger.warning("Update % s caused error % s" % (update, error))
 
 
-
-manager = Manager(TOKEN)
-manager.setup()
