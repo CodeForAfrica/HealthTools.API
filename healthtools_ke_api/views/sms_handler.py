@@ -1,8 +1,13 @@
+import getpass
+import json
+from datetime import datetime
 from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
+from healthtools_ke_api.settings import SLACK
+
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
-from healthtools_ke_api.views.elastic_search import Elastic
+from healthtools_ke_api.views.search import Elastic
 
 import requests
 import re
@@ -37,11 +42,6 @@ def sms():
     # Track Event SMS SENT
     track_event(current_app.config.get('GA_TRACKING_ID'), 'smsquery', 'send',
                 encode_cid(phone_number), label='lambda', value=2)
-    # Full url with params for sending sms, print should trigger cloudwatch
-    # log on aws
-    print "SMS URL: ", resp.url
-    # Response from the above url, print should trigger cloudwatch log on aws
-    print "SMS PROVIDER RESPONSE", resp.text
     return msg[0]
 
 
@@ -69,9 +69,9 @@ def build_query_response(query):
     if find_keyword_in_query(query, DOC_KEYWORDS):
         search_terms = find_keyword_in_query(query, DOC_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        print query
         doctors = es.get_from_elasticsearch('doctors', query)
         msg = construct_docs_response(doctors[:SMS_RESULT_COUNT])
+        check_message(msg)
         return [msg]
     # Looking for Nurses keywords
     elif find_keyword_in_query(query, NO_KEYWORDS):
@@ -79,14 +79,15 @@ def build_query_response(query):
         query = query[:search_terms.start()] + query[search_terms.end():]
         nurses = get_nurses_from_nc_registry(query)
         msg = construct_nurse_response(nurses[:SMS_RESULT_COUNT])
+        check_message(msg)
         return [msg]
     # Looking for clinical officers Keywords
     elif find_keyword_in_query(query, CO_KEYWORDS):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        print query
         clinical_officers = es.get_from_elasticsearch('clinical-officers', query)
         msg = construct_co_response(clinical_officers[:SMS_RESULT_COUNT])
+        check_message(msg)
         return [msg]
     # Looking for nhif hospitals
     elif find_keyword_in_query(query, NHIF_KEYWORDS):
@@ -94,7 +95,7 @@ def build_query_response(query):
         query = query[:search_terms.start()] + query[search_terms.end():]
         r = requests.get(current_app.config.get('NHIF_SEARCH_URL'), params={'q': query})
         msg = construct_nhif_response(parse_elastic_search_results(r))
-        print msg
+        check_message(msg)
         return [msg, r.json()]
     # Looking for health facilities
     elif find_keyword_in_query(query, HF_KEYWORDS):
@@ -102,11 +103,12 @@ def build_query_response(query):
         query = query[:search_terms.start()] + query[search_terms.end():]
         r = requests.get(current_app.config.get('HF_SEARCH_URL'), params={'q': query})
         msg = construct_hf_response(parse_elastic_search_results(r))
-        print msg
+        check_message(msg)
         return [msg, r.json()]
     # If we miss the keywords then reply with the preferred query formats
     else:
-        msg_items = []
+        print_error(query)
+        msg_items = list()
         msg_items.append("We could not understand your query. Try these:")
         msg_items.append("1. Doctors: DR. SAMUEL AMAI")
         msg_items.append("2. Clinical Officers: CO SAMUEL AMAI")
@@ -114,7 +116,6 @@ def build_query_response(query):
         msg_items.append("4. NHIF accredited hospital: NHIF KITALE")
         msg_items.append("5. Health Facility: HF KITALE")
         msg = " ".join(msg_items)
-        print msg
         return [msg, {'error': " ".join(msg_items)}]
 
 
@@ -132,7 +133,6 @@ def construct_co_response(co_list):
         count = count + 1
     if len(co_list) > 1:
         msg_items.append("Find the full list at http://health.the-star.co.ke")
-    print "\n".join(msg_items)
     return "\n".join(msg_items)
 
 
@@ -182,7 +182,6 @@ def construct_nurse_response(nurse_list):
         count = count + 1
     if len(nurse_list) > 1:
         msg_items.append("Find the full list at http://health.the-star.co.ke")
-
     return "\n".join(msg_items)
 
 
@@ -231,6 +230,38 @@ def parse_elastic_search_results(response):
         else:
             break
     return result_list
+
+
+def check_message(msg):
+    # check the message and if query wasn't understood, post error
+    if 'could not find' in msg:
+        print_error(msg)
+
+
+def print_error(message):
+    """
+    print error messages in the terminal
+    if slack webhook is set up, post the errors to slack
+    """
+    print("[{0}] - ".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + message)
+    response = None
+    if SLACK["url"]:
+        response = requests.post(
+            SLACK["url"],
+            data=json.dumps({
+                "attachments": [{
+                    "author_name": "HealthTools API",
+                    "color": "warning",
+                    "pretext": "[SMS] Could not find a result for this SMS.",
+                    "fields": [{
+                        "title": "Message",
+                        "value": message,
+                        "short": False
+                    }]
+                }]
+            }),
+            headers={"Content-Type": "application/json"})
+    return response
 
 
 def encode_cid(phone_number):
