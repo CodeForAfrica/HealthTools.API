@@ -95,3 +95,5 @@ ENV/
 # Bot settings
 cert.pem
 private.key
+
+manager.py

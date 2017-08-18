@@ -19,13 +19,7 @@ SERVER_IP = TGBOT["SERVER_IP"]
 PORT = TGBOT["TELEGRAM_PORT"]
 CERT_FILE = TGBOT["CERT_FILE"]
 KEY_FILE = TGBOT["KEY_FILE"]
-
-# WEBHOOK_URL = "https://api.telegram.org/bot{}/setWebhook?url={}".format(
-#     TOKEN, "https://3f3fb2d1.ngrok.io")
-
-# WEBHOOK_URL = "https://73365b89.ngrok.io"
-WEBHOOK_URL = "https://health.the-star.co.ke"
-
+WEBHOOK_URL = TGBOT["BOT_WEBHOOK_URL"]
 
 # States
 CHOOSING, TYPING_REPLY = range(2)
@@ -46,8 +40,13 @@ class Manager(object):
         self.token = token
 
         self.bot = Bot(token)
-        self.updater = Updater(bot=self.bot)
-        self.dispatcher = self.updater.dispatcher
+
+        if DEBUG:
+            self.updater = Updater(bot=self.bot)
+            self.dispatcher = self.updater.dispatcher
+        else:
+            self.update_queue = Queue()
+            self.dispatcher = Dispatcher(self.bot, self.update_queue)
 
         self.build_query = BuildQuery()
         self._setup_commands()
@@ -90,13 +89,6 @@ class Manager(object):
 
         time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
         self.updater.bot.set_webhook(url=webhook_url)
-        # self.bot.setWebhook(url=webhook_url,
-        #                     certificate=open(CERT_FILE, 'rb'))
-
-        # Webhook info
-        # print ("\nWebhook set % s: \n" % WebhookInfo(
-        # url=WEBHOOK_URL, has_custom_certificate=True,
-        # pending_update_count=10))
 
         print ("\nWebhook set: %s \n", self.bot.getWebhookInfo().url)
         self.updater.idle()
@@ -107,8 +99,7 @@ class Manager(object):
         else:
             self.start_webhook(
                 webhook_url=WEBHOOK_URL,
-                # listen=SERVER_IP,
-                listen="0.0.0.0",
+                listen=SERVER_IP,
                 port=int(PORT),
                 url_path=self.token,
                 cert=CERT_FILE,
@@ -300,7 +291,6 @@ class Manager(object):
 
     def error(self, bot, update, error):
         self.logger.warning("Update % s caused error % s" % (update, error))
-
 
 
 manager = Manager(TOKEN)

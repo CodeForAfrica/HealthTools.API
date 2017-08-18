@@ -33,5 +33,6 @@ TGBOT = {
     "SERVER_IP": os.getenv("SERVER_IP"),
     "TELEGRAM_PORT": os.getenv("TELEGRAM_PORT", 8443),
     "CERT_FILE": os.getenv("CERT_FILE"),
-    "KEY_FILE": os.getenv("KEY_FILE")
+    "KEY_FILE": os.getenv("KEY_FILE"),
+    "BOT_WEBHOOK_URL": os.getenv("BOT_WEBHOOK_URL")
 }
