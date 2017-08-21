@@ -12,7 +12,7 @@ from healthtools_ke_api.views.clinical_officers import clinical_officers_api
 from healthtools_ke_api.views.health_facilities import health_facilities_api
 
 from healthtools_ke_api.views.sms_handler import sms_handler
-from healthtools_ke_api.views.telegram_bot import telegram_bot
+# from healthtools_ke_api.views.telegram_bot import telegram_bot
 
 
 app = Flask(__name__)
@@ -22,7 +22,7 @@ app.register_blueprint(nurses_api, url_prefix='/nurses')
 app.register_blueprint(clinical_officers_api, url_prefix='/clinical-officers')
 app.register_blueprint(health_facilities_api, url_prefix='/health-facilities')
 app.register_blueprint(sms_handler)
-app.register_blueprint(telegram_bot)
+# app.register_blueprint(telegram_bot)
 
 @app.route("/")
 def index():

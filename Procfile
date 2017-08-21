@@ -1,1 +1,2 @@
-web: python index.py
+web: python handler.py
+# worker: python handler.py

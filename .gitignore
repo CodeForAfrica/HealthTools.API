@@ -97,3 +97,5 @@ cert.pem
 private.key
 
 manager.py
+healthtools_ke_api/views/bot_manager.py
+healthtools_ke_api/views/telegram_bot.py
