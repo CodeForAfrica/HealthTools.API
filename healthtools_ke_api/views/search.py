@@ -33,7 +33,7 @@ class Elastic(object):
         Remove keyword from search term
         """
         query_formatted = query.strip().lower()
-        keywords = ['dr', 'dr.', 'doctor', 'nurse', 'co', 'c.o.', 'c.o', 'clinical officer','health facility']
+        keywords = ['dr', 'dr.', 'doctor', 'nurse', 'co', 'c.o.', 'c.o','hf', 'h.f', 'h.f.', 'clinical officer','health facility']
         for word in keywords:
             regex = r'(?<![\w\d]){0}(?![\w\d])'.format(word)
             query_formatted = re.sub(regex, "", query_formatted)
