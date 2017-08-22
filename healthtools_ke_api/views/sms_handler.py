@@ -125,7 +125,6 @@ def construct_co_response(co_list):
     count = 1
     msg_items = []
     for co in co_list:
-        co = co["fields"]
         status = " ".join(
             [str(count) + ".", "".join(co['name']), "-", "".join(co['qualifications'])])
         msg_items.append(status)
@@ -194,7 +193,6 @@ def construct_docs_response(docs_list):
     msg_items = []
 
     for doc in docs_list:
-        doc = doc["fields"]
         # Ignore speciality if not there, dont display none
         if doc['speciality'] == "None":
             status = " ".join([str(count) + ".", "".join(doc['name']), "-",
@@ -225,7 +223,7 @@ def parse_elastic_search_results(response):
     search_results_count = len(hits)
     print "FOUND {} RESULTS".format(search_results_count)
     for item in hits:
-        result = item['fields']
+        result = item
         if len(result_list) < result_to_send_count:
             result_list.append(result)
         else:
