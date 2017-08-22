@@ -41,7 +41,7 @@ def sms():
     # log on aws
     print "SMS URL: ", resp.url
     # Response from the above url, print should trigger cloudwatch log on aws
-    print "SMS PROVIDER RESPONSE", resp.text
+    # print "SMS PROVIDER RESPONSE", resp.text
     return msg[0]
 
 
@@ -69,7 +69,6 @@ def build_query_response(query):
     if find_keyword_in_query(query, DOC_KEYWORDS):
         search_terms = find_keyword_in_query(query, DOC_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        print query
         doctors = es.get_from_elasticsearch('doctors', query)
         msg = construct_docs_response(doctors[:SMS_RESULT_COUNT])
         return [msg]
@@ -125,6 +124,7 @@ def construct_co_response(co_list):
     count = 1
     msg_items = []
     for co in co_list:
+        co = co['_source']
         status = " ".join(
             [str(count) + ".", "".join(co['name']), "-", "".join(co['qualifications'])])
         msg_items.append(status)
@@ -188,22 +188,23 @@ def construct_nurse_response(nurse_list):
 def construct_docs_response(docs_list):
     # Just incase we found ourselves here with an empty list
     if len(docs_list) < 1:
-        return "Could not find a doctor with that name"
+        return "Could not find a doctor with that name."
     count = 1
     msg_items = []
 
     for doc in docs_list:
         # Ignore speciality if not there, dont display none
-        if doc['speciality'] == "None":
+        doc = doc['_source']
+        if doc['practice_type'] == "None":
             status = " ".join([str(count) + ".", "".join(doc['name']), "-",
                                "".join(doc['reg_no']), "-", "".join(doc['qualifications'])])
         else:
             status = " ".join([str(count) + ".", "".join(doc['name']), "-", "".join(doc[
                                                                                         'reg_no']), "-",
-                               "".join(doc['qualifications']), "".join(doc['speciality'])])
+                               "".join(doc['qualifications']), "".join(doc['practice_type'])])
         msg_items.append(status)
         count = count + 1
-    if len(docs_list) > 1:
+    if len(docs_list) > 0:
         msg_items.append("Find the full list at http://health.the-star.co.ke")
 
     return "\n".join(msg_items)
