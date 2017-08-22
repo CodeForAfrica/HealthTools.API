@@ -118,6 +118,28 @@ def build_query_response(query):
         msg = " ".join(msg_items)
         return [msg, {'error': " ".join(msg_items)}]
 
+def construct_docs_response(docs_list):
+    # Just incase we found ourselves here with an empty list
+    if len(docs_list) < 1:
+        return "Could not find a doctor with that name"
+    count = 1
+    msg_items = []
+
+    for doc in docs_list:
+        # Ignore speciality if not there, dont display none
+        if doc['speciality'] == "None":
+            status = " ".join([str(count) + ".", "".join(doc['name']), "-",
+                               "".join(doc['reg_no']), "-", "".join(doc['qualifications'])])
+        else:
+            status = " ".join([str(count) + ".", "".join(doc['name']), "-", "".join(doc[
+                                                                                        'reg_no']), "-",
+                               "".join(doc['qualifications']), "".join(doc['speciality'])])
+        msg_items.append(status)
+        count = count + 1
+    if len(docs_list) > 1:
+        msg_items.append("Find the full list at http://health.the-star.co.ke")
+
+    return "\n".join(msg_items)
 
 def construct_co_response(co_list):
     # Just incase we found ourselves here with an empty list
@@ -126,7 +148,6 @@ def construct_co_response(co_list):
     count = 1
     msg_items = []
     for co in co_list:
-        co = co["fields"]
         status = " ".join(
             [str(count) + ".", "".join(co['name']), "-", "".join(co['qualifications'])])
         msg_items.append(status)
@@ -182,31 +203,6 @@ def construct_nurse_response(nurse_list):
         count = count + 1
     if len(nurse_list) > 1:
         msg_items.append("Find the full list at http://health.the-star.co.ke")
-    return "\n".join(msg_items)
-
-
-def construct_docs_response(docs_list):
-    # Just incase we found ourselves here with an empty list
-    if len(docs_list) < 1:
-        return "Could not find a doctor with that name"
-    count = 1
-    msg_items = []
-
-    for doc in docs_list:
-        doc = doc["fields"]
-        # Ignore speciality if not there, dont display none
-        if doc['speciality'] == "None":
-            status = " ".join([str(count) + ".", "".join(doc['name']), "-",
-                               "".join(doc['reg_no']), "-", "".join(doc['qualifications'])])
-        else:
-            status = " ".join([str(count) + ".", "".join(doc['name']), "-", "".join(doc[
-                                                                                        'reg_no']), "-",
-                               "".join(doc['qualifications']), "".join(doc['speciality'])])
-        msg_items.append(status)
-        count = count + 1
-    if len(docs_list) > 1:
-        msg_items.append("Find the full list at http://health.the-star.co.ke")
-
     return "\n".join(msg_items)
 
 
