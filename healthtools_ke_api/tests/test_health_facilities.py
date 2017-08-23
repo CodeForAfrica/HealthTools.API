@@ -13,9 +13,9 @@ class TestHealthFacilitiesAPI(TestCase):
         self.assertTrue(len(health_facility) > 0)
 
     def test_hf_endpoint_with_bad_query(self):
-        response = self.client.get("/health_facilities/search.json?q=")
+        response = self.client.get("/health-facilities/search.json?q=")
         self.assertIn("A query is required.", response.data)
 
     def test_hf_endpoint_gets_health_facility(self):
-        response = self.client.get("/health_facilities/search.json?q=mombasa")
+        response = self.client.get("/health-facilities/search.json?q=mombasa")
         self.assertIn("success", response.data)
