@@ -11,7 +11,8 @@ from flask import Flask, Blueprint, request, jsonify, current_app
 from queue import Queue
 from threading import Thread
 
-from telegram import Bot, Update, ReplyKeyboardMarkup, ParseMode, ReplyKeyboardRemove, WebhookInfo
+from telegram import (Bot, Update, ReplyKeyboardMarkup, ParseMode,
+                      ReplyKeyboardRemove, WebhookInfo)
 from telegram.ext import (Dispatcher, Updater, CommandHandler, ConversationHandler,
                           Filters, MessageHandler, RegexHandler)
 
@@ -20,19 +21,20 @@ from healthtools_ke_api.settings import DEBUG, TGBOT
 
 TOKEN = TGBOT["BOT_TOKEN"]
 SERVER_IP = TGBOT["SERVER_IP"]
-# PORT = TGBOT["TELEGRAM_PORT"]
-# CERT_FILE = TGBOT["CERT_FILE"]
-# KEY_FILE = TGBOT["KEY_FILE"]
+PORT = TGBOT["TELEGRAM_PORT"]
+CERT_FILE = TGBOT["CERT_FILE"]
+KEY_FILE = TGBOT["KEY_FILE"]
 
-# WEBHOOK_URL = TGBOT["BOT_WEBHOOK_URL"]
-WEBHOOK_URL = "https://htapi-test.herokuapp.com"
+WEBHOOK_URL = TGBOT["BOT_WEBHOOK_URL"]
 WEBHOOK_URL = WEBHOOK_URL + "/" + TOKEN
 
-# CONTEXT = (CERT_FILE, KEY_FILE)
+CONTEXT = (CERT_FILE, KEY_FILE)
 
 # States
 CHOOSING, TYPING_REPLY = range(2)
 
+build_query = BuildQuery()
+bot = Bot(TOKEN)
 
 # Enable logging
 if DEBUG:
@@ -45,20 +47,14 @@ else:
 
 logger = logging.getLogger("telegram.bot.Manager")
 
-bot = Bot(TOKEN)
 
-# if DEBUG:
-updater = Updater(bot=bot)
-dp = updater.dispatcher
-# else:
-#     update_queue = Queue()
-#     dp = Dispatcher(bot, update_queue)
-    # dp = Dispatcher(bot, None, workers=0)
-    # thread = Thread(
-    #     target=dispatcher.start, name='dispatcher')
-    # thread.start()
+if DEBUG:
+    updater = Updater(bot=bot)
+    dp = updater.dispatcher
+else:
+    update_queue = Queue()
+    dp = Dispatcher(bot, update_queue)
 
-build_query = BuildQuery()
 
 # Custom keyboard with reply options
 reply_keyboard = [["Clinical Officer", "Doctor", "Nurse"],
@@ -77,7 +73,7 @@ def start_polling():
 
     logger.info('Start polling')
 
-    # Delete any webhook
+    # getUpdate does not work if webhook is set. So we delete any webhook
     updater.bot.set_webhook()
 
     updater.start_polling(poll_interval=1.0, timeout=20)
@@ -85,7 +81,7 @@ def start_polling():
 
 
 # def set_webhook(webhook_url, listen, port, url_path, cert=None, key=None):
-def set_webhook(webhook_url, cert=None, key=None):
+def set_webhook(webhook_url=None, cert=None, key=None):
     """
     Activates schedulers of all setups, setups webhook, and
     starts small http server to listen for updates via this webhook.
@@ -95,65 +91,20 @@ def set_webhook(webhook_url, cert=None, key=None):
     logger.info('Start webhook')
 
     # Delete any webhook to avoid Conflict: terminated by other setWebhook
-    bot.deleteWebhook()
+    bot.setWebhook()
+    time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
 
-    # # Using nginx
-    # time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
+    # Using nginx + bot
+    bot.setWebhook(url=WEBHOOK_URL
+                   #    certificate=open(CERT_FILE, 'rb')
+                   )
 
-    # updater.start_webhook(listen='127.0.0.1', port=5000, url_path='TOKEN1')
-    # updater.bot.set_webhook(url='https://example.com/TOKEN1',
-    #                                 certificate=open('cert.pem', 'rb'))
-
-    # Using the integrated webhook server
-    # updater.start_webhook(listen=listen, port=port,
-    #                            url_path=url_path, cert=cert, key=key,
-    #                            webhook_url=webhook_url)
-
-    # Using Heroku
-    time.sleep(5)
-    updater.start_webhook(listen="0.0.0.0", port=5000, url_path=TOKEN)
-    updater.bot.set_webhook(url=webhook_url)
     print ("\nWebhook set: %s \n", bot.getWebhookInfo().url)
-    updater.idle()
 
-    # time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
-    # bot.setWebhook(url=webhook_url
-                #    certificate=CERT_FILE
-                #    )
+    thread = Thread(target=dp.start, name='dp')
+    thread.start()
 
-    # print ("\nWebhook set: %s \n", bot.getWebhookInfo().url)
-    # updater.idle()
-
-# def webhook():
-#     logger.info('Start webhook')
-#     update = telegram.update.Update.de_json(request.get_json(force=True))
-#     bot.sendMessage(chat_id=update.message.chat_id, text='Hello, there')
-
-# return 'OK'
-
-
-def setup():
-    """
-    Set up how to receive new updates for the bot
-    1. If DEBUG=True, use polling
-    2. else, we use a webhook
-    """
-    if DEBUG:
-        start_polling()
-    else:
-        set_webhook(
-            webhook_url=WEBHOOK_URL,
-            # listen=SERVER_IP,
-            # port=int(PORT),
-            # url_path=token,
-            # cert=CERT_FILE,
-            # key=KEY_FILE
-        )
-
-        # thread = Thread(target=dispatcher.start, name='dispatcher')
-        # thread.start()
-
-        # return (update_queue, dispatcher)
+    return (update_queue, dp)
 
 
 def facts_to_str(user_data):
@@ -306,10 +257,6 @@ def cancel(bot, update):
     return ConversationHandler.END
 
 
-def help(bot, update):
-    update.message.reply_text("I am here to help you")
-
-
 def unknown(bot, update):
     bot.sendMessage(
         chat_id=update.message.chat_id,
@@ -321,7 +268,8 @@ def error(bot, update, error):
 
 
 def main():
-    dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('help', start))
+
     # Add conversation handler with the states
     dp.add_handler(ConversationHandler(
         # Handler object to trigger the start of the conversation
@@ -343,27 +291,19 @@ def main():
 
         fallbacks=[CommandHandler('cancel', cancel)],
 
-        # Allow user can restart a conversation with an entry point
+        # Allow user to restart a conversation with an entry point
         allow_reentry=True
     ))
 
-    # dispatcher.add_handler(conv_handler)
-    dp.add_handler(
-        MessageHandler(Filters.command, unknown))
+    dp.add_handler(MessageHandler(Filters.command, unknown))
     dp.add_error_handler(error)
 
     if DEBUG:
-        start_polling()
+        return start_polling()
     else:
-        # thread = Thread(target=dp.start, name='dp')
-        # thread.start()
+        # Start Webhook
+        set_webhook()
 
-        # return (update_queue, dp)
-        set_webhook(
-            webhook_url=WEBHOOK_URL
-            # cert=CERT_FILE,
-            # key=KEY_FILE
-        )
 
 main()
 
@@ -371,49 +311,40 @@ main()
 telegram_bot = Flask(__name__)
 
 
+# TO DO: Use GET not POST
 @telegram_bot.route('/' + TOKEN, methods=['GET', 'POST'])
 def webhook():
     if request.method == "POST":
 
-        # retrieve the message in JSON and then transform it to Telegram object
-
         print ("\n-----WE ARE HERE: request.get_json-----")
         print ("\nBase URL:", request.base_url)
         print ("\nurl_root:", request.url_root)
-        print ("\nrequest.json:", request.get_json())
+        print ("\nrequest.json:", request.get_json(force=True))
         print ("\n")
 
+        # retrieve the message in JSON and then transform it to Telegram object
         update = Update.de_json(request.get_json(force=True), bot)
 
         logger.info("Update received! " + update.message.text)
-        dp.process_update(update)
+
+        # Start conversation
         update_queue.put(update)
+
         return "OK"
     else:
-        pass
-        # return redirect("https://telegram.me/links_forward_bot", code=302)
+        return {"Error": "Method not allowed"}, 405
 
 
 @telegram_bot.route('/', methods=['GET', 'POST'])
 def index():
-    return "OK"
-    # return redirect("https://telegram.me/links_forward_bot", code=302)
+    return "OK", 200
 
 
 if __name__ == '__main__':
 
-    # if not DEBUG:
-    #     set_webhook(
-    #         webhook_url=WEBHOOK_URL
-    #         # cert=CERT_FILE,
-    #         # key=KEY_FILE
-    #     )
-    # else:
-    #     pass
-
-    telegram_bot.run(host='0.0.0.0',
-                     #  port=int(PORT),
-                     port=5000
-                     #  ssl_context=CONTEXT,
-                     #  debug=True
-                     )
+    telegram_bot.run(
+        host="localhost",
+        port=5000,
+        # ssl_context=CONTEXT,
+        debug=True
+    )
