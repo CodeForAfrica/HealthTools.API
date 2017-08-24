@@ -83,7 +83,6 @@ def build_query_response(query):
     elif find_keyword_in_query(query, CO_KEYWORDS):
         search_terms = find_keyword_in_query(query, CO_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        print query
         clinical_officers = es.get_from_elasticsearch('clinical-officers', query)
         msg = construct_co_response(clinical_officers[:SMS_RESULT_COUNT])
         return [msg]
@@ -91,16 +90,16 @@ def build_query_response(query):
     elif find_keyword_in_query(query, NHIF_KEYWORDS):
         search_terms = find_keyword_in_query(query, NHIF_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(current_app.config.get('NHIF_SEARCH_URL'), params={'q': query})
-        msg = construct_nhif_response(parse_elastic_search_results(r))
+        nhif = es.get_from_elasticsearch('nhif-outpatient', query)
+        msg = construct_nhif_response(nhif[:SMS_RESULT_COUNT])
         print msg
         return [msg, r.json()]
     # Looking for health facilities
     elif find_keyword_in_query(query, HF_KEYWORDS):
         search_terms = find_keyword_in_query(query, HF_KEYWORDS)
         query = query[:search_terms.start()] + query[search_terms.end():]
-        r = requests.get(current_app.config.get('HF_SEARCH_URL'), params={'q': query})
-        msg = construct_hf_response(parse_elastic_search_results(r))
+        health_facilities = es.get_from_elasticsearch('health-facilities', query)
+        msg = construct_hf_response(health_facilities[:SMS_RESULT_COUNT])
         print msg
         return [msg, r.json()]
     # If we miss the keywords then reply with the preferred query formats
