@@ -91,3 +91,4 @@ ENV/
 # DS_Store settings
 .DS_Store
 /.DS_Store
+//.DS_Store
