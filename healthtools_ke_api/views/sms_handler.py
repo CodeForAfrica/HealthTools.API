@@ -93,7 +93,7 @@ def build_query_response(query):
         nhif = es.get_from_elasticsearch('nhif-outpatient', query)
         msg = construct_nhif_response(nhif[:SMS_RESULT_COUNT])
         print msg
-        return [msg, r.json()]
+        return [msg]
     # Looking for health facilities
     elif find_keyword_in_query(query, HF_KEYWORDS):
         search_terms = find_keyword_in_query(query, HF_KEYWORDS)
@@ -101,7 +101,7 @@ def build_query_response(query):
         health_facilities = es.get_from_elasticsearch('health-facilities', query)
         msg = construct_hf_response(health_facilities[:SMS_RESULT_COUNT])
         print msg
-        return [msg, r.json()]
+        return [msg]
     # If we miss the keywords then reply with the preferred query formats
     else:
         msg_items = []
