@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request, jsonify, current_app
 
-from elastic_search import Elastic
+from healthtools_ke_api.elastic_search import Elastic
 from healthtools_ke_api.analytics import track_event
 
 health_facilities_api = Blueprint('health_facilities_api', __name__)
@@ -45,7 +45,7 @@ def search():
         # get health_facilities by that name from aws
         response = {}
         es = Elastic()
-        health_facilities = es.get_facilities_from_elasticsearch('health-facilities', query)
+        health_facilities = es.get_from_elasticsearch('health-facilities', query)
 
         if not health_facilities:
             response["message"] = "No health-facility by that name found."

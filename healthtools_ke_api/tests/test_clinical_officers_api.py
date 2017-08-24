@@ -1,6 +1,6 @@
 from unittest import TestCase
 from healthtools_ke_api import app
-from healthtools_ke_api.views.elastic_search import Elastic
+from healthtools_ke_api.elastic_search import Elastic
 
 
 class TestClinicalOfficersAPI(TestCase):

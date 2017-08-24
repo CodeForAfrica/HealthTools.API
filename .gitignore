@@ -92,10 +92,6 @@ ENV/
 .vscode/
 .DS_Store
 
-# Bot settings
+# Bot SSL settings
 cert.pem
 private.key
-
-manager.py
-healthtools_ke_api/views/bot_manager.py
-healthtools_ke_api/views/telegram_bot.py

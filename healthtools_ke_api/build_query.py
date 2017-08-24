@@ -1,12 +1,13 @@
+import re
+import requests
+import string
+
 from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
-from healthtools_ke_api.views.elastic_search import Elastic
+from healthtools_ke_api.elastic_search import Elastic
 
-import requests
-import re
-import string
 
 es = Elastic()
 
@@ -72,7 +73,7 @@ class BuildQuery(object):
                 # Default: ES doc_type = nhif-outpatient-cs
                 doc_type = ["nhif-outpatient", "nhif-outpatient-cs"]
 
-            nhif_hospitals = es.get_nhif_from_elasticsearch(
+            nhif_hospitals = es.get_from_elasticsearch(
                 doc_type, query)
 
             msg = self.construct_nhif_response(nhif_hospitals)
@@ -82,7 +83,7 @@ class BuildQuery(object):
         elif self.find_keyword_in_query(query, self.HF_KEYWORDS):
             search_terms = self.find_keyword_in_query(query, self.HF_KEYWORDS)
             query = query[:search_terms.start()] + query[search_terms.end():]
-            health_facilities = es.get_facilities_from_elasticsearch(
+            health_facilities = es.get_from_elasticsearch(
                 'health-facilities', query)
             msg = self.construct_hf_response(
                 health_facilities[:self.SMS_RESULT_COUNT])

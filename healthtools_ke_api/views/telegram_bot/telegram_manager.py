@@ -6,17 +6,18 @@ import requests
 import string
 import time
 
-from flask import Flask, Blueprint, request, jsonify, current_app
+from flask import Flask, Blueprint, request, jsonify
 
 from queue import Queue
 from threading import Thread
 
+from emoji import emojize
 from telegram import (Bot, Update, ReplyKeyboardMarkup, ParseMode,
-                      ReplyKeyboardRemove, WebhookInfo)
-from telegram.ext import (Dispatcher, Updater, CommandHandler, ConversationHandler,
-                          Filters, MessageHandler, RegexHandler)
+                      ReplyKeyboardRemove)
+from telegram.ext import (Dispatcher, Updater, CommandHandler,
+                          ConversationHandler, Filters, MessageHandler, RegexHandler)
 
-from healthtools_ke_api.views.build_query import BuildQuery
+from healthtools_ke_api.build_query import BuildQuery
 from healthtools_ke_api.settings import DEBUG, TGBOT
 
 TOKEN = TGBOT["BOT_TOKEN"]
@@ -33,8 +34,9 @@ CONTEXT = (CERT_FILE, KEY_FILE)
 # States
 CHOOSING, TYPING_REPLY = range(2)
 
-build_query = BuildQuery()
 bot = Bot(TOKEN)
+build_query = BuildQuery()
+build_query.SMS_RESULT_COUNT = 5
 
 # Enable logging
 if DEBUG:
@@ -80,14 +82,11 @@ def start_polling():
     updater.idle()
 
 
-# def set_webhook(webhook_url, listen, port, url_path, cert=None, key=None):
-def set_webhook(webhook_url=None, cert=None, key=None):
+def set_webhook(webhook_url, cert, key):
     """
     Activates schedulers of all setups, setups webhook, and
     starts small http server to listen for updates via this webhook.
     """
-
-    # logger.debug('Start webhook')
     logger.info('Start webhook')
 
     # Delete any webhook to avoid Conflict: terminated by other setWebhook
@@ -95,7 +94,7 @@ def set_webhook(webhook_url=None, cert=None, key=None):
     time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
 
     # Using nginx + bot
-    bot.setWebhook(url=WEBHOOK_URL
+    bot.setWebhook(url=webhook_url
                    #    certificate=open(CERT_FILE, 'rb')
                    )
 
@@ -121,18 +120,16 @@ def start(bot, update):
     chat_id = update.message.chat_id
     user = update.message.from_user.first_name
 
-    # logger.debug('Conversation started by % s' % user)
-    logger.info('Conversation started by % s' % user)
-
+    wave = emojize(':wave:', use_aliases=True)
     welcome_msg = (
-        "*Hello* %s.\n"
+        u"*Hello* {0} {1} \n"
         "My name is `Healthtools Bot`.\n\n"
         "*Here's what I can do for you:*\n"
         "1. Check to see if your doctor, nurse, or clinical officer is registered\n"
         "2. Find out which facilities your NHIF card will cover in your county\n"
         "3. Find the nearest doctor or health facility\n"
-        "\nSend /cancel to stop talking to me.\n" % user
-    )
+        "\nSend /cancel to stop talking to me.\n".format(user, wave)
+    ).encode('utf-8')
 
     bot.send_message(
         chat_id=chat_id,
@@ -142,7 +139,6 @@ def start(bot, update):
     )
 
     # Call the next function
-    # return CHOOSING
     return CHOOSING
 
 # TODO: Handle edited_message in these too
@@ -219,11 +215,6 @@ def fetch_data(user_data):
     """
     Fetch the data requested by the user
     """
-
-    # TO DO: How many results to fetch
-    # If many, pagination
-    # Use InlineQueryHandler
-
     query = user_data.keys()[-1]
 
     if query:
@@ -249,9 +240,7 @@ def fetch_data(user_data):
 
 def cancel(bot, update):
     user = update.message.from_user
-    logger.info("User %s canceled the conversation." %
-                user.first_name)
-    update.message.reply_text("Catch you later %s! Hope to talk to you soon" % user.first_name,
+    update.message.reply_text("Catch you later %s! Hope to talk to you soon." % user.first_name,
                               reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
@@ -267,7 +256,7 @@ def error(bot, update, error):
     logger.warning("Update % s caused error % s" % (update, error))
 
 
-def main():
+def setup():
     dp.add_handler(CommandHandler('help', start))
 
     # Add conversation handler with the states
@@ -279,12 +268,14 @@ def main():
         states={
             CHOOSING: [RegexHandler('^(Clinical Officer|Doctor|Nurse|Health Facility|NHIF Accredited Hospital)',
                                     regular_choice,
-                                    pass_user_data=True),
+                                    pass_user_data=True,
+                                    edited_updates=True),
                        ],
 
             TYPING_REPLY: [MessageHandler(Filters.text,
                                           received_information,
-                                          pass_user_data=True),
+                                          pass_user_data=True,
+                                          edited_updates=True),
                            ],
 
         },
@@ -299,52 +290,10 @@ def main():
     dp.add_error_handler(error)
 
     if DEBUG:
+        # Use webhook
         return start_polling()
     else:
         # Start Webhook
-        set_webhook()
-
-
-main()
-
-
-telegram_bot = Flask(__name__)
-
-
-# TO DO: Use GET not POST
-@telegram_bot.route('/' + TOKEN, methods=['GET', 'POST'])
-def webhook():
-    if request.method == "POST":
-
-        print ("\n-----WE ARE HERE: request.get_json-----")
-        print ("\nBase URL:", request.base_url)
-        print ("\nurl_root:", request.url_root)
-        print ("\nrequest.json:", request.get_json(force=True))
-        print ("\n")
-
-        # retrieve the message in JSON and then transform it to Telegram object
-        update = Update.de_json(request.get_json(force=True), bot)
-
-        logger.info("Update received! " + update.message.text)
-
-        # Start conversation
-        update_queue.put(update)
-
-        return "OK"
-    else:
-        return {"Error": "Method not allowed"}, 405
-
-
-@telegram_bot.route('/', methods=['GET', 'POST'])
-def index():
-    return "OK", 200
-
-
-if __name__ == '__main__':
-
-    telegram_bot.run(
-        host="localhost",
-        port=5000,
-        # ssl_context=CONTEXT,
-        debug=True
-    )
+        set_webhook(webhook_url=WEBHOOK_URL,
+                    cert=CERT_FILE,
+                    key=KEY_FILE)
