@@ -210,31 +210,6 @@ def construct_nurse_response(nurse_list):
     return "\n".join(msg_items)
 
 
-def construct_docs_response(docs_list):
-    # Just incase we found ourselves here with an empty list
-    if len(docs_list) < 1:
-        return "Could not find a doctor with that name."
-    count = 1
-    msg_items = []
-
-    for doc in docs_list:
-        # Ignore speciality if not there, dont display none
-        doc = doc['_source']
-        if doc['practice_type'] == "None":
-            status = " ".join([str(count) + ".", "".join(doc['name']), "-",
-                               "".join(doc['reg_no']), "-", "".join(doc['qualifications'])])
-        else:
-            status = " ".join([str(count) + ".", "".join(doc['name']), "-", "".join(doc[
-                                                                                        'reg_no']), "-",
-                               "".join(doc['qualifications']), "".join(doc['practice_type'])])
-        msg_items.append(status)
-        count = count + 1
-    if len(docs_list) > 0:
-        msg_items.append("Find the full list at http://health.the-star.co.ke")
-
-    return "\n".join(msg_items)
-
-
 def clean_query(query):
     query = query.lower().strip().replace(".", "")
     return query
