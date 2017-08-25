@@ -5,7 +5,7 @@ The Telegram Bot does the followinng:
 3. Find the nearest doctor or health facility
 
 ### Installation
-Make sure you have installed in your environment: `python-telegram-boy`
+Make sure you have installed in your environment: `python-telegram-bot`
 
 # Create a new telegram bot
 - https://telegram.me/BotFather
@@ -13,20 +13,19 @@ Make sure you have installed in your environment: `python-telegram-boy`
 
 # ngrok Configuration
 - ngrok allows you to expose a web server running on your local machine to the interne
-- Install Ngrok
-    [link][https://ngrok.com/]
+- Install Ngrok: https://ngrok.com
 - Follow the instructions on: https://ngrok.com/docs#expose
     Note: The listening port you use, is the same one your app should listen on. E.g.
-    $ ngrok http 5000
+    ```$ ngrok http 5000```
 
-    In manage.py,
-
+    In manage.py:
+    ```
     if __name__ == '__main__':
         app.run(
             host="localhost", # Since ngrok is running locally
             port=5000, # the app listens on the same port as ngrok
         )
-
+    ```
 - Configuration
     See the nginx.config.template
 
