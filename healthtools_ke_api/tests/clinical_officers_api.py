@@ -16,6 +16,6 @@ class TestClinicalOfficersAPI(TestCase):
         response = self.client.get("/clinical-officers/search.json?q=")
         self.assertIn("A query is required.", response.data)
 
-    def test_cos_endpoint_gets_doctors(self):
+    def test_cos_endpoint_gets_clinical_officers(self):
         response = self.client.get("/clinical-officers/search.json?q=Ann")
         self.assertIn("success", response.data)
