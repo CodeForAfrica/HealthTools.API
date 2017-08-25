@@ -33,9 +33,3 @@ def webhook():
                 "status": 200})
     else:
         return jsonify({"Error": "Method not allowed", "status": 405})
-
-
-@telegram_bot.route('/', methods=['GET', 'POST'])
-def index():
-    return jsonify({"Success": "This takes you to the telegram Bot",
-                    "status": 200})

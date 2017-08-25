@@ -31,8 +31,10 @@ SMS_SHORTCODE = os.environ.get("SMS_SHORTCODE")
 TGBOT = {
     "BOT_TOKEN": os.getenv('BOT_TOKEN'),
     "SERVER_IP": os.getenv("SERVER_IP"),
-    "TELEGRAM_PORT": os.getenv("TELEGRAM_PORT", 8443),
+    "TELEGRAM_PORT": os.getenv("TELEGRAM_PORT", 5000),
     "CERT_FILE": os.getenv("CERT_FILE"),
     "KEY_FILE": os.getenv("KEY_FILE"),
     "BOT_WEBHOOK_URL": os.getenv("BOT_WEBHOOK_URL")
 }
+
+SLACK = {"url": os.getenv("WEBHOOK_URL")}

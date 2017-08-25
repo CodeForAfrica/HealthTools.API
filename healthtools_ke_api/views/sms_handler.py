@@ -1,12 +1,18 @@
+import getpass
+import json
+import re
+import requests
+
+from datetime import datetime
 from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
+from healthtools_ke_api.settings import SLACK
+
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
 from healthtools_ke_api.elastic_search import Elastic
 from healthtools_ke_api.build_query import BuildQuery
 
-import requests
-import re
 
 SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
 SMS_RESULT_COUNT = 4  # Number of results to be send via sms
@@ -39,11 +45,7 @@ def sms():
     # Track Event SMS SENT
     track_event(current_app.config.get('GA_TRACKING_ID'), 'smsquery', 'send',
                 encode_cid(phone_number), label='lambda', value=2)
-    # Full url with params for sending sms, print should trigger cloudwatch
-    # log on aws
-    print "SMS URL: ", resp.url
-    # Response from the above url, print should trigger cloudwatch log on aws
-    print "SMS PROVIDER RESPONSE", resp.text
+
     return msg[0]
 
 
@@ -55,9 +57,10 @@ def send_sms(phone_number, msg):
         'shortCode': current_app.config.get('SMS_SHORTCODE'),
         'MSISDN': phone_number,
         'MESSAGE': msg
-        }
+    }
     resp = requests.get(SMS_SEND_URL, params=params)
     return resp
+
 
 def encode_cid(phone_number):
     # TODO: Generate a hash instead of using phone number

@@ -1,13 +1,14 @@
-import re
+import getpass
+import json
 import requests
-import string
+import re
 
+from datetime import datetime
 from flask import Blueprint, request, current_app
 
 from healthtools_ke_api.analytics import track_event
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
 from healthtools_ke_api.elastic_search import Elastic
-
 
 es = Elastic()
 
@@ -38,6 +39,7 @@ class BuildQuery(object):
             print query
             doctors = es.get_from_elasticsearch('doctors', query)
             msg = self.construct_docs_response(doctors[:self.SMS_RESULT_COUNT])
+            self.check_message(msg)
             return [msg]
         # Looking for Nurses keywords
         elif self.find_keyword_in_query(query, self.NO_KEYWORDS):
@@ -45,6 +47,7 @@ class BuildQuery(object):
             query = query[:search_terms.start()] + query[search_terms.end():]
             nurses = get_nurses_from_nc_registry(query)
             msg = self.construct_nurse_response(nurses[:self.SMS_RESULT_COUNT])
+            self.check_message(msg)
             return [msg]
         # Looking for clinical officers Keywords
         elif self.find_keyword_in_query(query, self.CO_KEYWORDS):
@@ -55,6 +58,7 @@ class BuildQuery(object):
                 'clinical-officers', query)
             msg = self.construct_co_response(
                 clinical_officers[:self.SMS_RESULT_COUNT])
+            self.check_message(msg)
             return [msg]
         # Looking for nhif hospitals
         elif self.find_keyword_in_query(query, self.NHIF_KEYWORDS):
@@ -91,7 +95,8 @@ class BuildQuery(object):
             return [msg]
         # If we miss the keywords then reply with the preferred query formats
         else:
-            msg_items = []
+            self.print_error(query)
+            msg_items = list()
             msg_items.append("We could not understand your query. Try these:")
             msg_items.append("1. Doctors: DR. SAMUEL AMAI")
             msg_items.append("2. Clinical Officers: CO SAMUEL AMAI")
@@ -99,7 +104,6 @@ class BuildQuery(object):
             msg_items.append("4. NHIF accredited hospital: NHIF KITALE")
             msg_items.append("5. Health Facility: HF KITALE")
             msg = " ".join(msg_items)
-            print msg
             return [msg, {'error': " ".join(msg_items)}]
 
     def construct_co_response(self, co_list):
@@ -221,3 +225,34 @@ class BuildQuery(object):
             else:
                 break
         return result_list
+
+    def check_message(self, msg):
+        # check the message and if query wasn't understood, post error
+        if 'could not find' in msg:
+            self.print_error(msg)
+
+    def print_error(self, message):
+        """		
+        print error messages in the terminal
+        if slack webhook is set up, post the errors to slack
+        """
+        print("[{0}] - ".format(datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S")) + message)
+        response = None
+        if SLACK["url"]:
+            response = requests.post(
+                SLACK["url"],
+                data=json.dumps({
+                    "attachments": [{
+                        "author_name": "HealthTools API",
+                        "color": "warning",
+                        "pretext": "[SMS] Could not find a result for this SMS.",
+                        "fields": [{
+                            "title": "Message",
+                            "value": message,
+                            "short": False
+                        }]
+                    }]
+                }),
+                headers={"Content-Type": "application/json"})
+        return response
