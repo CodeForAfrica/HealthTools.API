@@ -17,10 +17,10 @@ class TestSmsApi(TestCase):
         self.assertTrue(len(response[0]) > 0)
 
     def test_send_sms(self):
-        response = self.client.get("/sms", query_string={"phoneNumber": "+254726075080", "message": 'CO KEBAGENDI'})
+        response = self.client.get("/sms", query_string={"phoneNumber": "09", "message": 'CO KEBAGENDI'})
         self.assertEqual(200, response.status_code)
 
     def test_queries_not_understood_post_to_slack(self):
         message = build_query_response('Test SMS error posts to slack')
-        response = self.client.get("/sms", query_string={"phoneNumber": "+254726075080", "message": message[0]})
+        response = self.client.get("/sms", query_string={"phoneNumber": "09", "message": message[0]})
         self.assertEqual('Could not find a Clinical Officer with that name', response.data)
