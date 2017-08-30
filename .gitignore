@@ -91,6 +91,8 @@ ENV/
 # Development
 .vscode/
 .DS_Store
+/.DS_Store
+/./.DS_Store
 
 # Bot SSL settings
 cert.pem
