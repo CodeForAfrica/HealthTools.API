@@ -1,6 +1,6 @@
 from unittest import TestCase
 from healthtools_ke_api import app
-from healthtools_ke_api.views.search import Elastic
+from healthtools_ke_api.elastic_search import Elastic
 
 
 class TestClinicalOfficersAPI(TestCase):
@@ -9,7 +9,8 @@ class TestClinicalOfficersAPI(TestCase):
         self.es = Elastic()
 
     def test_gets_cos_from_elasticsearch(self):
-        clinical_officers = self.es.get_from_elasticsearch("clinical-officers", "Jacob")
+        clinical_officers = self.es.get_from_elasticsearch(
+            "clinical-officers", "Jacob")
         self.assertTrue(len(clinical_officers) > 0)
 
     def test_cos_endpoint_with_bad_query(self):

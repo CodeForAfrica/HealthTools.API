@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 
-from search import Elastic
+from healthtools_ke_api.elastic_search import Elastic
 from healthtools_ke_api.analytics import track_event
 
 clinical_officers_api = Blueprint('clinical_officers_api', __name__)
