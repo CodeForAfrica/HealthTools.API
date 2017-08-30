@@ -1,8 +1,8 @@
 FROM python:2.7.13
 
-COPY . /healthtools-ke-api
+COPY . /htools-api
 
-WORKDIR /healthtools-ke-api
+WORKDIR /htools-api
 
 RUN pip install -r requirements.txt
 
