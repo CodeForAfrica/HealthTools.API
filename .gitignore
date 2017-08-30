@@ -88,12 +88,13 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# Development
+# VS Code (?)
 .vscode/
-.DS_Store
-/.DS_Store
-/./.DS_Store
 
-# Bot SSL settings
+# OS X
+*.DS_Store
+
+
+# Telegram Bot SSL settings
 cert.pem
 private.key
