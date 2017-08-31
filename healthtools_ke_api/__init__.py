@@ -36,7 +36,7 @@ def index():
             "/nurses": {"methods": ["GET"]},
             "/doctors": {"methods": ["GET"]},
             "/clinical-officers": {"methods": ["GET"]},
-            "/health_facilities": {"methods": ["GET"]}
+            "/health-facilities": {"methods": ["GET"]}
 
         }
     }
