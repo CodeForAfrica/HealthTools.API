@@ -61,3 +61,4 @@ def handle_error(error):
 # change error handler for all http exceptions to return json instead of html
 for code in default_exceptions.keys():
     app.errorhandler(code)(handle_error)
+    
