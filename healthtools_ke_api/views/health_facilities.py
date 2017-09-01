@@ -1,63 +1,65 @@
-from flask import Flask, jsonify
-from werkzeug.exceptions import HTTPException, default_exceptions
+from flask import Blueprint, request, jsonify, current_app
 
-from healthtools_ke_api.views.doctors import doctors_api
-from healthtools_ke_api.views.nurses import nurses_api
-from healthtools_ke_api.views.clinical_officers import clinical_officers_api
-from healthtools_ke_api.views.health_facilities import health_facilities_api
+from healthtools_ke_api.elastic_search import Elastic
+from healthtools_ke_api.analytics import track_event
 
-
-from healthtools_ke_api.views.sms_handler import sms_handler
-
-import os
-import sys
+health_facilities_api = Blueprint('health_facilities_api', __name__)
 
 
-app = Flask(__name__)
-
-app.register_blueprint(doctors_api, url_prefix='/doctors')
-app.register_blueprint(nurses_api, url_prefix='/nurses')
-app.register_blueprint(clinical_officers_api, url_prefix='/clinical-officers')
-app.register_blueprint(health_facilities_api, url_prefix='/health-facilities')
-
-app.register_blueprint(sms_handler)
-
-
-@app.route("/")
+@health_facilities_api.route('/', methods=['GET'])
 def index():
     '''
     Landing endpoint
     '''
     msg = {
-        "name": "HealthTools.KE-API",
+        "name": "API to Health Facilities registry",
         "authentication": [],
         "endpoints": {
-            "/": {"methods": ["GET"]},
-            "/nurses": {"methods": ["GET"]},
-            "/doctors": {"methods": ["GET"]},
-            "/clinical-officers": {"methods": ["GET"]},
-            "/health-facilities": {"methods": ["GET"]}
-
+            "/": {
+                "methods": ["GET"]
+            },
+            "/health-facilities/search.json": {
+                "methods": ["GET"],
+                "args": {
+                    "q": {"required": True}
+                }
+            },
         }
     }
     return jsonify(msg)
 
 
-def handle_error(error):
-    '''Generic error handlers for all http exceptions'''
-    response = {}
-    status_code = 500
-    if isinstance(error, HTTPException):
-        status_code = error.code
-    response["status_code"] = status_code
-    response["error"] = str(error)
+@health_facilities_api.route('/search.json', methods=['GET'])
+def search():
     try:
-        response['description'] = error.description
+        query = request.args.get('q')
+        if not query or len(query) < 1:
+            return jsonify({
+                "error": "A query is required.",
+                "results": "",
+                "data": {"health_facilities": []}
+            })
+
+        # get health facilitites by that name from aws
+        response = {}
+        es = Elastic()
+        health_facilities = es.get_from_elasticsearch('health-facilities', query)
+
+        if not health_facilities:
+            response["message"] = "No health facility by that name found."
+
+        track_event(current_app.config.get('GA_TRACKING_ID'),
+                    'Health-Facilities', 'search', request.remote_addr,
+                    label=query, value=len(health_facilities))
+        response["data"] = {"health_facilities": health_facilities}
+        response["status"] = "success"
+
+        results = jsonify(response)
+        return results
     except Exception as err:
-        print err
-    return jsonify(response), status_code
-
-
-# change error handler for all http exceptions to return json instead of html
-for code in default_exceptions.keys():
-    app.errorhandler(code)(handle_error)
+        return jsonify({
+            "status": "error",
+            "message": str(err),
+            "data": {"health_facilities": []}
+        })
+        
