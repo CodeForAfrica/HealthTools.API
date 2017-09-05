@@ -11,7 +11,7 @@ from healthtools_ke_api.views.nurses import nurses_api
 from healthtools_ke_api.views.clinical_officers import clinical_officers_api
 
 from healthtools_ke_api.views.sms_handler import sms_handler
-from healthtools_ke_api.views.telegram_bot import telegram_bot as tg
+# from healthtools_ke_api.views.telegram_bot import telegram_bot as tg
 
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ app.register_blueprint(doctors_api, url_prefix='/doctors')
 app.register_blueprint(nurses_api, url_prefix='/nurses')
 app.register_blueprint(clinical_officers_api, url_prefix='/clinical-officers')
 app.register_blueprint(sms_handler)
-app.register_blueprint(tg.telegram_bot)
+# app.register_blueprint(tg.telegram_bot)
 
 
 @app.route("/")
@@ -52,7 +52,7 @@ def handle_error(error):
     try:
         response['description'] = error.description
     except Exception as err:
-        print err
+        print (err)
     return jsonify(response), status_code
 
 

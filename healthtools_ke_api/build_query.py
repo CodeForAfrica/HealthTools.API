@@ -36,7 +36,7 @@ class BuildQuery(object):
         if self.find_keyword_in_query(query, self.DOC_KEYWORDS):
             search_terms = self.find_keyword_in_query(query, self.DOC_KEYWORDS)
             query = query[:search_terms.start()] + query[search_terms.end():]
-            print query
+            # print query
             doctors = es.get_from_elasticsearch('doctors', query)
             msg = self.construct_docs_response(doctors[:self.SMS_RESULT_COUNT])
             self.check_message(msg)
@@ -53,7 +53,7 @@ class BuildQuery(object):
         elif self.find_keyword_in_query(query, self.CO_KEYWORDS):
             search_terms = self.find_keyword_in_query(query, self.CO_KEYWORDS)
             query = query[:search_terms.start()] + query[search_terms.end():]
-            print query
+            # print query
             clinical_officers = es.get_from_elasticsearch(
                 'clinical-officers', query)
             msg = self.construct_co_response(
@@ -81,7 +81,7 @@ class BuildQuery(object):
                 doc_type, query)
 
             msg = self.construct_nhif_response(nhif_hospitals)
-            print msg
+            # print msg
             return [msg]
         # Looking for health facilities
         elif self.find_keyword_in_query(query, self.HF_KEYWORDS):
@@ -91,7 +91,7 @@ class BuildQuery(object):
                 'health-facilities', query)
             msg = self.construct_hf_response(
                 health_facilities[:self.SMS_RESULT_COUNT])
-            print msg
+            # print msg
             return [msg]
         # If we miss the keywords then reply with the preferred query formats
         else:
@@ -122,7 +122,7 @@ class BuildQuery(object):
         if len(co_list) > 1:
             msg_items.append(
                 "\nFind the full list at http://health.the-star.co.ke")
-        print "\n".join(msg_items)
+        print ("\n".join(msg_items))
         return "\n".join(msg_items)
 
     def construct_docs_response(self, docs_list):
@@ -217,7 +217,7 @@ class BuildQuery(object):
         hits = fields_dict['hit']
         result_list = []
         search_results_count = len(hits)
-        print "FOUND {} RESULTS".format(search_results_count)
+        print ("FOUND {} RESULTS".format(search_results_count))
         for item in hits:
             result = item['fields']
             if len(result_list) < result_to_send_count:
