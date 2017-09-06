@@ -9,6 +9,10 @@ from werkzeug.exceptions import HTTPException, default_exceptions
 from healthtools_ke_api.views.doctors import doctors_api
 from healthtools_ke_api.views.nurses import nurses_api
 from healthtools_ke_api.views.clinical_officers import clinical_officers_api
+from healthtools_ke_api.views.nhif_inpatient import nhif_inpatient_api
+from healthtools_ke_api.views.nhif_outpatient_cs import nhif_outpatient_cs_api
+from healthtools_ke_api.views.nhif_outpatient import nhif_outpatient_api
+  
 
 from healthtools_ke_api.views.sms_handler import sms_handler
 from healthtools_ke_api.views.telegram_bot import telegram_bot as tg
@@ -19,6 +23,10 @@ app = Flask(__name__)
 app.register_blueprint(doctors_api, url_prefix='/doctors')
 app.register_blueprint(nurses_api, url_prefix='/nurses')
 app.register_blueprint(clinical_officers_api, url_prefix='/clinical-officers')
+app.register_blueprint(nhif_inpatient_api, url_prefix='/nhif-inpatient')
+app.register_blueprint(nhif_outpatient_cs_api, url_prefix='/nhif-outpatient-cs')
+app.register_blueprint(nhif_outpatient_api, url_prefix='/nhif-outpatient')
+
 app.register_blueprint(sms_handler)
 app.register_blueprint(tg.telegram_bot)
 
@@ -36,6 +44,9 @@ def index():
             "/nurses": {"methods": ["GET"]},
             "/doctors": {"methods": ["GET"]},
             "/clinical-officers": {"methods": ["GET"]},
+            "/nhif-inpatient": {"methods": ["GET"]},
+            "/nhif-outpatient-cs": {"methods": ["GET"]},
+            "/nhif-outpatient": {"methods": ["GET"]}
         }
     }
     return jsonify(msg)
