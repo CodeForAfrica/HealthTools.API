@@ -11,8 +11,7 @@ from healthtools_ke_api.settings import SLACK
 
 from healthtools_ke_api.views.nurses import get_nurses_from_nc_registry
 from healthtools_ke_api.elastic_search import Elastic
-# from healthtools_ke_api.build_query import BuildQuery
-from healthtools_ke_api.views.response import BuildQuery
+from healthtools_ke_api.build_query import BuildQuery
 
 
 
