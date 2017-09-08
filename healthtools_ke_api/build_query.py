@@ -13,7 +13,7 @@ from healthtools_ke_api.elastic_search import Elastic
 es = Elastic()
 
 KEYWORDS = {
-        "doctors": ['doc', 'daktari', 'doctor', 'oncologist', 'dr.', 'dr'],
+        "doctors": ['doc', 'daktari', 'doctor', 'oncologist', 'dr'],
         "nurses": ['nurse', 'no', 'nursing officer', 'mhuguzi', 'muuguzi', 'RN', 'Registered Nurse'],
         "clinical-officers": ['co', 'clinical officer', 'clinic officer', 'clinical', 'clinical oficer'],
         "NHIF": ['nhif', 'bima', 'insurance', 'insurance fund', 'health insurance', 'hospital fund'],
@@ -87,7 +87,7 @@ class BuildQuery(object):
             msg_items.append("1. Doctors: DR. SAMUEL AMAI")
             msg_items.append("2. Clinical Officers: CO SAMUEL AMAI")
             msg_items.append("3. Nurses: NURSE SAMUEL AMAI")
-            msg_items.append("4. NHIF accredited hospital: NHIF KITALE")
+            msg_items.append("4. NHIF accredited hospital: NHIF KITALE or NHIF KITALE INPATIENT")
             msg_items.append("5. Health Facility: HF KITALE")
             msg = " ".join(msg_items)
             return [msg, {'error': " ".join(msg_items)}]
