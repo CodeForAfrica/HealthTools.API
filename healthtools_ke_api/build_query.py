@@ -36,9 +36,11 @@ class BuildQuery(object):
         if self.find_keyword_in_query(query, self.DOC_KEYWORDS):
             search_terms = self.find_keyword_in_query(query, self.DOC_KEYWORDS)
             query = query[:search_terms.start()] + query[search_terms.end():]
-            # print query
+            print query
             doctors = es.get_from_elasticsearch('doctors', query)
+            print doctors
             msg = self.construct_docs_response(doctors[:self.SMS_RESULT_COUNT])
+            print msg
             self.check_message(msg)
             return [msg]
         # Looking for Nurses keywords
