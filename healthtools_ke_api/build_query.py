@@ -20,32 +20,35 @@ KEYWORDS = {
         "health-facilities": ['hf', 'hospital', 'dispensary', 'clinic', 'hospitali', 'sanatorium', 'health centre']
         }
 
-
 class BuildQuery(object):
     def __init__(self):
         self.SMS_RESULT_COUNT = 4  # Number of results to be send via sms
         
-    def clean_query(self, query):
+    def clean_query(self, query): 
+        #removes period from the query, changes the query into a lowercased list '''
         query = query.replace(".","")
         query = query.lower().split(" ")
         return query
 
     def find_keyword(self, query):
-        name = self.clean_query(query)
+        #finds the keyword in the query
+        names = self.clean_query(query)
         for key, value in KEYWORDS.items():
-            for x in name:
-                if x in value:
+            for name in names:
+                if name in value:
                     return '{}'.format(key)
 
     def search_term(self, query):
-        name = self.clean_query(query)
+        #searches for the name to be searched in the query
+        names = self.clean_query(query)
         for key, value in KEYWORDS.items():
-            for x in name:
-                if x in value:
-                  name.remove(x)
-                  return (" ".join(name))
+            for name in names:
+                if name in value:
+                  names.remove(name)
+                  return (" ".join(names))
 
     def build_query_response(self, query):
+        #Search elastic search using the specified keyword and search parameter and returns a list
         quest = self.find_keyword(query)
         q = self.search_term(query)
         
@@ -87,12 +90,13 @@ class BuildQuery(object):
             msg_items.append("1. Doctors: DR. SAMUEL AMAI")
             msg_items.append("2. Clinical Officers: CO SAMUEL AMAI")
             msg_items.append("3. Nurses: NURSE SAMUEL AMAI")
-            msg_items.append("4. NHIF accredited hospital: NHIF KITALE or NHIF KITALE INPATIENT")
+            msg_items.append("4. NHIF accredited hospital: NHIF KITALE or NHIF INPATIENT KITALE")
             msg_items.append("5. Health Facility: HF KITALE")
             msg = " ".join(msg_items)
             return [msg, {'error': " ".join(msg_items)}]
     
     def construct_responses(self, docs_list):
+        # created responses for NHIF, doctors, health facilitites and clinical officers
         hosy = ['nhif-outpatient-cs', 'nhif-outpatient','nhif-inpatient' ]
 
         if len(docs_list) < 1:
@@ -124,10 +128,10 @@ class BuildQuery(object):
         if len(docs_list) > 1:
             msg_items.append(
                 "\nFind the full list at http://health.the-star.co.ke")
-        # print "msg items", msg_items
         return "\n".join(msg_items)
 
     def construct_nurses_responses(self, docs_list):
+        # nurses response
         if [len(docs_list)] < 1:
             return "Could not find a Nurse with that name."
         count = 1
@@ -140,7 +144,6 @@ class BuildQuery(object):
         if len(docs_list) > 1:
             msg_items.append(
                 "\nFind the full list at http://health.the-star.co.ke")
-        # print "msg items", msg_items
         return "\n".join(msg_items)
 
     def check_message(self, msg):
