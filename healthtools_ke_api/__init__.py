@@ -52,7 +52,7 @@ def handle_error(error):
     try:
         response['description'] = error.description
     except Exception as err:
-        print (err)
+        print(err)
     return jsonify(response), status_code
 
 

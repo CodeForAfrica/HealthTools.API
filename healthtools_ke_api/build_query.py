@@ -97,10 +97,10 @@ class BuildQuery(object):
     
     def construct_responses(self, docs_list):
         # created responses for NHIF, doctors, health facilitites and clinical officers
-        hosy = ['nhif-outpatient-cs', 'nhif-outpatient','nhif-inpatient' ]
+        hospitals = ['nhif-outpatient-cs', 'nhif-outpatient','nhif-inpatient' ]
 
         if len(docs_list) < 1:
-            return "Could not find a anything with that name."
+            return "Could not find {} with that name.".format('')
         count = 1
         msg_items = []
         if filter(lambda docs_list: docs_list['_type'] == 'doctors', docs_list):
@@ -112,7 +112,7 @@ class BuildQuery(object):
             for co in docs_list:
                 co = co['_source']
                 status = " ".join([str(count) + ".", "".join(co['name'].title()), "-", "".join(co['qualifications'].upper())])
-        elif filter(lambda docs_list: docs_list['_type'] in hosy, docs_list):
+        elif filter(lambda docs_list: docs_list['_type'] in hospitals, docs_list):
                 for cs in docs_list:
                     cs = cs['_source']
                     status = " ".join([str(count) + ".", cs['hospital'].title()])
