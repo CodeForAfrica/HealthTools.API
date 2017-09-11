@@ -100,7 +100,8 @@ class BuildQuery(object):
         hospitals = ['nhif-outpatient-cs', 'nhif-outpatient','nhif-inpatient' ]
 
         if len(docs_list) < 1:
-            return "Could not find {} with that name.".format('')
+            return "Could not find search result with that name."
+            
         count = 1
         msg_items = []
         if filter(lambda docs_list: docs_list['_type'] == 'doctors', docs_list):
