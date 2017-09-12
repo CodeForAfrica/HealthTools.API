@@ -25,33 +25,29 @@ class BuildQuery(object):
         self.SMS_RESULT_COUNT = 4  # Number of results to be send via sms
         
     def clean_query(self, query): 
-        #removes period from the query, changes the query into a lowercased list '''
+        ''' removes period from the query, changes the query into a lowercased list '''
         query = query.replace(".","")
         query = query.lower().split(" ")
         return query
 
-    def find_keyword(self, query):
-        #finds the keyword in the query
+    def find_keyword_and_search_term(self, query):
+        '''this function distinguishes the keyword from the name to be searched. '''
+        keyword= []
         names = self.clean_query(query)
         for key, value in KEYWORDS.items():
             for name in names:
                 if name in value:
-                    return '{}'.format(key)
+                    keyword.append(key) #
+                    names.remove(name) 
+                    return (" ".join(names)), (" ".join(keyword))
 
-    def search_term(self, query):
-        #searches for the name to be searched in the query
-        names = self.clean_query(query)
-        for key, value in KEYWORDS.items():
-            for name in names:
-                if name in value:
-                  names.remove(name)
-                  return (" ".join(names))
 
     def build_query_response(self, query):
-        #Search elastic search using the specified keyword and search parameter and returns a list
-        quest = self.find_keyword(query)
-        q = self.search_term(query)
+        ''' Search elastic search using the specified keyword and search parameter and returns a list'''
         
+        query = self.find_keyword_and_search_term(query)
+        q = (" ".join((query[:1])))
+        quest = (" ".join((query[1:])))
         if quest:
             if quest == 'nurses':
                 nurses = get_nurses_from_nc_registry(q)
@@ -96,7 +92,8 @@ class BuildQuery(object):
             return [msg, {'error': " ".join(msg_items)}]
     
     def construct_responses(self, docs_list):
-        # created responses for NHIF, doctors, health facilitites and clinical officers
+        ''' creates responses for NHIF, doctors, health facilitites and clinical officers '''
+
         hospitals = ['nhif-outpatient-cs', 'nhif-outpatient','nhif-inpatient' ]
 
         if len(docs_list) < 1:
@@ -132,7 +129,9 @@ class BuildQuery(object):
         return "\n".join(msg_items)
 
     def construct_nurses_responses(self, docs_list):
-        # nurses response
+        '''
+         creates response for nurses
+        '''
         if [len(docs_list)] < 1:
             return "Could not find a Nurse with that name."
         count = 1
@@ -148,7 +147,9 @@ class BuildQuery(object):
         return "\n".join(msg_items)
 
     def check_message(self, msg):
-        # check the message and if query wasn't understood, post error
+        '''
+        check the message and if query wasn't understood, post error
+        '''
         if 'could not find' in msg:
             self.print_error(msg)
 
