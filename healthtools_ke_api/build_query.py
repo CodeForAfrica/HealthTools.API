@@ -37,8 +37,8 @@ class BuildQuery(object):
         for key, value in KEYWORDS.items():
             for name in names:
                 if name in value:
-                    keyword.append(key) #
-                    names.remove(name) 
+                    keyword.append(key) 
+                    names.remove(name) # name is removed from query list 
                     return (" ".join(names)), (" ".join(keyword))
 
 
@@ -46,8 +46,8 @@ class BuildQuery(object):
         ''' Search elastic search using the specified keyword and search parameter and returns a list'''
         
         query = self.find_keyword_and_search_term(query)
-        q = (" ".join((query[:1])))
-        quest = (" ".join((query[1:])))
+        q = (" ".join((query[:1]))) # slice to retain the last value of the query list
+        quest = (" ".join((query[1:]))) # slice to retain the first value of the query list
         if quest:
             if quest == 'nurses':
                 nurses = get_nurses_from_nc_registry(q)
