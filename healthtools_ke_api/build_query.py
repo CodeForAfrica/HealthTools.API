@@ -12,87 +12,72 @@ from healthtools_ke_api.elastic_search import Elastic
 
 es = Elastic()
 
+KEYWORDS = {
+        "doctors": ['doc', 'daktari', 'doctor', 'oncologist', 'dr'],
+        "nurses": ['nurse', 'no', 'nursing officer', 'mhuguzi', 'muuguzi', 'RN', 'Registered Nurse'],
+        "clinical-officers": ['co', 'clinical officer', 'clinic officer', 'clinical', 'clinical oficer'],
+        "NHIF": ['nhif', 'bima', 'insurance', 'insurance fund', 'health insurance', 'hospital fund'],
+        "health-facilities": ['hf', 'hospital', 'dispensary', 'clinic', 'hospitali', 'sanatorium', 'health centre']
+        }
 
 class BuildQuery(object):
     def __init__(self):
         self.SMS_RESULT_COUNT = 4  # Number of results to be send via sms
-        self.DOC_KEYWORDS = ['doc', 'daktari', 'doctor', 'oncologist', 'dr']
-        self.CO_KEYWORDS = ['CO', 'clinical officer',
-                            'clinic officer', 'clinical', 'clinical oficer', ]
-        self.NO_KEYWORDS = ['nurse', 'no', 'nursing officer',
-                            'mhuguzi', 'muuguzi', 'RN', 'Registered Nurse']
-        self.NHIF_KEYWORDS = ['nhif', 'bima', 'insurance',
-                              'insurance fund', 'health insurance', 'hospital fund']
-        self.HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
-                            'hospitali', 'sanatorium', 'health centre']
+        
+    def clean_query(self, query): 
+        ''' removes period from the query, changes the query into a lowercased list '''
+        query = query.replace(".","")
+        query = query.lower().split(" ")
+        return query
 
-    def find_keyword_in_query(self, query, keywords):
-        regex = re.compile(r'\b(?:%s)\b' % '|'.join(keywords), re.IGNORECASE)
-        return re.search(regex, query)
+    def find_keyword_and_search_term(self, query):
+        '''this function distinguishes the keyword from the name to be searched. '''
+        keyword= []
+        names = self.clean_query(query)
+        for key, value in KEYWORDS.items():
+            for name in names:
+                if name in value:
+                    keyword.append(key) 
+                    names.remove(name) # name is removed from query list 
+                    return (" ".join(names)), (" ".join(keyword))
+
 
     def build_query_response(self, query):
-        query = self.clean_query(query)
-        # Start by looking for doctors keywords
-        if self.find_keyword_in_query(query, self.DOC_KEYWORDS):
-            search_terms = self.find_keyword_in_query(query, self.DOC_KEYWORDS)
-            query = query[:search_terms.start()] + query[search_terms.end():]
-            print query
-            doctors = es.get_from_elasticsearch('doctors', query)
-            msg = self.construct_docs_response(doctors[:self.SMS_RESULT_COUNT])
-            self.check_message(msg)
-            return [msg]
-        # Looking for Nurses keywords
-        elif self.find_keyword_in_query(query, self.NO_KEYWORDS):
-            search_terms = self.find_keyword_in_query(query, self.NO_KEYWORDS)
-            query = query[:search_terms.start()] + query[search_terms.end():]
-            nurses = get_nurses_from_nc_registry(query)
-            msg = self.construct_nurse_response(nurses[:self.SMS_RESULT_COUNT])
-            self.check_message(msg)
-            return [msg]
-        # Looking for clinical officers Keywords
-        elif self.find_keyword_in_query(query, self.CO_KEYWORDS):
-            search_terms = self.find_keyword_in_query(query, self.CO_KEYWORDS)
-            query = query[:search_terms.start()] + query[search_terms.end():]
-            print query
-            clinical_officers = es.get_from_elasticsearch(
-                'clinical-officers', query)
-            msg = self.construct_co_response(
-                clinical_officers[:self.SMS_RESULT_COUNT])
-            self.check_message(msg)
-            return [msg]
-        # Looking for nhif hospitals
-        elif self.find_keyword_in_query(query, self.NHIF_KEYWORDS):
-            search_terms = self.find_keyword_in_query(
-                query, self.NHIF_KEYWORDS)
-            query = query[:search_terms.start()] + query[search_terms.end():]
+        ''' Search elastic search using the specified keyword and search parameter and returns a list'''
+        
+        query = self.find_keyword_and_search_term(query)
+        q = (" ".join((query[:1]))) # slice to retain the last value of the query list
+        quest = (" ".join((query[1:]))) # slice to retain the first value of the query list
+        if quest:
+            if quest == 'nurses':
+                nurses = get_nurses_from_nc_registry(q)
+                msg = self.construct_nurses_responses(nurses[:self.SMS_RESULT_COUNT])
+                self.check_message(msg)
+                return [msg]
 
-            if re.search("inpatient", query):
-                query = re.sub("\s*inpatient\s*", "",
-                               query, flags=re.IGNORECASE)
-                doc_type = "nhif-inpatient"
+            elif quest == 'NHIF':
+                if re.search("inpatient", query):
+                    q = re.sub("\s*inpatient\s*", "",
+                               q, flags=re.IGNORECASE)
+                    doc_type = "nhif-inpatient"
+                else:
+                    q = re.sub("\s*outpatient\s*", "",
+                               q, flags=re.IGNORECASE)
+
+                    # Default: ES doc_type = nhif-outpatient-cs
+                    doc_type = ["nhif-outpatient", "nhif-outpatient-cs"]
+
+                nhif_hospitals = es.get_from_elasticsearch(doc_type, q)
+                msg = self.construct_responses(nhif_hospitals[:self.SMS_RESULT_COUNT])
+                self.check_message(msg)
+                return [msg]
+
             else:
-                query = re.sub("\s*outpatient\s*", "",
-                               query, flags=re.IGNORECASE)
+                search = es.get_from_elasticsearch(quest, q)
+                msg = self.construct_responses(search[:self.SMS_RESULT_COUNT])
+                self.check_message(msg)
+                return [msg]
 
-                # Default: ES doc_type = nhif-outpatient-cs
-                doc_type = ["nhif-outpatient", "nhif-outpatient-cs"]
-
-            nhif_hospitals = es.get_from_elasticsearch(
-                doc_type, query)
-
-            msg = self.construct_nhif_response(nhif_hospitals)
-            print msg
-            return [msg]
-        # Looking for health facilities
-        elif self.find_keyword_in_query(query, self.HF_KEYWORDS):
-            search_terms = self.find_keyword_in_query(query, self.HF_KEYWORDS)
-            query = query[:search_terms.start()] + query[search_terms.end():]
-            health_facilities = es.get_from_elasticsearch(
-                'health-facilities', query)
-            msg = self.construct_hf_response(
-                health_facilities[:self.SMS_RESULT_COUNT])
-            print msg
-            return [msg]
         # If we miss the keywords then reply with the preferred query formats
         else:
             self.print_error(query)
@@ -101,133 +86,70 @@ class BuildQuery(object):
             msg_items.append("1. Doctors: DR. SAMUEL AMAI")
             msg_items.append("2. Clinical Officers: CO SAMUEL AMAI")
             msg_items.append("3. Nurses: NURSE SAMUEL AMAI")
-            msg_items.append("4. NHIF accredited hospital: NHIF KITALE")
+            msg_items.append("4. NHIF accredited hospital: NHIF KITALE or NHIF INPATIENT KITALE")
             msg_items.append("5. Health Facility: HF KITALE")
             msg = " ".join(msg_items)
             return [msg, {'error': " ".join(msg_items)}]
+    
+    def construct_responses(self, docs_list):
+        ''' creates responses for NHIF, doctors, health facilitites and clinical officers '''
 
-    def construct_co_response(self, co_list):
-        # Just incase we found ourselves here with an empty list
-        if len(co_list) < 1:
-            return "Could not find a clinical officer with that name."
-        count = 1
-        msg_items = []
-        for co in co_list:
-            # co = co["fields"]
-            co = co["_source"]
-            status = " ".join(
-                [str(count) + ".", "".join(co['name'].title()), "-", "".join(co['qualifications'].upper())])
-            msg_items.append(status)
-            count = count + 1
-        if len(co_list) > 1:
-            msg_items.append(
-                "\nFind the full list at http://health.the-star.co.ke")
-        print "\n".join(msg_items)
-        return "\n".join(msg_items)
+        hospitals = ['nhif-outpatient-cs', 'nhif-outpatient','nhif-inpatient' ]
 
-    def construct_docs_response(self, docs_list):
-        # Just incase we found ourselves here with an empty list
         if len(docs_list) < 1:
-            return "Could not find a doctor with that name"
+            return "Could not find search result with that name."
+            
         count = 1
         msg_items = []
-
-        for doc in docs_list:
-            doc = doc["_source"]
-            status = " ".join([str(count) + ".", "".join(doc['name'].title()), "-",
-                               "".join(doc['reg_no'].title()), "-", "".join(doc['qualifications'].upper())])
-
-            msg_items.append(status)
-            count = count + 1
+        if filter(lambda docs_list: docs_list['_type'] == 'doctors', docs_list):
+            for doc in docs_list:
+                doc = doc['_source']
+                status = " ".join([str(count) + ".", "".join(doc['name'].title()), "-",
+                        "".join(doc['reg_no'].title()), "-", "".join(doc['qualifications'].upper())])
+        elif filter(lambda docs_list: docs_list['_type'] == 'clinical-officers', docs_list):
+            for co in docs_list:
+                co = co['_source']
+                status = " ".join([str(count) + ".", "".join(co['name'].title()), "-", "".join(co['qualifications'].upper())])
+        elif filter(lambda docs_list: docs_list['_type'] in hospitals, docs_list):
+                for cs in docs_list:
+                    cs = cs['_source']
+                    status = " ".join([str(count) + ".", cs['hospital'].title()])
+        elif filter(lambda docs_list: docs_list['_type'] == 'health-facilities', docs_list):
+            for hf in docs_list:
+                hf = hf['_source']
+                status = " ".join([str(count) + ".", hf['name'].title() + " -", hf['keph_level_name'].title()])
+        else:
+            return "fail"
+        
+        msg_items.append(status)
+        count = count + 1
         if len(docs_list) > 1:
             msg_items.append(
                 "\nFind the full list at http://health.the-star.co.ke")
-
         return "\n".join(msg_items)
 
-    def construct_nurse_response(self, nurse_list):
-        # Just incase we found ourselves here with an empty list
-        if len(nurse_list) < 1:
-            return "Could not find a nurse with that name"
+    def construct_nurses_responses(self, docs_list):
+        '''
+         creates response for nurses
+        '''
+        if [len(docs_list)] < 1:
+            return "Could not find a Nurse with that name."
         count = 1
         msg_items = []
-        for nurse in nurse_list:
-            status = " ".join([str(count) + ".", nurse['name'].title() +
-                               ",", "Valid to", nurse['valid_till'].title()])
-            msg_items.append(status)
-            count = count + 1
-        if len(nurse_list) > 1:
+        for nurse in docs_list:
+                status = " ".join([str(count) + ".", nurse['name'].title() + ",", "Valid to", nurse['valid_till'].title()])
+
+        msg_items.append(status)
+        count = count + 1
+        if len(docs_list) > 1:
             msg_items.append(
                 "\nFind the full list at http://health.the-star.co.ke")
-
         return "\n".join(msg_items)
-
-    def construct_nhif_response(self, nhif_list):
-        # Just incase we found ourselves here with an empty list
-        if len(nhif_list) < 1:
-            return "We could not find an NHIF accredited hospital with the name or in the location you provided."
-        count = 1
-        msg_items = []
-        nhif_hospitals = []
-
-        for nhif in nhif_list:
-            nhif = nhif['_source']
-            hospital = nhif['hospital']
-            nhif_hospitals.append(hospital)
-
-        nhif_hospitals = list(set(nhif_hospitals))
-
-        for hospital in nhif_hospitals:
-            status = " ".join([str(count) + ".", hospital.title()])
-            msg_items.append(status)
-            count = count + 1
-
-        if len(nhif_list) > 1:
-            msg_items.append(
-                "\nFind the full list at http://health.the-star.co.ke")
-
-        return "\n".join(msg_items)
-
-    def construct_hf_response(self, hf_list):
-        # Just incase we found ourselves here with an empty list
-        if len(hf_list) < 1:
-            return "We could not find a health facility with the name or in the location you provided."
-        count = 1
-        msg_items = []
-        for hf in hf_list:
-            hf = hf['_source']
-            status = " ".join([str(count) + ".", hf['name'].title() +
-                               " -", hf['keph_level_name'].title()])
-            msg_items.append(status)
-            count = count + 1
-        if len(hf_list) > 1:
-            msg_items.append(
-                "\nFind the full list at http://health.the-star.co.ke")
-
-        return "\n".join(msg_items)
-
-    def clean_query(self, query):
-        query = query.lower().strip().replace(".", "")
-        return query
-
-    def parse_elastic_search_results(self, response):
-        result_to_send_count = self.SMS_RESULT_COUNT
-        data_dict = response.json()
-        fields_dict = (data_dict['hits'])
-        hits = fields_dict['hit']
-        result_list = []
-        search_results_count = len(hits)
-        print "FOUND {} RESULTS".format(search_results_count)
-        for item in hits:
-            result = item['fields']
-            if len(result_list) < result_to_send_count:
-                result_list.append(result)
-            else:
-                break
-        return result_list
 
     def check_message(self, msg):
-        # check the message and if query wasn't understood, post error
+        '''
+        check the message and if query wasn't understood, post error
+        '''
         if 'could not find' in msg:
             self.print_error(msg)
 

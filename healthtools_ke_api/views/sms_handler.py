@@ -14,17 +14,9 @@ from healthtools_ke_api.elastic_search import Elastic
 from healthtools_ke_api.build_query import BuildQuery
 
 
+
 SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
-SMS_RESULT_COUNT = 4  # Number of results to be send via sms
-DOC_KEYWORDS = ['doc', 'daktari', 'doctor', 'oncologist', 'dr']
-CO_KEYWORDS = ['CO', 'clinical officer',
-               'clinic officer', 'clinical', 'clinical oficer', ]
-NO_KEYWORDS = ['nurse', 'no', 'nursing officer',
-               'mhuguzi', 'muuguzi', 'RN', 'Registered Nurse']
-NHIF_KEYWORDS = ['nhif', 'bima', 'insurance',
-                 'insurance fund', 'health insurance', 'hospital fund']
-HF_KEYWORDS = ['hf', 'hospital', 'dispensary', 'clinic',
-               'hospitali', 'sanatorium', 'health centre']
+
 es = Elastic()
 bq = BuildQuery()
 
