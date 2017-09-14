@@ -31,6 +31,9 @@ def index():
 
 @health_facilities_api.route('/search.json', methods=['GET'])
 def search():
+    '''
+    This function searches for queried name in elactic search/health facilities.
+    '''
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:
