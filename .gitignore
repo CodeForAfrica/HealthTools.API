@@ -87,3 +87,12 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+#sphnix source
+docs/_build/
+docs/_static/
+docs/_templates/
+
+#jekyll build
+docs/_site/

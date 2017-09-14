@@ -8,9 +8,12 @@ import re
 
 class Elastic(object):
     """
-    Common class for elastic search client and methods
+    Common class for elastic search client and method
     """
     def __init__(self):
+        """
+        Setup AWS elastic search service
+        """
         # client host for aws elastic search service
         if "aws" in ES["host"]:
             # set up authentication credentials
@@ -31,6 +34,12 @@ class Elastic(object):
     def remove_keyword(query):
         """
         Remove keyword from search term
+
+        Args:
+            query (str): the string to remove keyword from
+        
+        Returns:
+            (str) The string without the keywords
         """
         query_formatted = query.strip().lower()
         keywords = ['dr', 'dr.', 'doctor', 'nurse', 'co', 'c.o.', 'c.o', 'clinical officer']
@@ -42,7 +51,9 @@ class Elastic(object):
     def get_from_elasticsearch(self, doc_type, query):
         """
         get data from elasticsearch
-        :return: Query results from elasticsearch
+
+        Returns: 
+            Query results from elasticsearch
         """
         search_term = self.remove_keyword(query)
         results = self.es_client.search(

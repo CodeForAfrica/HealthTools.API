@@ -23,6 +23,7 @@ app.register_blueprint(sms_handler)
 def index():
     '''
     Landing endpoint
+
     '''
     msg = {
         "name": "HealthTools.KE-API",
@@ -39,6 +40,7 @@ def index():
 
 def handle_error(error):
     '''Generic error handlers for all http exceptions'''
+    
     response = {}
     status_code = 500
     if isinstance(error, HTTPException):

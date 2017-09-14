@@ -8,9 +8,31 @@ doctors_api = Blueprint('doctors_api', __name__)
 
 @doctors_api.route('/', methods=['GET'])
 def index():
-    '''
-    Landing endpoint
-    '''
+    """
+    This function displays all the endpoints available
+    in the doctors registry.
+
+    Returns:
+    json.  The response ::
+
+        {
+            "name": "API to Kenyan doctors registry",
+            "authentication": [],
+            "endpoints": {
+                "/": {
+                    "methods": ["GET"]
+                },
+                "/doctors/search.json": {
+                    "methods": ["GET"],
+                    "args": {
+                        "q": {"required": True}
+                    }
+                },
+            }
+        }
+
+    """
+
     msg = {
         "name": "API to the Kenyan doctors registry",
         "authentication": [],
@@ -29,6 +51,46 @@ def index():
 
 @doctors_api.route('/search.json', methods=['GET'])
 def search():
+    """This function searches through the Kenyan Doctors registry API
+    based on the search query supplied by user.
+
+    Query string: 
+         q (str):  The name of the doctor to lookup.
+        
+    
+    Returns:
+       json.  The response can be any of the following ::
+
+          When no query string was supplied: 
+
+          {
+            "error": "A query is required.",
+            "results": "",
+            "data": {"doctors": []}
+          }
+
+          When no doctor was found
+
+          {
+            "message" = "No doctor by that name found."
+          }
+
+          when clinical officer(s) was found
+
+          {
+            "data": {"doctors": <list_of_doctors>},
+            "status": "success",
+                
+          }
+
+          When an error occurs
+
+          {
+              "status": "error",
+              "message": <error_message>,
+              "data": {"doctors": []}
+          }
+    """
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:

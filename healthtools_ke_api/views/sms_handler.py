@@ -25,6 +25,17 @@ sms_handler = Blueprint("sms_handler", __name__)
 
 @sms_handler.route("/sms", methods=['GET'])
 def sms():
+    '''
+        This function sends an sms to a targeted phone number
+
+        Query:
+            message (str): The text to send
+            phoneNumber (str): The phone number to send the sms to
+        
+        Returns:
+            The message object
+    '''
+
     name = request.args.get("message")
     phone_number = request.args.get("phoneNumber")
     if not name or not phone_number:
@@ -46,6 +57,17 @@ def sms():
 
 
 def send_sms(phone_number, msg):
+    '''
+        This function sends sms 
+
+        Args:
+            message (str): The text to send
+            phoneNumber (str): The phone number to send the sms to 
+
+        Returns:
+            The status  of the sms sent
+    '''
+
     params = {
         'user': current_app.config.get('SMS_USER'),
         'pass': current_app.config.get('SMS_PASS'),
@@ -59,11 +81,46 @@ def send_sms(phone_number, msg):
 
 
 def find_keyword_in_query(query, keywords):
+    '''
+        This function finds keyword in query
+
+        Args:
+            query(str): The string to lookup for keywords
+            keywords(lst): The keywords to search
+
+        Returns:
+            A list of the keywords in query
+    '''
+
     regex = re.compile(r'\b(?:%s)\b' % '|'.join(keywords), re.IGNORECASE)
     return re.search(regex, query)
 
 
 def build_query_response(query):
+    '''
+        This function builds an sms object based on the query passed
+
+        Args:
+            query(str): Description of the User's request 
+
+        Returns:
+            json. The response can be any of the following ::
+
+                When a keyword is found in the query
+                    returns The sms object
+                Else 
+                    returns an error response with instances of  valid query
+                        [
+                            "We could not understand your query. Try these:",
+                            "1. Doctors: DR. SAMUEL AMAI",
+                            "2. Clinical Officers: CO SAMUEL AMAI",
+                            "3. Nurses: NURSE SAMUEL AMAI",
+                            "4. NHIF accredited hospital: NHIF KITALE",
+                            "5. Health Facility: HF KITALE"
+                        ]
+            
+    '''
+    
     query = clean_query(query)
     # Start by looking for doctors keywords
     if find_keyword_in_query(query, DOC_KEYWORDS):
@@ -117,6 +174,16 @@ def build_query_response(query):
 
 
 def construct_co_response(co_list):
+    '''
+        This function builds dynamic message item for a list of clinical officers supplied by the user
+
+        Args:
+             co_list(list): The list of clinical officers
+        
+        Returns:
+            json. The list of message items for clinical officers
+    '''
+
     # Just incase we found ourselves here with an empty list
     if len(co_list) < 1:
         return "Could not find a clinical officer with that name."
@@ -135,6 +202,16 @@ def construct_co_response(co_list):
 
 
 def construct_nhif_response(nhif_list):
+    '''
+        This function builds dynamic message item for a list of NHIF's supplied by the user
+
+        Args:
+             nhif_list(list): The list of NHIF's
+        
+        Returns:
+            json. The list of message items for NHIF's
+    '''
+
     # Just incase we found ourselves here with an empty list
     if len(nhif_list) < 1:
         return "We could not find an NHIF accredited hospital in the location you provided."
@@ -151,6 +228,16 @@ def construct_nhif_response(nhif_list):
 
 
 def construct_hf_response(hf_list):
+    '''
+        This function builds dynamic message item for a list of HF's supplied by the user
+
+        Args:
+             hf_list(list): The list of HF's
+        
+        Returns:
+            json. The list of message items for HF's
+    '''
+
     # Just incase we found ourselves here with an empty list
     if len(hf_list) < 1:
         return "We could not find a health facility in the location you provided."
@@ -168,6 +255,16 @@ def construct_hf_response(hf_list):
 
 
 def construct_nurse_response(nurse_list):
+    '''
+        This function builds dynamic message item for a list of nurses supplied by the user
+
+        Args:
+             nurse_list(list): The list of nurses
+        
+        Returns:
+            json. The list of message items for nurses
+    '''
+
     # Just incase we found ourselves here with an empty list
     if len(nurse_list) < 1:
         return "Could not find a nurse with that name"
@@ -185,6 +282,17 @@ def construct_nurse_response(nurse_list):
 
 
 def construct_docs_response(docs_list):
+    
+    '''
+        This function builds dynamic message item for a list of doctors supplied by the user
+
+        Args:
+             nurse_list(list): The list of doctors
+        
+        Returns:
+            json. The list of message items for doctors
+    '''
+
     # Just incase we found ourselves here with an empty list
     if len(docs_list) < 1:
         return "Could not find a doctor with that name."
@@ -210,11 +318,31 @@ def construct_docs_response(docs_list):
 
 
 def clean_query(query):
+    '''
+        This function removes whitespaces, fullstop mark
+
+        Args:
+            query(str): The owrd to clean
+        Returns:
+            str. The lowercase of the cleaned word
+    '''
+
+
     query = query.lower().strip().replace(".", "")
     return query
 
 
 def parse_elastic_search_results(response):
+    '''
+        This function builds a list of result set with size as specified in the config variable <SMS_RESULT_COUNT>
+
+        Args:
+            response(json):
+                The search result
+        Returns:
+            The parsed list of response object
+    '''
+
     result_to_send_count = SMS_RESULT_COUNT
     data_dict = response.json()
     fields_dict = (data_dict['hits'])
