@@ -3,6 +3,7 @@ from healthtools_ke_api import app
 from healthtools_ke_api.views.sms_handler import build_query_response, send_sms
 
 
+
 class TestSmsApi(TestCase):
     def setUp(self):
         self.client = app.test_client()
@@ -13,10 +14,14 @@ class TestSmsApi(TestCase):
         self.assertEqual(message, response.data)
 
     def test_query_response(self):
-        response = build_query_response('nurse mary')
+        response = build_query_response('sanatorium Kituni')
         self.assertTrue(len(response[0]) > 0)
 
     def test_send_sms(self):
-        message = build_query_response('nurse mary')
-        response = self.client.get("/sms", query_string={"phoneNumber": "+254726075080", "message": message[0]})
+        response = self.client.get("/sms", query_string={"phoneNumber": "09", "message": 'hf Emayian'})
         self.assertEqual(200, response.status_code)
+
+    def test_queries_not_understood_post_to_slack(self):
+        message = build_query_response('Test SMS error posts to slack')
+        response = self.client.get("/sms", query_string={"phoneNumber": "09", "message": message[0]})
+        self.assertEqual('Could not find a health facility with that name', response.data)
