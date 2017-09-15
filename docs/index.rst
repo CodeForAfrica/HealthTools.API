@@ -15,9 +15,11 @@ HealthTools Kenya API to retrieve, structure and return data being used by the h
 .. toctree::
    :maxdepth: 2
 
+   telegram_bot
    utilities   
    views
    views_util
+
 
 
 Indices and tables
