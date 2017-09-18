@@ -4,16 +4,24 @@ import requests
 def track_event(tracking_id, category, action, cid, label=None, value=0):
     '''
     Posts Tracking in info to Google Analytics using measurement protocol.
+
     Args:
         tracking_id: The tracking ID of the Google Analytics account in which these data is associated with.
+
         category: The name assigned to the group of similar events to track.
+
         action: The Specific action being tracked.
+
         cid: Anonymous Client Identifier. Ideally, this should be a UUID that is associated with particular user, device
+
         label: Label of the event.
+        
         value: Value of event in this case number of results obtained
+
     Returns:
-        No return value # If the request fails, it will raise a 
-        RequestException. .
+        No return value 
+        # If the request fails, it will raise a RequestException.
+
     '''
     data = {
         'v': '1',
