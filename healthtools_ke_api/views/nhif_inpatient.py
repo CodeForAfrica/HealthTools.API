@@ -11,7 +11,25 @@ nhif_inpatient_api = Blueprint('nhif_inpatient_api', __name__)
 @nhif_inpatient_api.route('/', methods=['GET'])
 def index():
     '''
-    Landing endpoint
+    This function displays all the endpoints available
+    in the NHIF inpatient registry.
+
+    Returns:
+    json.  The response ::
+
+        {
+             "name": "API to the NHIF inpatient registry",
+            "authentication": [],
+            "endpoints": {
+                "/": {"methods": ["GET"]},
+                "/nhif-inpatient/search.json": {
+                    "methods": ["GET"],
+                    "args": {
+                        "q": {"required": True}
+                    }
+                },
+            }
+        }
     '''
     msg = {
         "name": "API to the NHIF inpatient registry",
@@ -30,6 +48,46 @@ def index():
 
 @nhif_inpatient_api.route('/search.json', methods=['GET'])
 def search():
+    """This function searches through the Kenyan nhif_inpatient registry API
+    based on the search query supplied by user.
+
+    Query string: 
+         q (str):  The name of the nhif inpatient to lookup.
+        
+    
+    Returns:
+       json.  The response can be any of the following ::
+
+          When no query string was supplied: 
+
+          {
+            "error": "A query is required.",
+            "results": "",
+            "data": {"nhif_inpatient": []}
+          }
+
+          When no nhif inpatient was found
+
+          {
+            "message" = "No nhif inpatient by that name found."
+          }
+
+          when nhif_inpatient(s) was found
+
+          {
+            "data": {"nhif_inpatient": <nhif_inpatients>},
+            "status": "success",
+                
+          }
+
+          When an error occurs
+
+          {
+              "status": "error",
+              "message": <error_message>,
+              "data": {"nhif_inpatient": []}
+          }
+    """
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:
