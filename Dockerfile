@@ -6,4 +6,4 @@ WORKDIR /htools-api
 
 RUN pip install -r requirements.txt
 
-CMD ["gunicorn", "manage:app"]
+CMD ["gunicorn", "healthtools.manage:app"]
