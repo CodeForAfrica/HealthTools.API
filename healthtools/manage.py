@@ -1,4 +1,4 @@
-from healthtools_ke_api import app
+from healthtools.core import app
 
 if __name__ == "__main__":
     app.run()
