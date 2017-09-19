@@ -37,7 +37,8 @@ class Elastic(object):
         """
         query_formatted = query.strip().lower()
         keywords = ['dr', 'dr.', 'doctor', 'nurse',
-                    'co', 'c.o.', 'c.o', 'clinical officer']
+                    'co', 'c.o.', 'c.o', 'clinical officer',
+                    'hf', 'h.f', 'h.f.','health facility']
         for word in keywords:
             regex = r'(?<![\w\d]){0}(?![\w\d])'.format(word)
             query_formatted = re.sub(regex, "", query_formatted)
