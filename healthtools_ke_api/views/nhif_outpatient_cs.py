@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response, json, current_app
 from bs4 import BeautifulSoup
-from elastic_search import Elastic
 
+from healthtools_ke_api.elastic_search import Elastic
 from healthtools_ke_api.analytics import track_event
 
 import requests

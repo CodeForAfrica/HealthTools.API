@@ -81,17 +81,17 @@ The Telegram Bot does the followinng:
 2. Find out which facilities your NHIF card will cover in your county
 3. Find the nearest doctor or health facility
 
-### Installation
+**Installation**
 Make sure you have installed in your environment: `python-telegram-bot`
 
-# Create a new telegram bot
-- https://telegram.me/BotFather
+**Create a new telegram bot**
+- Use [BotFather](https://telegram.me/BotFather)
 - After you create your bot, save the token assigned.
 
-# ngrok Configuration
+**ngrok Configuration**
 - ngrok allows you to expose a web server running on your local machine to the interne
 - Install Ngrok: https://ngrok.com
-- Follow the instructions on: https://ngrok.com/docs#expose
+- Follow the setup instructions [here](https://ngrok.com/docs#expose)
     Note: The listening port you use, is the same one your app should listen on. E.g.
     ```$ ngrok http 5000```
 
@@ -103,10 +103,8 @@ Make sure you have installed in your environment: `python-telegram-bot`
             port=5000, # the app listens on the same port as ngrok
         )
     ```
-- Configuration
-    See the nginx.config.template
 
-# Nginx Configuration
+**Nginx Configuration**
 - Install Nginx
     https://www.nginx.com/resources/admin-guide/installing-nginx-open-source/
     or
