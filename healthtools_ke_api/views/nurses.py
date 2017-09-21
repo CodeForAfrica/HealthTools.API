@@ -16,9 +16,26 @@ NURSING_COUNCIL_URL = "http://nckenya.com/services/search.php?p=1&s={}"
 
 @nurses_api.route('/', methods=['GET'])
 def index():
-    '''
-    Landing endpoint
-    '''
+    """
+    This function displays all the endpoints available
+    in the nurses registry.
+    Returns:
+    json.  The response ::
+        {
+            "name": "Nursing Council of Kenya API",
+            "authentication": [],
+            "endpoints": {
+                "/": {"methods": ["GET"]},
+                "/nurses/search.json": {
+                    "methods": ["GET"],
+                    "args": {
+                        "q": {"required": True}
+                    }
+                },
+            }
+        }
+    """
+
     msg = {
         "name": "Nursing Council of Kenya API",
         "authentication": [],
@@ -37,6 +54,36 @@ def index():
 
 @nurses_api.route('/search.json', methods=['GET'])
 def search():
+    """This function searches through the nursing council of Kenya registry
+    based on the search query supplied by user.
+    Query string: 
+         q (str):  The name of the nurse to lookup.
+    Returns (JSON):
+       The response can be any of the following ::
+          When no query string was supplied: 
+          {
+            "error": "A query is required.",
+            "results": "",
+            "data": {"nurses": []}
+          }
+          When no nurse was found
+          {
+            "message" = "No nurse by that name found."
+          }
+          when nurse(s) was found
+          {
+            "data": {"nurses": <list_of_nurses>},
+            "status": "success",
+                
+          }
+          When an error occurs
+          {
+              "status": "error",
+              "message": <error_message>,
+              "data": {"nurses": []}
+          }
+    """
+
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:
