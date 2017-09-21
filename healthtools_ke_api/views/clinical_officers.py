@@ -12,13 +12,14 @@ clinical_officers_api = Blueprint('clinical_officers_api', __name__)
 
 @clinical_officers_api.route('/', methods=['GET'])
 def index():
-    """This function displays all the endpoints available
+    """
+    This function displays all the endpoints available
     in the Clinical Officers registry.
 
     Returns:
        json.  The response ::
 
-         {
+        {
             "name": "API to Kenyan Clinical Officers registry",
             "authentication": [],
             "endpoints": {
@@ -32,8 +33,7 @@ def index():
                     }
                 },
             }
-         }
-
+        }
     """
     msg = {
         "name": "API to Kenyan Clinical Officers registry",

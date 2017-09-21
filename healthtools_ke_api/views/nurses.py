@@ -54,7 +54,8 @@ def index():
 
 @nurses_api.route('/search.json', methods=['GET'])
 def search():
-    """This function searches through the nursing council of Kenya registry
+    """
+    This function searches through the nursing council of Kenya registry
     based on the search query supplied by user.
     Query string: 
          q (str):  The name of the nurse to lookup.

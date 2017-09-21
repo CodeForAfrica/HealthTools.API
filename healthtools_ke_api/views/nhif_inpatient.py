@@ -30,7 +30,8 @@ def index():
 
 @nhif_inpatient_api.route('/search.json', methods=['GET'])
 def search():
-    """This function searches through the Kenyan nhif_inpatient registry API
+    """
+    This function searches through the Kenyan nhif_inpatient registry API
     based on the search query supplied by user.
     Query string: 
          q (str):  The name of the nhif inpatient to lookup.

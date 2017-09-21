@@ -33,7 +33,7 @@ sms_handler = Blueprint("sms_handler", __name__)
 
 @sms_handler.route("/sms", methods=['GET'])
 def sms():
-    '''
+    """
         This function sends an sms to a targeted phone number
         Query:
             message (str): The text to send
@@ -41,7 +41,7 @@ def sms():
         
         Returns:
             The message object
-    '''
+    """
 
     name = request.args.get("message")
     phone_number = request.args.get("phoneNumber")
@@ -60,14 +60,14 @@ def sms():
 
 
 def send_sms(phone_number, msg):
-    '''
+    """
         This function sends sms 
-        Args:
-            message (str): The text to send
-            phoneNumber (str): The phone number to send the sms to 
-        Returns:
-            The status  of the sms sent
-    '''
+    Args:
+        message (str): The text to send
+        phoneNumber (str): The phone number to send the sms to 
+    Returns:
+        The status  of the sms sent
+    """
 
     params = {
         'user': current_app.config.get('SMS_USER'),

@@ -10,7 +10,7 @@ nhif_outpatient_cs_api = Blueprint('nhif_outpatient_cs_api', __name__)
 
 @nhif_outpatient_cs_api.route('/', methods=['GET'])
 def index():
-    '''
+    """
     This function displays all the endpoints available
     in the NHIF Outpatient CS registry.
     Returns:
@@ -28,7 +28,7 @@ def index():
                  },
              }
         }
-    '''
+    """
     msg = {
         "name": "API to the NHIF Outpatient CS registry",
         "authentication": [],
@@ -46,7 +46,8 @@ def index():
 
 @nhif_outpatient_cs_api.route('/search.json', methods=['GET'])
 def search():
-    """This function searches through the Kenyan NHIF Outpatient  CS facility registry API
+    """
+    This function searches through the Kenyan NHIF Outpatient  CS facility registry API
     based on the search query supplied by user.
     Query string: 
          q (str):  The name of the NHIF Outpatient CS facility to lookup.

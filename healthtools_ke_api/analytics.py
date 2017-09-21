@@ -2,7 +2,7 @@ import requests
 
 
 def track_event(tracking_id, category, action, cid, label=None, value=0):
-    '''
+    """
     Posts Tracking in info to Google Analytics using measurement protocol.
     Args:
         tracking_id: The tracking ID of the Google Analytics account in which these data is associated with.
@@ -14,7 +14,7 @@ def track_event(tracking_id, category, action, cid, label=None, value=0):
     Returns:
         No return value # If the request fails, it will raise a 
         RequestException. .
-    '''
+    """
     data = {
         'v': '1',
         'tid': tracking_id,
