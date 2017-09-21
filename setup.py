@@ -13,6 +13,8 @@ setup(
     install_requires=[
         'flask',
         'requests',
-        'bs4'
+        'bs4',
+        'elasticsearch',
+        'requests_aws4auth'
     ],
 )

@@ -1,5 +1,5 @@
-from healthtools.search.keywords import *
 from healthtools.search import elastic, nurses
+from healthtools.search.keywords import determine_doc_type, remove_keywords
 
 
 def run_query(query, doc_type=None):

@@ -6,18 +6,20 @@ from healthtools.search import run_query
 blueprint = Blueprint('search_api', __name__)
 
 
-@blueprint.route('/search', methods=['GET'])
-@blueprint.route('/search/<doc_type>', methods=['GET'])
+@blueprint.route('/search', methods=['GET'], strict_slashes=False)
+@blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
 def index(doc_type=None):
     query = request.args.get('q')
-    results = run_query(query, doc_type)
+    result = run_query(query, doc_type)  # TODO: Return run_query message here
 
     # Error with run_query (run_query returns false)
-    if(not results):
+    if(not result):
         return jsonify({
-            'results': [],
+            'result': {'hits': [], 'total': 0},
             'status': 'FAILED',
-            'msg': ''  # TODO: Pass run_query msg here.
+            'msg': ''  # TODO: Pass run_query message here.
         })
 
-    return jsonify({'results': results, 'status': 'OK'})
+    # TODO: Log event here (send to Google Analytics)
+
+    return jsonify({'result': result, 'status': 'OK'})

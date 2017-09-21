@@ -17,7 +17,7 @@ def get_nurses_from_nc_registry(query):
     '''
     url = NURSING_COUNCIL_URL.format(query)
     response = requests.get(url)
-    nurses = []
+    nurses = {'hits': [], 'total': 0}
 
     if 'No results' in response.content:
         return nurses
@@ -34,6 +34,8 @@ def get_nurses_from_nc_registry(query):
         columns = [text.text.strip() for text in columns]
 
         entry = dict(zip(NURSES_FIELDS, columns))
-        nurses.append(entry)
+        nurses['hits'].append(entry)
+
+    nurses['total'] = len(nurses['hits'])
 
     return nurses
