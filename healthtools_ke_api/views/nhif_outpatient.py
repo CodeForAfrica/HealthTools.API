@@ -10,9 +10,26 @@ nhif_outpatient_api = Blueprint('nhif_outpatient_api', __name__)
 
 @nhif_outpatient_api.route('/', methods=['GET'])
 def index():
-    '''
-    Landing endpoint
-    '''
+    """
+    This function displays all the endpoints available
+    in the NHIF inpatient registry.
+    Returns:
+    json.  The response ::
+        {
+            "name": "API to the NHIF inpatient registry",
+            "authentication": [],
+            "endpoints": {
+                "/": {"methods": ["GET"]},
+                "/nhif-outpatient/search.json": {
+                    "methods": ["GET"],
+                    "args": {
+                        "q": {"required": True}
+                    }
+                },
+            }
+        }
+    """
+
     msg = {
         "name": "API to the NHIF inpatient registry",
         "authentication": [],
@@ -30,6 +47,39 @@ def index():
 
 @nhif_outpatient_api.route('/search.json', methods=['GET'])
 def search():
+    """
+    This function searches through the Kenyan NHIF Outpatient facility registry API
+    based on the search query supplied by user.
+    Query string: 
+         q (str):  The name of the NHIF Outpatient CS facility to lookup.
+        
+    
+    Returns:
+       json.  The response can be any of the following ::
+          When no query string was supplied: 
+          {
+            "error": "A query is required.",
+            "results": "",
+            "data": {"nhif_outpatient": []}
+          }
+          When no NHIF Outpatient facility was found
+          {
+            "message" = "No NHIF Outpatient facility by that name found."
+          }
+          when NHIF Outpatient facilities was found
+          {
+            "data": {"nhif_outpatient": <nhif_outpatients>},
+            "status": "success",
+                
+          }
+          When an error occurs
+          {
+              "status": "error",
+              "message": <error_message>,
+              "data": {"nhif_outpatient": []}
+          }
+    """
+
     try:
         query = request.args.get('q')
         if not query or len(query) < 1:
