@@ -75,20 +75,20 @@ If you set up elasticsearch locally run it `$ elasticsearch`
 
 You can now run the server `$ python manage.py` or `gunicorn manage:app` for production.
 
-# Setting up Telegram Bot on HealthTools.KE-api
+## Setting up Telegram Bot on HealthTools.KE-api
 The Telegram Bot does the followinng:
 1. Check to see if your doctor, nurse, or clinical officer is registered
 2. Find out which facilities your NHIF card will cover in your county
 3. Find the nearest doctor or health facility
 
-**Installation**
+### Installation
 Make sure you have installed in your environment: `python-telegram-bot`
 
-**Create a new telegram bot**
+### Create a new telegram bot
 - Use [BotFather](https://telegram.me/BotFather)
 - After you create your bot, save the token assigned.
 
-**ngrok Configuration**
+### ngrok Configuration
 - ngrok allows you to expose a web server running on your local machine to the interne
 - Install Ngrok: https://ngrok.com
 - Follow the setup instructions [here](https://ngrok.com/docs#expose)
@@ -104,7 +104,7 @@ Make sure you have installed in your environment: `python-telegram-bot`
         )
     ```
 
-**Nginx Configuration**
+### Nginx Configuration
 - Install Nginx
     https://www.nginx.com/resources/admin-guide/installing-nginx-open-source/
     or
@@ -114,7 +114,7 @@ Make sure you have installed in your environment: `python-telegram-bot`
     https://www.nginx.com/resources/wiki/start/topics/examples/full/
     Ensure you add `proxy_set_header    X-Forwarded-Proto https;` in location since Telegram bot webhooks works *only* with HTTPS URLs
 
-### Tests
+## Tests
 
 Run memcached on your terminal `$ memcached -p <port you set MEMCACHED_URL to run on>(default: 8000)`
 
