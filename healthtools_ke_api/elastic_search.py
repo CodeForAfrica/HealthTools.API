@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 
 from healthtools_ke_api.settings import AWS, ES
-from healthtools_ke_api.views.serializer import JSONSerializerPython2
+from healthtools_ke_api.serializer import JSONSerializerPython2
 import re
 
 

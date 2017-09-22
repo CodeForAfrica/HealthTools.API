@@ -16,27 +16,26 @@ from telegram import (Bot, Update, ReplyKeyboardMarkup, ParseMode,
                       ReplyKeyboardRemove)
 from telegram.ext import (Dispatcher, Updater, CommandHandler,
                           ConversationHandler, Filters, MessageHandler, RegexHandler)
+from telegram.error import InvalidToken, TelegramError
 
 from healthtools_ke_api.build_query import BuildQuery
 from healthtools_ke_api.settings import DEBUG, TGBOT
 
-TOKEN = TGBOT["BOT_TOKEN"]
 SERVER_IP = TGBOT["SERVER_IP"]
 PORT = TGBOT["TELEGRAM_PORT"]
 CERT_FILE = TGBOT["CERT_FILE"]
 KEY_FILE = TGBOT["KEY_FILE"]
 
+TOKEN = TGBOT["BOT_TOKEN"] if TGBOT["BOT_TOKEN"] else ""
 WEBHOOK_URL = TGBOT["BOT_WEBHOOK_URL"]
-WEBHOOK_URL = WEBHOOK_URL + "/" + TOKEN
+
+if WEBHOOK_URL:
+    WEBHOOK_URL = WEBHOOK_URL + "/" + TOKEN
 
 CONTEXT = (CERT_FILE, KEY_FILE)
 
 # States
 CHOOSING, TYPING_REPLY = range(2)
-
-bot = Bot(TOKEN)
-build_query = BuildQuery()
-build_query.SMS_RESULT_COUNT = 5
 
 # Enable logging
 if DEBUG:
@@ -48,6 +47,17 @@ else:
 
 
 logger = logging.getLogger("telegram.bot.Manager")
+
+try:
+    bot = Bot(TOKEN)
+except InvalidToken:
+    logger.warning('Telegram Bot token not set')
+    bot = None
+except TelegramError as err:
+    print err
+
+build_query = BuildQuery()
+build_query.SMS_RESULT_COUNT = 5
 
 
 if DEBUG:
@@ -90,15 +100,16 @@ def set_webhook(webhook_url, cert, key):
     logger.info('Start webhook')
 
     # Delete any webhook to avoid Conflict: terminated by other setWebhook
-    bot.setWebhook()
-    time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
+    if bot:
+        bot.setWebhook()
+        time.sleep(5)  # to avoid error 4RetryAfter: Flood control exceeded
 
-    # Using nginx + bot
-    bot.setWebhook(url=webhook_url
-                   #    certificate=open(CERT_FILE, 'rb')
-                   )
+        # Using nginx + bot
+        bot.setWebhook(url=webhook_url
+                    #    certificate=open(CERT_FILE, 'rb')
+                    )
 
-    print ("\nWebhook set: %s \n", bot.getWebhookInfo().url)
+        print ("\nWebhook set: %s \n", bot.getWebhookInfo().url)
 
     thread = Thread(target=dp.start, name='dp')
     thread.start()
@@ -141,9 +152,6 @@ def start(bot, update):
     # Call the next function
     return CHOOSING
 
-# TODO: Handle edited_message in these too
-
-
 def regular_choice(bot, update, user_data):
     """
     Show summary of user choice and input
@@ -162,7 +170,6 @@ def regular_choice(bot, update, user_data):
     )
 
     # Call next function: received_information
-    # return TYPING_REPLY
     return TYPING_REPLY
 
 
@@ -185,9 +192,6 @@ def received_information(bot, update, user_data):
 
     # Now we fetch the data
     results = fetch_data(user_data)
-
-    print("\n")
-    print(results)
 
     # Remove multiple whitespaces
     results = re.sub(" +", " ", str(results[0]))
@@ -289,11 +293,13 @@ def setup():
     dp.add_handler(MessageHandler(Filters.command, unknown))
     dp.add_error_handler(error)
 
-    if DEBUG:
-        # Use webhook
-        return start_polling()
-    else:
-        # Start Webhook
-        set_webhook(webhook_url=WEBHOOK_URL,
-                    cert=CERT_FILE,
-                    key=KEY_FILE)
+    # Only start bot iff the Bot TOKEN is set
+    if bot:
+        if DEBUG:
+            # Use polling
+            return start_polling()
+        else:
+            # Start Webhook
+            set_webhook(webhook_url=WEBHOOK_URL,
+                        cert=CERT_FILE,
+                        key=KEY_FILE)
