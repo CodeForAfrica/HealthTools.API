@@ -10,7 +10,7 @@ def run_query(query, doc_type=None):
     doc_type, search_type = determine_doc_type(query, doc_type)
 
     if (not doc_type):
-        return False
+        return False, False
 
     results = run_search(query, doc_type, search_type)
 

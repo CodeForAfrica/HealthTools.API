@@ -37,11 +37,12 @@ GA_TRACKING_ID = os.getenv('HTOOLS_GA_TRACKING_ID', 'UA-44795600-33')
 # Url of memcached server
 MEMCACHED_URL = os.getenv('HTOOLS_MEMCACHED_URL', '127.0.0.1:11211')
 
-
+###############################################################################
 # SMS provider credentials
-SMS_USER = os.getenv('HTOOLS_SMS_USER')
-SMS_PASS = os.getenv('HTOOLS_SMS_PASS')
-SMS_SHORTCODE = os.getenv('HTOOLS_SMS_SHORTCODE')
+
+SMS_MTECH_USER = os.getenv('HTOOLS_SMS_MTECH_USER')
+SMS_MTECH_PASS = os.getenv('HTOOLS_SMS_MTECH_PASS')
+SMS_MTECH_SHORTCODE = os.getenv('HTOOLS_SMS_MTECH_SHORTCODE')
 
 
 # TGBOT: TElegram Bot

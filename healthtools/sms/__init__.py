@@ -1,20 +1,35 @@
 import logging
 
 from healthtools.sms import twilio, mtech
-from healthtools.documents import DOCUMENTS
+from healthtools.search import run_query
 
 log = logging.getLogger(__name__)
 
 
 def process_sms(args, adapter='mtech'):
-    result = {}
+
+    msg = args.get('message')
+    phone_no = args.get('phoneNumber')
+
+    if(adapter == 'twilio'):
+        msg = args.get('Body')
+        phone_no = args.get('From')
+
+    # TODO: Track event SMS RECEIVED here
+
+    result, doc_type = run_query(msg)
+
+    sms_to_send = create_sms(result, doc_type)
 
     try:
-        result = eval(adapter+'.process_sms(args)')
+        response = eval(adapter+'.send_sms(sms_to_send, phone_no)')
     except Exception as e:
         raise e
 
-    return result
+    if (adapter == 'twilio'):
+        return response
+
+    return {'msg': sms_to_send, 'phone_no': phone_no, 'response': response}
 
 
 def create_sms(result, doc_type):
