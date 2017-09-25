@@ -1,11 +1,20 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name='healthtools_ke_api',
-    version='0.0.1',
-    packages=['healthtools_ke_api'],
+    name='healthtools',
+    version='0.0.2',
+    keywords='healthtools',
+    author='Code for Africa',
+    author_email='support@codeforafrica.org',
+    url='https://healthtools.readthedocs.io/',
+    license='MIT',
+    packages=find_packages(exclude=['ez_setup', 'examples', 'test']),
     include_package_data=True,
     install_requires=[
         'flask',
+        'requests',
+        'bs4',
+        'elasticsearch',
+        'requests_aws4auth'
     ],
 )
