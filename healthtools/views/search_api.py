@@ -10,16 +10,17 @@ blueprint = Blueprint('search_api', __name__)
 @blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
 def index(doc_type=None):
     query = request.args.get('q')
-    result = run_query(query, doc_type)  # TODO: Return run_query message here
+    result, doc_type = run_query(query, doc_type)
 
     # Error with run_query (run_query returns false)
     if(not result):
         return jsonify({
             'result': {'hits': [], 'total': 0},
+            'doc_type': doc_type,
             'status': 'FAILED',
             'msg': ''  # TODO: Pass run_query message here.
         })
 
     # TODO: Log event here (send to Google Analytics)
 
-    return jsonify({'result': result, 'status': 'OK'})
+    return jsonify({'result': result, 'doc_type': doc_type, 'status': 'OK'})

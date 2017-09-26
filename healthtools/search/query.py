@@ -12,17 +12,17 @@ def run_query(query, doc_type=None):
     if (not doc_type):
         return False, False
 
-    results = run_search(query, doc_type, search_type)
+    result = run_search(query, doc_type, search_type)
 
-    return results, doc_type
+    return result, doc_type
 
 
 def run_search(query, doc_type, search_type):
     if (search_type == 'nurses'):
-        results = nurses.search(remove_keywords(query))
+        result = nurses.search(remove_keywords(query))
     else:
-        results = elastic.search(remove_keywords(query), doc_type)
-    return results
+        result = elastic.search(remove_keywords(query), doc_type)
+    return result
 
 
 def format_query(query):
