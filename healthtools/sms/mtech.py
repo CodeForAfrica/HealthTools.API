@@ -5,14 +5,14 @@ from flask import current_app
 
 
 log = logging.getLogger(__name__)
-SMS_SEND_URL = 'http://ke.mtechcomm.com/remote'
+
+SMS_SEND_URL = 'http://ke.mtechcomm.com/bulkAPIV2/'
 
 
 def send_sms(msg, phone_no):
     params = {
-        'user': current_app.config.get('SMS_MTECH_USER'),
-        'pass': current_app.config.get('SMS_MTECH_PASS'),
-        'messageID': 0,
+        'User': current_app.config.get('SMS_MTECH_USER'),
+        'Pass': current_app.config.get('SMS_MTECH_PASS'),
         'shortCode': current_app.config.get('SMS_MTECH_SHORTCODE'),
         'MSISDN': phone_no,
         'MESSAGE': msg
