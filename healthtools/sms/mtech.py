@@ -19,7 +19,7 @@ def send_sms(msg, phone_no):
     }
 
     try:
-        response = requests.get(SMS_SEND_URL, params=params)
+        response = requests.get(SMS_SEND_URL, params=params).text
     except Exception as e:
         raise e
 
