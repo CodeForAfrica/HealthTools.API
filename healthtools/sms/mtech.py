@@ -15,7 +15,8 @@ def send_sms(msg, phone_no):
         'Pass': current_app.config.get('SMS_MTECH_PASS'),
         'shortCode': current_app.config.get('SMS_MTECH_SHORTCODE'),
         'MSISDN': phone_no,
-        'MESSAGE': msg
+        'MESSAGE': msg,
+        'logMessage': 0  # Needed for line break
     }
 
     try:
