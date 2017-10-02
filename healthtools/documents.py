@@ -37,6 +37,11 @@ def get_docs():
 
 
 def doc_exists(doc_type):
+    """
+    Check if a doc_type exists. Returns boolean
+    doc_type (str): A string that is passed to elasticsearch to specify
+        which doc_type to search
+    """
     for doc in DOCUMENTS:
         if (doc == doc_type):
             return True

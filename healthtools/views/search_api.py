@@ -12,6 +12,8 @@ def index(doc_type=None):
     query = request.args.get('q')
     result, doc_type = run_query(query, doc_type)
 
+    doc_type = "doc_type not provided" if not doc_type else doc_type
+
     # Error with run_query (run_query returns false)
     if(not result):
         return jsonify({

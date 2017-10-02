@@ -27,7 +27,9 @@ def run_search(query, doc_type, search_type):
 
 def format_query(query):
     ''' Format query ready to determine the doc_type from keywords. '''
-    query = query.replace('.', '').replace(',', '').lower().strip()
+    if query:
+        query = query.replace('.', '').replace(',', '').lower().strip()
+
     return query
 
 
@@ -38,11 +40,16 @@ def determine_doc_type(query, doc_type=None):
         return doc_type, DOCUMENTS[doc_type]['search_type']
 
     # Determine doc_type from query
-    query = format_query(query)
-    for doc in DOCUMENTS:
-        for keyword in DOCUMENTS[doc]['keywords']:
-            if query.startswith(keyword + ' '):
-                return doc, DOCUMENTS[doc]['search_type']
+    try:
+        query = format_query(query)
+        for doc in DOCUMENTS:
+            for keyword in DOCUMENTS[doc]['keywords']:
+                if query and query.startswith(keyword + ' '):
+                    return doc, DOCUMENTS[doc]['search_type']
+                else:
+                    return False, False
+    except Exception as err:
+        print err
 
     return False, False
 
@@ -51,6 +58,6 @@ def remove_keywords(query):
     query = format_query(query)
     for doc in DOCUMENTS:
         for keyword in DOCUMENTS[doc]['keywords']:
-            if query.startswith(keyword + ' '):
+            if query and query.startswith(keyword + ' '):
                 return query.replace(keyword, '', 1).strip()
     return query
