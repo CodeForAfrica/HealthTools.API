@@ -44,7 +44,6 @@ class TestNursesAPI(TestSetup):
         self.client.get("search/nurses?q=Marie")
         # second time should retrieve cached result
         response = self.client.get("search/nurses?q=Marie")
-        print ("-------r", response)
         self.assertIn(b"X-Retrieved-From-Cache", response.headers.keys())
 
 class TestNursesAPIWithoutDoctypes(TestSetup):

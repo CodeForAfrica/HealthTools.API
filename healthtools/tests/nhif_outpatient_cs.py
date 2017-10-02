@@ -16,20 +16,19 @@ class TestNhifOutpatientCSAPI(TestSetup):
     """
     This tests nhif accredited cs outpatient hospitals search api endpoint with  defined doctype
     """
-
     def test_nhifopcs_endpoint_with_bad_query(self):
         """
         This will display all the hospitals offering nhif outpatient cs available
         """
         response = self.client.get("search/nhif-outpatient-cs?q=")
-        self.assertIn("ALIF MEDICAL CENTRE", response.data)
+        self.assertIn(b"ALIF MEDICAL CENTRE", response.data)
 
     def test_nhifopcs_endpoint_gets_nhif_outpatient_cs(self):
         """
         This will display all the hospitals offering nhif outpatient cs with the name baba dogo
         """
         response = self.client.get("search/nhif-outpatient-cs?q=baba dogo")
-        self.assertIn("OK", response.data)
+        self.assertIn(b"OK", response.data)
 
 class TestNhifOutpatientCSAPIWithoutDoctype(TestSetup):
     """
@@ -37,8 +36,8 @@ class TestNhifOutpatientCSAPIWithoutDoctype(TestSetup):
     """
     def test_nhifopcs_endpoint_with_bad_query(self):
         response = self.client.get("search?q=Kenyatta")
-        self.assertIn('"status": "FAILED"', response.data)
+        self.assertIn(b'"status": "FAILED"', response.data)
 
     def test_nhifopcs_endpoint_gets_nhif_outpatient_cs(self):
         response = self.client.get("search?q=nhif Kenyatta")
-        self.assertIn("OK", response.data)
+        self.assertIn(b"OK", response.data)
