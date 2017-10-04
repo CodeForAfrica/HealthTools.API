@@ -34,9 +34,6 @@ def format_query(query):
 def determine_doc_type(query, doc_type=None):
 
     # Determine if doc_type exists
-    # print ("-----query", query)
-    # print ("-----doc_type", doc_type)
-    
     if (doc_type and doc_exists(doc_type)):
         if doc_type in DOCUMENTS['nhif']['doc_name']:
             return doc_type,'elastic'
