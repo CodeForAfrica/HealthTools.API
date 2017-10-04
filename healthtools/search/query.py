@@ -34,19 +34,26 @@ def format_query(query):
 def determine_doc_type(query, doc_type=None):
 
     # Determine if doc_type exists
+    # print ("-----query", query)
+    # print ("-----doc_type", doc_type)
+    
     if (doc_type and doc_exists(doc_type)):
+        if doc_type in DOCUMENTS['nhif']['doc_name']:
+            return doc_type,'elastic'
+        
         return doc_type, DOCUMENTS[doc_type]['search_type']
 
-    # Determine doc_type from query
+
+    #Determine doc_type from query
     query = format_query(query)
     for doc in DOCUMENTS:
         for keyword in DOCUMENTS[doc]['keywords']:
             if query.startswith(keyword + ' '):
                 return doc, DOCUMENTS[doc]['search_type']
 
+
     return False, False
-
-
+# 
 def remove_keywords(query):
     query = format_query(query)
     for doc in DOCUMENTS:

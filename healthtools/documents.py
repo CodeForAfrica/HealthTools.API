@@ -1,3 +1,5 @@
+from nested_lookup import nested_lookup
+
 DOCUMENTS = {
     'doctors': {
         'search_type': 'elastic',
@@ -16,7 +18,8 @@ DOCUMENTS = {
                      'RN', 'Registered Nurse'],
         'sms_field': 'name'
     },
-    'nhif': {
+    'nhif' : {
+        'doc_name': ['nhif-inpatient', 'nhif-outpatient', 'nhif-outpatient-cs'],
         'search_type': 'elastic',
         'keywords': ['nhif', 'bima', 'insurance', 'insurance fund',
                      'health insurance', 'hospital fund'],
@@ -29,15 +32,15 @@ DOCUMENTS = {
         'sms_field': 'name'
     },
 
+
 }
 
 
 def get_docs():
     return DOCUMENTS
 
-
 def doc_exists(doc_type):
-    for doc in DOCUMENTS:
-        if (doc == doc_type):
+    if nested_lookup('doc_type', DOCUMENTS):
             return True
     return False
+
