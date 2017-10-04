@@ -16,12 +16,16 @@ class TestClinicalOfficersAPIWithDoctype(TestSetup):
     """
     This tests clinical officers search api with doctype
     """
+    #happy path
+    
     def test_cos_endpoint_with_bad_query(self):
         """
         This will display all the clinical officers available
         """
         response = self.client.get("search/clinical-officers?q=")
         self.assertIn(b"ELIKANAH KEBAGENDI OMWENGA", response.data)
+
+    #sad path
 
     def test_cos_endpoint_gets_clinical_officers(self):
         """
