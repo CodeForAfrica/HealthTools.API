@@ -1,3 +1,7 @@
+#travis badge
+[![Build Status](https://travis-ci.org/CodeForAfricaLabs/HealthTools.API.svg?branch=master)](https://travis-ci.org/CodeForAfricaLabs/HealthTools.API)
+
+
 # HealthTools.API
 
 _The HealthTools API. Providing actionable health information._
@@ -35,3 +39,4 @@ Use nosetests to run tests (with stdout) like this:
 ## License
 
 ?
+
