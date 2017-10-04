@@ -40,7 +40,9 @@ def get_docs():
     return DOCUMENTS
 
 def doc_exists(doc_type):
-    if nested_lookup('doc_type', DOCUMENTS):
-            return True
-    return False
-
+    if doc_type in DOCUMENTS['nhif']['doc_name']:
+        return True
+    elif nested_lookup(doc_type, DOCUMENTS):
+        return True
+    else:
+        return False
