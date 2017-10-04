@@ -35,9 +35,6 @@ def determine_doc_type(query, doc_type=None):
 
     # Determine if doc_type exists
     if (doc_type and doc_exists(doc_type)):
-        if doc_type in DOCUMENTS['nhif']['doc_name']:
-            return doc_type,'elastic'
-        
         return doc_type, DOCUMENTS[doc_type]['search_type']
 
 
