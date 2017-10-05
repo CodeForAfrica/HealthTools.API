@@ -41,13 +41,6 @@ class TestHealthFacilitiesAPIWithDoctype(TestSetup):
         response = self.client.get("search/healthfacilities?q=Kitale")
         self.assertIn(b'"status": "FAILED"', response.data)
 
-    def test_health_facilities_endpoint_with_unavailable_query(self):
-        """
-        This tests running health-facilities endpoint with correct doctype but unavailable query
-        """
-        response = self.client.get("search/health-facilities?q=1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
-
 
 class TestHealthFacilitiesAPIWithoutDoctype(TestSetup):
     """
@@ -61,13 +54,6 @@ class TestHealthFacilitiesAPIWithoutDoctype(TestSetup):
     def test_health_facilities_endpoint_gets_health_facilities(self):
         response = self.client.get("search?q=dispensary Kilifi")
         self.assertIn(b"OK", response.data)
-
-    def test_health_facilities_endpoint_with_unavailable_query(self):
-        """
-        This tests running health-facilities endpoint with correct available keyword but unavailable query
-        """
-        response = self.client.get("search?q=sanatorium 1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
 
     def test_health_facilities_endpoint_with_keyword_only(self):
         """

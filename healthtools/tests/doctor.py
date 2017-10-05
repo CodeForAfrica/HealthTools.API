@@ -39,13 +39,6 @@ class TestDoctorsAPIWithDoctype(TestSetup):
         response = self.client.get("search/doctor?q=john")
         self.assertIn(b'"status": "FAILED"', response.data)
 
-    def test_doctors_endpoint_with_unavailable_query(self):
-        """
-        This tests running doctors endpoint with correct doctype but unavailable query
-        """
-        response = self.client.get("search/doctors?q=1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
-
 class TestDoctorsAPIWithoutDoctype(TestSetup):
     """
     This tests doctors search api without doctype, keywords are used instead
@@ -57,15 +50,7 @@ class TestDoctorsAPIWithoutDoctype(TestSetup):
     def test_doctors_endpoint_gets_doctors(self):
         response = self.client.get("search?q=daktari John")
         self.assertIn(b"OK", response.data)
-    
-    def test_doctors_endpoint_with_unavailable_query(self):
-        """
-        This tests running doctors endpoint with correct available keyword but unavailable query
-        """
-        response = self.client.get("search?q= daktari 1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
 
-    
     def test_doctors_endpoint_with_keyword_only(self):
         """
         This tests running doctors endpoint with correct available keyword only

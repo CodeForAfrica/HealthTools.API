@@ -29,22 +29,16 @@ class TestClinicalOfficersAPIWithDoctype(TestSetup):
         """
         This tests running cos endpoint with valid doctype and query
         """
-        response = self.client.get("search/clinical-officers?q=john")
+        response = self.client.get("search/clinical-officers?q=DABASO GARAMBODA")
         self.assertIn(b"OK", response.data)
 
     def test_cos_endpoint_with_bad_endpoint(self):
         """
         This tests running an endpoint with incorrect/unavailable doctype 
         """
-        response = self.client.get("search/clinicalofficers?q=john")
+        response = self.client.get("search/clinicalofficers?q=DABASO GARAMBODA")
         self.assertIn(b'"status": "FAILED"', response.data)
 
-    def test_cos_endpoint_with_unavailable_query(self):
-        """
-        This tests running cos endpoint with correct doctype but unavailable query
-        """
-        response = self.client.get("search/clinical-officers?q=1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
 
 class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
     """
@@ -55,17 +49,9 @@ class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
         self.assertIn(b'"status": "FAILED"', response.data)
 
     def test_cos_endpoint_gets_clinical_officers(self):
-        response = self.client.get("search?q=CO John")
+        response = self.client.get("search?q=clinical oficer DABASO GARAMBODA")
         self.assertIn(b"OK", response.data)
-    
-    def test_cos_endpoint_with_unavailable_query(self):
-        """
-        This tests running cos endpoint with correct available keyword but unavailable query
-        """
-        response = self.client.get("search?q= CO 1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
 
-    
     def test_cos_endpoint_with_keyword_only(self):
         """
         This tests running cos endpoint with correct available keyword only

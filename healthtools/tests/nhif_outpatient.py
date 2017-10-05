@@ -41,13 +41,6 @@ class TestNhifOutpatientAPIWithDoctype(TestSetup):
         response = self.client.get("search/nhifoutpatient?q=BRISTOL")
         self.assertIn(b'"status": "FAILED"', response.data)
 
-    def test_nhif_outpatient_endpoint_with_unavailable_query(self):
-        """
-        This tests running nhif-outpatient endpoint with correct doctype but unavailable query
-        """
-        response = self.client.get("search/nhif-outpatient?q=1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
-
 
 class TestNhifOutpatientAPIWithoutDoctype(TestSetup):
     """
@@ -61,13 +54,6 @@ class TestNhifOutpatientAPIWithoutDoctype(TestSetup):
     def test_nhif_outpatient_endpoint_gets_nhif_outpatient(self):
         response = self.client.get("search?q=bima outpatient Kilifi")
         self.assertIn(b"OK", response.data)
-
-    def test_nhif_outpatient_endpoint_with_unavailable_query(self):
-        """
-        This tests running nhif-outpatient endpoint with correct available keyword but unavailable query
-        """
-        response = self.client.get("search?q=outpatient insurance 1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
 
     def test_nhif_outpatient_endpoint_with_keyword_only(self):
         """
