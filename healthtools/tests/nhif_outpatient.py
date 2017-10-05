@@ -1,6 +1,7 @@
 import os
 import inspect
 import sys
+
 currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -8,38 +9,83 @@ sys.path.insert(0, parentdir)
 import unittest
 from healthtools.manage import app
 
+
 class TestSetup(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
 
-class TestNhifOutpatientAPI(TestSetup):
+
+class TestNhifOutpatientAPIWithDoctype(TestSetup):
     """
-    This tests search nhif accredited outpatient hospitals search api endpoint with doctype
+    This tests nhif-outpatient search api with doctype
     """
-    def test_nhifop_endpoint_with_bad_query(self):
+
+    def test_nhif_outpatient_endpoint_without_query(self):
         """
-        This will display all the nhif accredited outpatient hospitals available
+        This tests running nhif-outpatient endpoint with valid doctype and no query
         """
         response = self.client.get("search/nhif-outpatient?q=")
-        self.assertIn(b"CANCER CARE INTERNATIONAL", response.data)
+        self.assertIn(b"AMIN WOMEN'S CARE CLINIC", response.data)
 
-    def test_nhifop_endpoint_gets_nhif_outpatient(self):
+    def test_nhif_outpatient_endpoint_gets_nhif_outpatient(self):
         """
-        This will display all the nhif accredited outpatient hospitals with the name bristol park
+        This tests running nhif-outpatient endpoint with valid doctype and query
         """
-        response = self.client.get("search/nhif-outpatient?q=bristol park")
+        response = self.client.get("search/nhif-outpatient?q=BRISTOL")
         self.assertIn(b"OK", response.data)
+
+    def test_nhif_outpatient_endpoint_with_bad_endpoint(self):
+        """
+        This tests running an endpoint with incorrect/unavailable doctype 
+        """
+        response = self.client.get("search/nhifoutpatient?q=BRISTOL")
+        self.assertIn(b'"status": "FAILED"', response.data)
+
+    def test_nhif_outpatient_endpoint_with_unavailable_query(self):
+        """
+        This tests running nhif-outpatient endpoint with correct doctype but unavailable query
+        """
+        response = self.client.get("search/nhif-outpatient?q=1234")
+        self.assertIn(b'"status": "FAILED"', response.data)
+
 
 class TestNhifOutpatientAPIWithoutDoctype(TestSetup):
     """
-    This tests search nhif accredited outpatient hospitals search api endpoint using keywords
+    This tests nhif-outpatient search api without doctype, keywords are used instead
     """
-    def test_nhifop_endpoint_with_bad_query(self):
+
+    def test_nhif_outpatient_endpoint_without_keyword_in_query(self):
         response = self.client.get("search?q=Kenyatta")
         self.assertIn(b'"status": "FAILED"', response.data)
 
-    def test_nhifop_endpoint_gets_nhif_outpatient(self):
-        response = self.client.get("search?q=nhif Kenyatta")
+    def test_nhif_outpatient_endpoint_gets_nhif_outpatient(self):
+        response = self.client.get("search?q=bima outpatient Kilifi")
         self.assertIn(b"OK", response.data)
-        self.assertIn(b'"doc_type": "nhif-outpatient"', response.data)
-    
+
+    def test_nhif_outpatient_endpoint_with_unavailable_query(self):
+        """
+        This tests running nhif-outpatient endpoint with correct available keyword but unavailable query
+        """
+        response = self.client.get("search?q=outpatient insurance 1234")
+        self.assertIn(b'"status": "FAILED"', response.data)
+
+    def test_nhif_outpatient_endpoint_with_keyword_only(self):
+        """
+        This tests running nhif-outpatient endpoint with correct available keyword only
+        """
+        response = self.client.get("search?q=outpatient insurance")
+        self.assertIn(b'"status": "FAILED"', response.data)
+
+    def test_nhif_outpatient_endpoint_without_query(self):
+        """
+        This tests running nhif-outpatient endpoint without query
+        """
+        response = self.client.get("search?q=")
+        self.assertIn(b'"status": "FAILED"', response.data)
+
+    def test_nhif_outpatient_endpoint_with_nonkeyword(self):
+        """
+        This tests running nhif-outpatient endpoint with a keyword that is unavailable.
+        """
+        response = self.client.get("search?q=maji Kilifi")
+        self.assertIn(b'"status": "FAILED"', response.data)

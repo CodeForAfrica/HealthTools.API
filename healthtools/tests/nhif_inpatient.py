@@ -55,7 +55,7 @@ class TestNhifInpatientAPIWithoutDoctype(TestSetup):
     """
 
     def test_nhif_inpatient_endpoint_without_keyword_in_query(self):
-        response = self.client.get("search?q=john")
+        response = self.client.get("search?q=Kilifi")
         self.assertIn(b'"status": "FAILED"', response.data)
 
     def test_nhif_inpatient_endpoint_gets_nhif_inpatient(self):
