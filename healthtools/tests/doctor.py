@@ -22,10 +22,10 @@ class TestDoctorsAPIWithDoctype(TestSetup):
         This tests running doctors endpoint with valid doctype and no query
         """
         response = self.client.get("search/doctors?q=")
-        self.assertIn(b"ELIKANAH KEBAGENDI OMWENGA", response.data)
+        self.assertIn(b"DR NARAYAN VIJAYA KUMAR", response.data)
 
 
-    def test_doctors_endpoint_gets_clinical_officers(self):
+    def test_doctors_endpoint_gets_doctors(self):
         """
         This tests running doctors endpoint with valid doctype and query
         """
@@ -36,7 +36,7 @@ class TestDoctorsAPIWithDoctype(TestSetup):
         """
         This tests running an endpoint with incorrect/unavailable doctype 
         """
-        response = self.client.get("search/clinicalofficers?q=john")
+        response = self.client.get("search/doctor?q=john")
         self.assertIn(b'"status": "FAILED"', response.data)
 
     def test_doctors_endpoint_with_unavailable_query(self):
@@ -54,7 +54,7 @@ class TestDoctorsAPIWithoutDoctype(TestSetup):
         response = self.client.get("search?q=john")
         self.assertIn(b'"status": "FAILED"', response.data)
 
-    def test_doctors_endpoint_gets_clinical_officers(self):
+    def test_doctors_endpoint_gets_doctors(self):
         response = self.client.get("search?q=daktari John")
         self.assertIn(b"OK", response.data)
     
