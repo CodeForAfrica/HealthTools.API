@@ -1,6 +1,4 @@
-#travis badge
 [![Build Status](https://travis-ci.org/CodeForAfricaLabs/HealthTools.API.svg?branch=master)](https://travis-ci.org/CodeForAfricaLabs/HealthTools.API)
-
 
 # HealthTools.API
 

@@ -11,4 +11,4 @@ mount_app_blueprints(app)
 
 
 if __name__ == "__main__":
-     app.run()
+    app.run()
