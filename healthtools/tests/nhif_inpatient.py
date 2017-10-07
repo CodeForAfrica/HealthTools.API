@@ -1,11 +1,6 @@
-import os
-import inspect
-import sys
-
-currentdir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+"""
+This test for nhif inpatient end point
+"""
 import unittest
 from healthtools.manage import app
 

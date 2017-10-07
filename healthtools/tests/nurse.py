@@ -1,10 +1,6 @@
-import os
-import inspect
-import sys
-currentdir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+"""
+This test for nurses end point
+"""
 import unittest
 from healthtools.manage import app
 from healthtools.search.nurses import get_nurses_from_nc_registry

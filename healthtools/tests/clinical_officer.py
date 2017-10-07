@@ -1,10 +1,6 @@
-import os
-import inspect
-import sys
-currentdir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+"""
+This test for clinical officers end point
+"""
 import unittest
 from healthtools.manage import app
 
@@ -16,7 +12,6 @@ class TestClinicalOfficersAPIWithDoctype(TestSetup):
     """
     This tests clinical officers search api with doctype
     """
-    
     def test_cos_endpoint_without_query(self):
         """
         This tests running cos endpoint with valid doctype and no query
