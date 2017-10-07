@@ -1,6 +1,5 @@
 # HealthTools.API
 
-
 _The HealthTools API. Providing actionable health information._
 
 The HealthTools API provides a simple wrapper around Elasticsearch data being made available through the [HealthTools Scrapers](https://github.com/CodeForAfrica-SCRAPERS/healthtools_ke).
@@ -8,7 +7,6 @@ The HealthTools API provides a simple wrapper around Elasticsearch data being ma
 ## Usage
 
 ?
-
 
 ## Development
 
@@ -19,7 +17,6 @@ Change directory into package `$ cd HealthTools.KE-api`
 Install the dependencies by running `$ pip install -r requirements.txt`
 
 ?
-
 
 ### Tests
 

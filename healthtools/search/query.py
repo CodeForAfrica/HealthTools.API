@@ -37,17 +37,15 @@ def determine_doc_type(query, doc_type=None):
     if (doc_type and doc_exists(doc_type)):
         return doc_type, DOCUMENTS[doc_type]['search_type']
 
-
     #Determine doc_type from query
     query = format_query(query)
     for doc in DOCUMENTS:
         for keyword in DOCUMENTS[doc]['keywords']:
             if query.startswith(keyword + ' '):
                 return doc, DOCUMENTS[doc]['search_type']
-
-
+            
     return False, False
-# 
+
 def remove_keywords(query):
     query = format_query(query)
     for doc in DOCUMENTS:
