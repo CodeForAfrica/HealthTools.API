@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 
-from healthtools.search import run_query
+# from healthtools.search import run_query
+from healthtools.search.wit_ai import run_query
 
 
 blueprint = Blueprint('search_api', __name__)
