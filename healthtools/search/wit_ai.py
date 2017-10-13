@@ -50,7 +50,7 @@ def run_search(query, doc_type, search_type):
         result = elastic.search(query, doc_type)
     return result
 
-def run_query(query, doc_type=None):
+def wit_run_query(query, doc_type=None):
     doc_type, query = determine_doc_type(query, doc_type)
     search_type = find_search_type(doc_type)
     if (not doc_type):
