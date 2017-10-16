@@ -26,6 +26,16 @@ Install the dependencies by running `$ pip install -r requirements.txt`
 
 Use nosetests to run tests (with stdout) like this:
 ```$ nosetests --nocapture```
+```$ nosetests healthtools/tests```
+```$ nosetests healthtools/tests/doctor.py```
+```$ nosetests healthtools/tests/nurse.py```
+```$ nosetests healthtools/tests/clinical_officer.py```
+```$ nosetests healthtools/tests/health_facilities.py```
+```$ nosetests healthtools/tests/nhif_inpatient.py```
+```$ nosetests healthtools/tests/nhif_outpatient.py```
+```$ nosetests healthtools/tests/nhif_outpatient_cs.py```
+
+
 
 
 ## Contributing
