@@ -9,7 +9,7 @@ def run_query(query, doc_type=None):
 
     doc_type, search_type = determine_doc_type(query, doc_type)
 
-    if (not doc_type):
+    if not doc_type:
         return False, False
 
     result = run_search(query, doc_type, search_type)
@@ -18,7 +18,7 @@ def run_query(query, doc_type=None):
 
 
 def run_search(query, doc_type, search_type):
-    if (search_type == 'nurses'):
+    if search_type == 'nurses':
         result = nurses.search(remove_keywords(query))
     else:
         result = elastic.search(remove_keywords(query), doc_type)
@@ -34,7 +34,7 @@ def format_query(query):
 def determine_doc_type(query, doc_type=None):
 
     # Determine if doc_type exists
-    if (doc_type and doc_exists(doc_type)):
+    if doc_type and doc_exists(doc_type):
         return doc_type, DOCUMENTS[doc_type]['search_type']
 
     # Determine doc_type from query
@@ -43,8 +43,8 @@ def determine_doc_type(query, doc_type=None):
         for keyword in DOCUMENTS[doc]['keywords']:
             if query.startswith(keyword + ' '):
                 return doc, DOCUMENTS[doc]['search_type']
-            
     return False, False
+
 
 def remove_keywords(query):
     query = format_query(query)

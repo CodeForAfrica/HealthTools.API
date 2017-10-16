@@ -60,6 +60,6 @@ def get_docs():
 
 def doc_exists(doc_type):
     for doc in DOCUMENTS:
-        if (doc == doc_type):
-          return True
+        if doc == doc_type:
+            return True
     return False
