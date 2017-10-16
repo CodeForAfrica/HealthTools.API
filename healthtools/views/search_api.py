@@ -7,8 +7,9 @@ from healthtools.search.wit_ai import wit_run_query
 blueprint = Blueprint('search_api', __name__)
 
 
-@blueprint.route('/search', methods=['GET'], strict_slashes=False)
-def search_index(doc_type=None):
+@blueprint.route('/wit_search', methods=['GET'], strict_slashes=False)
+def wit_search_index():
+    doc_type = None
     query = request.args.get('q')
     result, doc_type = wit_run_query(query, doc_type)
 
@@ -25,6 +26,7 @@ def search_index(doc_type=None):
 
     return jsonify({'result': result, 'doc_type': doc_type, 'status': 'OK'})
 
+@blueprint.route('/search', methods=['GET'], strict_slashes=False)
 @blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
 def index(doc_type=None):
     query = request.args.get('q')
