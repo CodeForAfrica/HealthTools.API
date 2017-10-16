@@ -6,7 +6,7 @@ wit.ai will be used when the query is made using /search?=<query>
 from wit import Wit 
 from nested_lookup import nested_lookup
 from healthtools.search import elastic, nurses
-from settings import access_token
+from settings import WIT_ACCESS_TOKEN
 
 def determine_doc_type(query, doc_type=None):
     """
@@ -14,7 +14,7 @@ def determine_doc_type(query, doc_type=None):
     The response will return 2 keys one being the doc name and the othere query
     wit.ai returns all hyphens as underscores. 
     """
-    client = Wit(access_token = access_token)
+    client = Wit(access_token=WIT_ACCESS_TOKEN)
     message_text = query
     resp = client.message(message_text)
     query = ''.join(nested_lookup('value', resp['entities']['query']))
@@ -28,7 +28,7 @@ def find_search_type(doc_type):
     it should be elastic search or nurses search. If the doc type is empty,search type is None 
     """
     doc = ['nhif-outpatient', 'nhif-inpatient', 'nhif-outpatient-cs', 'doctors', 
-            'health-facilities', 'clinical-officers']
+           'health-facilities', 'clinical-officers']
     if doc_type not in  doc:
         if doc_type is not 'nurses':
             search_type = None
@@ -42,7 +42,7 @@ def run_search(query, doc_type, search_type):
     """
     This searches for the query as per the search type found
     """
-    if (search_type == 'nurses'):
+    if search_type == 'nurses':
         result = nurses.search(query)
     else:
         result = elastic.search(query, doc_type)
@@ -51,11 +51,9 @@ def run_search(query, doc_type, search_type):
 def wit_run_query(query, doc_type=None):
     doc_type, query = determine_doc_type(query, doc_type)
     search_type = find_search_type(doc_type)
-    if (not doc_type):
+    if not doc_type:
         return False, False
 
     result = run_search(query, doc_type, search_type)
 
     return result, doc_type
-
-

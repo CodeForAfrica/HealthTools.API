@@ -59,6 +59,6 @@ SLACK_URL = os.getenv('HTOOLS_SLACK_URL')
 
 ################################################################################
 
-#wit.ai access token
+#Wit.ai Access Token
 
-access_token = os.getenv("access_token")
+WIT_ACCESS_TOKEN = os.getenv("WIT_ACCESS_TOKEN")
