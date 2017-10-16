@@ -6,7 +6,24 @@ The HealthTools API provides a simple wrapper around Elasticsearch data being ma
 
 ## Usage
 
-?
+| URL Endpoint                        | HTTP Methods |
+|-------------------------------------|--------------|
+| /search/doctors?q=<name>            | GET          |
+| /search/doctors                     | GET          |
+| /search/nurses?q=<name>             | GET          |
+| /search/nurses                      | GET          |
+| /search/clinical-officers?q=<name>  | GET          |
+| /search/clinical-officers           | GET          |
+| /search/health-facilities?q=<name>  | GET          |
+| /search/health-facilities           | GET          |
+| /search/nhif-outpatient?q=<name>    | GET          |
+| /search/nhif-outpatient             | GET          |
+| /search/nhif-outpatient-cs?q=<name> | GET          |
+| /search/nhif-outpatient-cs          | GET          |
+| /search/nhif-inpatient?q=<name>     | GET          |
+| /search/nhif-inpatient              | GET          |
+| /search?q=<query>                   | GET          |
+| /wit_search?q=<query>               | GET          |
 
 
 ## Development
