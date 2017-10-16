@@ -1,11 +1,8 @@
 """
-Wit.ai will help predict the doc name the user is trying to search for. This will be based on how the 
-wit will have been trained. 
+Wit.ai will help predict the doc name the user is trying to search for. 
+This will be based on how the wit will have been trained. 
 wit.ai will be used when the query is made using /search?=<query>
 """
-import ast
-import json
-
 from wit import Wit 
 from nested_lookup import nested_lookup
 from healthtools.search import elastic, nurses
@@ -27,10 +24,11 @@ def determine_doc_type(query, doc_type=None):
 
 def find_search_type(doc_type):
     """
-    This checks the doc type against the doc list an determines whether it should be elastic search or nurses search.
-    If the doc type is empty,search type is None 
+    This checks the doc type against the doc list an determines whether 
+    it should be elastic search or nurses search. If the doc type is empty,search type is None 
     """
-    doc = ['nhif-outpatient', 'nhif-inpatient', 'nhif-outpatient-cs', 'doctors', 'health-facilities', 'clinical-officers']
+    doc = ['nhif-outpatient', 'nhif-inpatient', 'nhif-outpatient-cs', 'doctors', 
+            'health-facilities', 'clinical-officers']
     if doc_type not in  doc:
         if doc_type is not 'nurses':
             search_type = None
