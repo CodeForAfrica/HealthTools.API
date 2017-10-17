@@ -19,12 +19,13 @@ def determine_doc_type(query, doc_type=None):
     resp = client.message(message_text)
     query = ''.join(nested_lookup('value', resp['entities']['query']))
     doc_type = ''.join([var for var in (resp['entities'].keys()) if var != 'query'])
+    #wit returns the entity with an underscore,this changes it to hyphen
     doc_type = doc_type.replace("_", "-")
     return doc_type, query
 
 def find_search_type(doc_type):
     """
-    This checks the doc type against the doc list an determines whether 
+    This checks the doc type returned against the doc list an determines whether 
     it should be elastic search or nurses search. If the doc type is empty,search type is None 
     """
     doc = ['nhif-outpatient', 'nhif-inpatient', 'nhif-outpatient-cs', 'doctors', 
