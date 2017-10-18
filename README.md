@@ -10,7 +10,6 @@ The HealthTools API provides a simple wrapper around Elasticsearch data being ma
 
 ?
 
-
 ## Development
 
 Clone the repo from github `$ git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
@@ -20,7 +19,6 @@ Change directory into package `$ cd HealthTools.KE-api`
 Install the dependencies by running `$ pip install -r requirements.txt`
 
 ?
-
 
 ### Tests
 
