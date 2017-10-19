@@ -6,7 +6,6 @@ from healthtools.search.wit_ai import wit_run_query
 blueprint = Blueprint('search_api', __name__)
 
 @blueprint.route('/search', methods=['GET'], strict_slashes=False)
-# @blueprint.route('/search/<search_parameter>', methods=['GET'], strict_slashes=False)
 @blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
 def index(doc_type=None):
     query = request.args.get('q')
