@@ -11,16 +11,15 @@ from settings import WIT_ACCESS_TOKEN
 def determine_doc_type(query, doc_type=None):
     """
     This returns the doc name and the query.
-    The response will return 2 keys one being the doc name and the othere query
-    wit.ai returns all hyphens as underscores. 
+    The response will return 2 keys one being the doc name and the other query
+    wit.ai will returns all hyphens as underscores. 
     """
     client = Wit(access_token=WIT_ACCESS_TOKEN)
     message_text = query
     resp = client.message(message_text)
     query = ''.join(nested_lookup('value', resp['entities']['query']))
     doc_type = ''.join([var for var in (resp['entities'].keys()) if var != 'query'])
-    #wit returns the entity with an underscore,this changes it to hyphen
-    doc_type = doc_type.replace("_", "-")
+    doc_type = doc_type.replace("_", "-") # changes underscore to hyphen
     return doc_type, query
 
 def find_search_type(doc_type):
