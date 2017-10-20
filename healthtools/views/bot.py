@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify, Response, abort
+from nested_lookup import nested_lookup
+
 # from healthtools.bot.facebook_messenger import facebook_messenger
 # from healthtools.bot.telegram import telegram_reply
+from healthtools.bot import process_bot_query
 import requests, sys, json
 
 blueprint = Blueprint('bot', __name__)
@@ -23,8 +26,6 @@ def handle_verification():
 def handle_messages():
     print "Handling Messages"
     payload = request.get_data()
-    log(payload)
-    # import pdb; pdb.set_trace();
     for sender, message in messaging_events(payload):
         print "Incoming from %s: %s" % (sender, message)
         send_message(ACCESS_TOKEN, sender, message)
@@ -38,7 +39,8 @@ def messaging_events(payload):
     messaging_events = data["entry"][0]["messaging"]
     for event in messaging_events:
         if "message" in event and "text" in event["message"]:
-            yield event["sender"]["id"], event["message"]["text"].encode('unicode_escape')
+            query = ''.join((nested_lookup('text', data)))
+            yield event["sender"]["id"], process_bot_query(query, adapter='facebook')
         else:
             yield event["sender"]["id"], "I can't echo this"
 
@@ -51,14 +53,11 @@ def send_message(token, recipient, text):
     params={"access_token": token},
     data=json.dumps({
         "recipient": {"id": recipient},
-        "message": {"text": text.decode('unicode_escape')}
+        "message": {"text": text}
         }),
     headers={'Content-type': 'application/json'})
     if r.status_code != requests.codes.ok:
         print r.text
 
-def log(message):
-    print (message)
-    sys.stdout.flush()
 
 
