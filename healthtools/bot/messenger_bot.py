@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, Response, abort
 from nested_lookup import nested_lookup
 from healthtools.bot import process_bot_query
-from healthtools.settings VERIFY_TOKEN, ACCESS_TOKEN
+from healthtools.settings import FB_VERIFY_TOKEN, FB_ACCESS_TOKEN
 import requests, sys, json
 
 blueprint = Blueprint('bot', __name__)
@@ -12,7 +12,7 @@ def handle_verification():
     #webhook verification
     print "Handling Verification."
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == VERIFY_TOKEN:
+        if not request.args.get("hub.verify_token") == FB_VERIFY_TOKEN:
             return "Invalid verification token", 403
         return requests.args['hub.challenge']
     return "Verification successful!", 200
@@ -23,7 +23,7 @@ def handle_messages():
     payload = request.get_data()
     for sender, message in messaging_events(payload):
         print "Incoming from %s: %s" % (sender, message)
-        send_message(ACCESS_TOKEN, sender, message)
+        send_message(FB_ACCESS_TOKEN, sender, message)
     return "ok", 200
 
 def messaging_events(payload):
@@ -36,10 +36,6 @@ def messaging_events(payload):
         if "message" in event and "text" in event["message"]:
             query = ''.join((nested_lookup('text', data)))
             yield event["sender"]["id"], process_bot_query(query)
-            return
-        else:
-            yield event["sender"]["id"], "I can't echo this"
-
 
 def send_message(token, recipient, text):
     """Send the message text to recipient with id recipient.
