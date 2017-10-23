@@ -58,6 +58,5 @@ TGBOT = {
 SLACK_URL = os.getenv('HTOOLS_SLACK_URL')
 
 # Facebook messenger bot tokens
-
 FB_VERIFY_TOKEN = os.getenv('FB_VERIFY_TOKEN')
 FB_ACCESS_TOKEN = os.getenv('FB_ACCESS_TOKEN')

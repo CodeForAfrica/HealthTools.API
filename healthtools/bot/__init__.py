@@ -5,7 +5,7 @@ can be used with wit.ai by changing the run query being used to wit_run_query fu
 from healthtools.search import run_query
 
 def process_bot_query(query):
-    "Method to call run query fucntion that will search the entry on elastic search"
+    "Method to call run query function that will search the query on elastic search"
     
     result, doc_type = run_query(query)
     print result, doc_type
