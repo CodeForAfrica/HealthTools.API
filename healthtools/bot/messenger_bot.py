@@ -7,7 +7,6 @@ import requests, sys, json
 blueprint = Blueprint('bot', __name__)
 
 
-@blueprint.route('/webhook', methods=['GET'])
 def handle_verification():
     #webhook verification
     print "Handling Verification."
@@ -17,7 +16,6 @@ def handle_verification():
         return requests.args['hub.challenge']
     return "Verification successful!", 200
 
-@blueprint.route('/webhook', methods=['POST'])
 def handle_messages():
     print "Handling Messages"
     payload = request.get_data()
