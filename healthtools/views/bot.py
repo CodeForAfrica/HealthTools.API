@@ -40,7 +40,9 @@ def messaging_events(payload):
     for event in messaging_events:
         if "message" in event and "text" in event["message"]:
             query = ''.join((nested_lookup('text', data)))
+
             yield event["sender"]["id"], process_bot_query(query, adapter='facebook')
+
         else:
             yield event["sender"]["id"], "I can't echo this"
 
