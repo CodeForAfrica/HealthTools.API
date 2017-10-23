@@ -54,6 +54,6 @@ def create_sms(result, doc_type):
     # TODO: Figure out singular vs plural
     response += 'We found ' + str(result['total']) + ' matches:'
     for hit in result['hits'][:3]:
-        response += '\n' + hit['_source']['name']
+        response += '\n' + hit['_source']['name'] 
 
     return response

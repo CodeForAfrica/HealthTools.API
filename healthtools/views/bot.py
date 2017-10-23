@@ -1,15 +1,10 @@
 from flask import Blueprint, request, jsonify, Response, abort
 from nested_lookup import nested_lookup
-
-# from healthtools.bot.facebook_messenger import facebook_messenger
-# from healthtools.bot.telegram import telegram_reply
 from healthtools.bot import process_bot_query
+from healthtools.settings VERIFY_TOKEN, ACCESS_TOKEN
 import requests, sys, json
 
 blueprint = Blueprint('bot', __name__)
-
-VERIFY_TOKEN = 'EAAb02ovr13sBADIlYFAHuEP6pNKlIyglLZCP5R3oGCfCJrh1aReDbi9qPYNilJPcs3kZBMUNfO036zC6CraGUSE0HRLlkwYn0PRLW7ZBA7keYCfOZB9FFkvZBY2yeAf4h9UhTqHQiHDj1FbxpNlyTWNuZCZAen8aUbKSkkuq23ZAr1bfd27W8vteCVV3GDH2wXoZD'
-ACCESS_TOKEN = 'EAAb02ovr13sBADnkA3KB4QHR6iWCZBlgCCnoLo6lPfsPiFtmDXYUhMsJmzlOOdzW8KqaMPZAZCzboW1zDJbOSdkOYDFIsQq7tZCeT5DOfl4rsNhKfPVZCtB3EtggKgMQnuZAKOZAn7EhGx2UrydHVrRw9pSavRZBvmO0kS5fx2sGPMlYgtcyYUMgefuu98UfWHUZD'
 
 
 @blueprint.route('/webhook', methods=['GET'])
@@ -40,9 +35,8 @@ def messaging_events(payload):
     for event in messaging_events:
         if "message" in event and "text" in event["message"]:
             query = ''.join((nested_lookup('text', data)))
-
-            yield event["sender"]["id"], process_bot_query(query, adapter='facebook')
-
+            yield event["sender"]["id"], process_bot_query(query)
+            return
         else:
             yield event["sender"]["id"], "I can't echo this"
 
@@ -50,7 +44,6 @@ def messaging_events(payload):
 def send_message(token, recipient, text):
     """Send the message text to recipient with id recipient.
     """
-
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
     params={"access_token": token},
     data=json.dumps({
@@ -60,6 +53,7 @@ def send_message(token, recipient, text):
     headers={'Content-type': 'application/json'})
     if r.status_code != requests.codes.ok:
         print r.text
+
 
 
 
