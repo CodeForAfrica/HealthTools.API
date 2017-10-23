@@ -1,11 +1,4 @@
-import logging
-from nested_lookup import nested_lookup
-
-from healthtools.bot import facebook_messenger
-from healthtools.bot.telegram import telegram_reply
 from healthtools.search import run_query
-
-log = logging.getLogger(__name__)
 
 def process_bot_query(query):
     "Method to call run query fucntion that will search the entry on elastic search"
@@ -26,7 +19,6 @@ def create_response(result, doc_type):
     response = ''
 
     if (not result or not doc_type):
-        log.info('No result')
         # TODO: Have this as a snippet in a txt file instead and import
         response = 'We could not understand your query. Try these:\n' + \
             '1. Doctors: DR. SAMUEL AMAI\n' + \
