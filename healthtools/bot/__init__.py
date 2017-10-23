@@ -1,3 +1,7 @@
+"""
+This bot processor queries for the query sent as a message
+can be used with wit.ai by changing the run query being used to wit_run_query function
+"""
 from healthtools.search import run_query
 
 def process_bot_query(query):
@@ -7,19 +11,14 @@ def process_bot_query(query):
     print result, doc_type
 
     reply_to_send = create_response(result, doc_type)
-
     return reply_to_send
-    
+
 def create_response(result, doc_type):
     '''
-    Method to structure an bot friendly response from
-    search.run_query result.
+    Method to structure a bot friendly response
     '''
-
     response = ''
-
-    if (not result or not doc_type):
-        # TODO: Have this as a snippet in a txt file instead and import
+    if not result or not doc_type:
         response = 'We could not understand your query. Try these:\n' + \
             '1. Doctors: DR. SAMUEL AMAI\n' + \
             '2. Clinical Officers: CO SAMUEL AMAI\n' + \
@@ -34,4 +33,3 @@ def create_response(result, doc_type):
     for hit in result['hits'][:3]:
         response += '\n' + hit['_source']['name'] + '\n'
     return response + '\n' + 'visit https://health.the-star.co.ke/ to view more'
-
