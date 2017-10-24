@@ -83,7 +83,7 @@ The token can be found from the settings tab, API details segment.
 
 To set it in the ENV, run  `export WIT_ACCESS_TOKEN='Token'`
 
-The following endpoint is used to run wit.ai on healthrools.API
+The following endpoint is used to run wit.ai on healthtools.API
 
 | URL Endpoint | HTTP Method | Functionality | Parameter |
 |--------------|-------------|---------------|-----------|
