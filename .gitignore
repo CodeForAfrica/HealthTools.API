@@ -95,3 +95,4 @@ ENV/
 *.DS_Store
 
 .idea/
+images/
