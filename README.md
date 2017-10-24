@@ -25,11 +25,11 @@ Specification for the API are:
 
 Clone the repo from github `$ git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
 
-Change directory into package `$ cd HealthTools.KE-api`
+Change directory into package `$ cd HealthTools.API`
 
 Install the dependencies by running `$ pip install -r requirements.txt`
 
-?
+Run the server by running `$ python healthtools\manage.py runserver`
 
 ### Tests
 
@@ -46,9 +46,6 @@ $ nosetests healthtools/tests/nhif_inpatient.py
 $ nosetests healthtools/tests/nhif_outpatient.py
 $ nosetests healthtools/tests/nhif_outpatient_cs.py
 ```
-### Wit.ai
-
-### Messenger Bot
 
 ## Contributing
 
