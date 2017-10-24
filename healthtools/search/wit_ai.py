@@ -7,6 +7,7 @@ from wit import Wit
 from nested_lookup import nested_lookup
 from healthtools.search import elastic, nurses
 from settings import WIT_ACCESS_TOKEN
+from healthtools.documents import doc_exists
 
 def determine_doc_type(query, doc_type=None):
     """
@@ -22,22 +23,6 @@ def determine_doc_type(query, doc_type=None):
     doc_type = doc_type.replace("_", "-") # changes underscore to hyphen
     return doc_type, query
 
-def find_search_type(doc_type):
-    """
-    This checks the doc type returned against the doc list an determines whether 
-    it should be elastic search or nurses search. If the doc type is empty,search type is None 
-    """
-    doc = ['nhif-outpatient', 'nhif-inpatient', 'nhif-outpatient-cs', 'doctors', 
-           'health-facilities', 'clinical-officers']
-    if doc_type not in  doc:
-        if doc_type is not 'nurses':
-            search_type = None
-        else:
-            search_type = 'nurses'
-    else:
-        search_type = 'elastic'
-    return search_type
-
 def run_search(query, doc_type, search_type):
     """
     This searches for the query as per the search type found
@@ -50,9 +35,13 @@ def run_search(query, doc_type, search_type):
 
 def wit_run_query(query, doc_type=None):
     doc_type, query = determine_doc_type(query, doc_type)
-    search_type = find_search_type(doc_type)
     if not doc_type:
         return False, False
+
+    if doc_exists(doc_type) is True:
+        search_type = doc_type
+    else:
+        search_type = None
 
     result = run_search(query, doc_type, search_type)
 
