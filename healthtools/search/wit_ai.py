@@ -6,7 +6,7 @@ wit.ai will be used when the query is made using /search?=<query>
 from wit import Wit 
 from nested_lookup import nested_lookup
 from healthtools.search import elastic, nurses
-from settings import WIT_ACCESS_TOKEN
+from healthtools.settings import WIT_ACCESS_TOKEN
 from healthtools.documents import doc_exists
 
 def determine_doc_type(query, doc_type=None):
