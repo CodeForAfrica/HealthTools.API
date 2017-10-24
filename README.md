@@ -8,24 +8,18 @@ The HealthTools API provides a simple wrapper around Elasticsearch data being ma
 
 ## Usage
 
-| URL Endpoint                        | HTTP Methods |
-|-------------------------------------|--------------|
-| /search/doctors?q=<name>            | GET          |
-| /search/doctors                     | GET          |
-| /search/nurses?q=<name>             | GET          |
-| /search/nurses                      | GET          |
-| /search/clinical-officers?q=<name>  | GET          |
-| /search/clinical-officers           | GET          |
-| /search/health-facilities?q=<name>  | GET          |
-| /search/health-facilities           | GET          |
-| /search/nhif-outpatient?q=<name>    | GET          |
-| /search/nhif-outpatient             | GET          |
-| /search/nhif-outpatient-cs?q=<name> | GET          |
-| /search/nhif-outpatient-cs          | GET          |
-| /search/nhif-inpatient?q=<name>     | GET          |
-| /search/nhif-inpatient              | GET          |
-| /search?q=<query>                   | GET          |
-| /wit_search?q=<query>               | GET          |
+Specification for the API are:
+
+| URL Endpoint               | HTTP Methods | Functionality                                                                 | Parameters |
+|----------------------------|--------------|-------------------------------------------------------------------------------|------------|
+| /search/doctors            | GET          | Search a doctor by the name                                                   | q=[name]   |
+| /search/nurses             | GET          | Search a nurse by the name                                                    | q=[name]   |
+| /search/clinical-officers  | GET          | Search a clinical officer by the name                                         | q=[name]   |
+| /search/health-facilities  | GET          | Search a health facility by the name                                          | q=[name]   |
+| /search/nhif-outpatient    | GET          | Search a NHIF accredited outpatient facility by the name                      | q=[name]   |
+| /search/nhif-outpatient-cs | GET          | Search a NHIF accredited outpatient  facility for civil servants, by the name | q=[name]   |
+| /search/nhif-inpatient     | GET          | Search a NHIF accredited inpatient facility by the name                       | q=[name]   |
+| /search                    | GET          | Search a query that contains a keyword Eg. HF Kitale                          | q=[query]  |
 
 ## Development
 
@@ -41,7 +35,7 @@ Install the dependencies by running `$ pip install -r requirements.txt`
 
 Use nosetests to run tests (with stdout) like so:
 
-```sh
+```
 $ nosetests --nocapture
 $ nosetests healthtools/tests
 $ nosetests healthtools/tests/doctor.py
@@ -52,6 +46,9 @@ $ nosetests healthtools/tests/nhif_inpatient.py
 $ nosetests healthtools/tests/nhif_outpatient.py
 $ nosetests healthtools/tests/nhif_outpatient_cs.py
 ```
+### Wit.ai
+
+### Messenger Bot
 
 ## Contributing
 
