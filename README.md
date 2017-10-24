@@ -9,18 +9,18 @@ The HealthTools API provides a simple wrapper around Elasticsearch data being ma
 ## Usage
 
 Specification for the API are:
-
-| URL Endpoint               | HTTP Methods | Functionality                                                                 | Parameters |
-|----------------------------|--------------|-------------------------------------------------------------------------------|------------|
-| /search/doctors            | GET          | Search a doctor by the name                                                   | q=[name]   |
-| /search/nurses             | GET          | Search a nurse by the name                                                    | q=[name]   |
-| /search/clinical-officers  | GET          | Search a clinical officer by the name                                         | q=[name]   |
-| /search/health-facilities  | GET          | Search a health facility by the name                                          | q=[name]   |
-| /search/nhif-outpatient    | GET          | Search a NHIF accredited outpatient facility by the name                      | q=[name]   |
-| /search/nhif-outpatient-cs | GET          | Search a NHIF accredited outpatient  facility for civil servants, by the name | q=[name]   |
-| /search/nhif-inpatient     | GET          | Search a NHIF accredited inpatient facility by the name                       | q=[name]   |
-| /search                    | GET          | Search a query that contains a keyword Eg. HF Kitale                          | q=[query]  |
-
+| URL Endpoint               | HTTP Methods | Functionality                                                                 | Parameters               |
+|----------------------------|--------------|-------------------------------------------------------------------------------|--------------------------|
+| /search/doctors            | GET          | Search a doctor by the name                                                   | q=[name]                 |
+| /search/nurses             | GET          | Search a nurse by the name                                                    | q=[name]                 |
+| /search/clinical-officers  | GET          | Search a clinical officer by the name                                         | q=[name]                 |
+| /search/health-facilities  | GET          | Search a health facility by the name                                          | q=[name]                 |
+| /search/nhif-outpatient    | GET          | Search a NHIF accredited outpatient facility by the name                      | q=[name]                 |
+| /search/nhif-outpatient-cs | GET          | Search a NHIF accredited outpatient  facility for civil servants, by the name | q=[name]                 |
+| /search/nhif-inpatient     | GET          | Search a NHIF accredited inpatient facility by the name                       | q=[name]                 |
+| /search                    | GET          | Search a query that contains a keyword Eg. HF Kitale                          | q=[query]                |
+| /sms                       | GET          | Search a query received from sms Eg. Dr Jane                                  | q=[phoneNumber, message] |
+| /sms/[adapter]             | GET          | Search a query received from sms using the specified adapter Eg. mtech        | q=[query]                |
 ## Development
 
 Clone the repo from github `$ git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
