@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from healthtools.search import run_query
-from healthtools.search.wit_ai import wit_run_query
+# from healthtools.search.wit_ai import wit_run_query
 
 blueprint = Blueprint('search_api', __name__)
 
@@ -9,9 +9,6 @@ blueprint = Blueprint('search_api', __name__)
 @blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
 def index(doc_type=None):
     query = request.args.get('q')
-
-    if doc_type and doc_type == 'wit':
-        result, doc_type = wit_run_query(query)
 
     result, doc_type = run_query(query, doc_type)
 
