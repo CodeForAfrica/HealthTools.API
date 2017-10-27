@@ -19,30 +19,9 @@ def determine_doc_type(query, doc_type=None):
     message_text = query
     resp = client.message(message_text)
     query = ''.join(nested_lookup('value', resp['entities']['query']))
-    doc_type = ''.join([var for var in (resp['entities'].keys()) if var != 'query'])
-    doc_type = doc_type.replace("_", "-") # changes underscore to hyphen
+    doc = ''.join([var for var in (resp['entities'].keys()) if var != 'query'])
+    doc = doc.replace("_", "-") # changes underscore to hyphen
+    if doc_exists(doc) is True:
+            doc = doc_type
     return doc_type, query
 
-def run_search(query, doc_type, search_type):
-    """
-    This searches for the query as per the search type found
-    """
-    if search_type == 'nurses':
-        result = nurses.search(query)
-    else:
-        result = elastic.search(query, doc_type)
-    return result
-
-def wit_run_query(query, doc_type=None):
-    doc_type, query = determine_doc_type(query, doc_type)
-    if not doc_type:
-        return False, False
-
-    if doc_exists(doc_type) is True:
-        search_type = doc_type
-    else:
-        search_type = None
-
-    result = run_search(query, doc_type, search_type)
-
-    return result, doc_type
