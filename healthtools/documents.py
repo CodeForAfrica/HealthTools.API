@@ -57,7 +57,6 @@ DOCUMENTS = {
 
 }
 
-
 def get_docs():
     return DOCUMENTS
 
