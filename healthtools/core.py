@@ -63,3 +63,14 @@ class AWS4AuthNotUnicode(AWS4Auth):
         req = super(AWS4AuthNotUnicode, self).__call__(req)
         req.headers = {str(name): value for name, value in req.headers.items()}
         return req
+
+def print_error(message):
+    '''
+    Print error messages in the terminal.
+    '''
+    error = "- ERROR: " + message['ERROR']
+    source = ("- SOURCE: " + message['SOURCE']) if "SOURCE" in message else ""
+    error_msg = "- MESSAGE: " + message['MESSAGE']
+    msg = "\n".join([error, source, error_msg])
+
+    log.error(msg)

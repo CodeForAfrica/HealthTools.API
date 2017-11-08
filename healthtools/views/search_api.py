@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from healthtools.search import run_query
+from healthtools.core import print_error
 
 blueprint = Blueprint('search_api', __name__)
 
@@ -9,17 +10,26 @@ blueprint = Blueprint('search_api', __name__)
 def index(doc_type=None):
     query = request.args.get('q')
 
-    result, doc_type = run_query(query, doc_type)
+    try:
+        result, doc_type = run_query(query, doc_type)
+        response = jsonify({
+            'result': result,
+            'doc_type': doc_type,
+            'status': 'OK'
+        })
 
-    # Error with run_query (run_query returns false)
-    if not result:
-        return jsonify({
+    except Exception as err:
+        response =  jsonify({
             'result': {'hits': [], 'total': 0},
             'doc_type': doc_type,
             'status': 'FAILED',
             'msg': ''  # TODO: Pass run_query message here.
         })
+        error = {
+            "ERROR": "index()",
+            "MESSAGE": str(err)
+        }
+        print_error(error)
 
     # TODO: Log event here (send to Google Analytics)
-
-    return jsonify({'result': result, 'doc_type': doc_type, 'status': 'OK'})
+    return response

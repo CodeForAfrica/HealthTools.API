@@ -3,6 +3,7 @@ from nested_lookup import nested_lookup
 from healthtools.settings import WIT_ACCESS_TOKEN
 
 from healthtools.documents import DOCUMENTS, doc_exists
+from healthtools.core import print_error
 
 from healthtools.search import elastic, nurses
 
@@ -55,6 +56,11 @@ def determine_doc_type(query, doc_type=None):
         for keyword in DOCUMENTS[doc]['keywords']:
             if query.startswith(keyword + ' '):
                 return doc, DOCUMENTS[doc]['search_type']
+    error = {
+        "ERROR": "doc_type could not be determined from query",
+        "MESSAGE": 'Query supplied = ' + query
+    }
+    print_error(error)
     return False, False
 
 
