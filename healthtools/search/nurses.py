@@ -1,11 +1,12 @@
 import requests
+import logging
 from bs4 import BeautifulSoup
-from healthtools.core import print_error
 
 
 NURSING_COUNCIL_URL = 'http://nckenya.com/services/search.php?p=1&s={}'
 NURSES_FIELDS = ['name', 'licence_no', 'valid_till']
 
+log = logging.getLogger(__name__)
 
 def search(query):
     results = get_nurses_from_nc_registry(query)
@@ -41,8 +42,4 @@ def get_nurses_from_nc_registry(query):
 
         return nurses
     except Exception as err:
-        error = {
-            "ERROR": "get_nurses_from_nc_registry()",
-            "MESSAGE": str(err)
-        }
-        print_error(error)
+        log.error("Error getting nurses from the nursing council url \n" + str(err))

@@ -1,5 +1,7 @@
-from healthtools.core import es, es_index, print_error
+import logging
+from healthtools.core import es, es_index
 
+log = logging.getLogger(__name__)
 
 def search(query, doc_type):
     try:
@@ -8,15 +10,11 @@ def search(query, doc_type):
             body={'query': match_all_text(query)},
             doc_type=doc_type
         )
+        
         hits = result.get('hits', {})
         return hits
     except Exception as err:
-        error = {
-            "ERROR": "Elastic Search",
-            "MESSAGE": str(err)
-        }
-        print_error(error)
-    
+        log.error("Error fetching data from elastic search \n" + str(err))    
 
 
 def match_all():

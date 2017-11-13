@@ -1,9 +1,10 @@
+import logging
 from flask import Blueprint, request, jsonify
 
 from healthtools.search import run_query
-from healthtools.core import print_error
 
 blueprint = Blueprint('search_api', __name__)
+log = logging.getLogger(__name__)
 
 @blueprint.route('/search', methods=['GET'], strict_slashes=False)
 @blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
@@ -25,11 +26,7 @@ def index(doc_type=None):
             'status': 'FAILED',
             'msg': ''  # TODO: Pass run_query message here.
         })
-        error = {
-            "ERROR": "index()",
-            "MESSAGE": str(err)
-        }
-        print_error(error)
+        log.error('Search failed \n' + str(err))
 
     # TODO: Log event here (send to Google Analytics)
     return response
