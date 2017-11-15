@@ -1,11 +1,12 @@
+import logging
 from wit import Wit 
 from nested_lookup import nested_lookup
 from healthtools.settings import WIT_ACCESS_TOKEN
 
 from healthtools.documents import DOCUMENTS, doc_exists
-
 from healthtools.search import elastic, nurses
 
+log = logging.getLogger(__name__)
 
 def run_query(query, doc_type=None):
 
@@ -18,7 +19,6 @@ def run_query(query, doc_type=None):
     else:
         search_type = 'nurses'
         return doc_type, search_type
-    
     doc_type, search_type = determine_doc_type(query, doc_type)
 
     if not doc_type:
@@ -55,6 +55,7 @@ def determine_doc_type(query, doc_type=None):
         for keyword in DOCUMENTS[doc]['keywords']:
             if query.startswith(keyword + ' '):
                 return doc, DOCUMENTS[doc]['search_type']
+    log.error("doc_type could not be determined from query\n Query: " + query)
     return False, False
 
 
