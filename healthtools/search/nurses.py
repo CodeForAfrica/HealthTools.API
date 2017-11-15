@@ -19,7 +19,7 @@ def get_nurses_from_nc_registry(query):
     response = requests.get(url)
     nurses = {'hits': [], 'total': 0}
 
-    if 'No results' in response.content:
+    if b'No results' in response.content:
         return nurses
 
     # make soup for parsing out of response and get the table
@@ -37,5 +37,5 @@ def get_nurses_from_nc_registry(query):
         nurses['hits'].append(entry)
 
     nurses['total'] = len(nurses['hits'])
-
+    
     return nurses

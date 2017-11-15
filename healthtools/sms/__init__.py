@@ -1,6 +1,6 @@
 import logging
 
-from healthtools.sms import twilio, mtech
+from healthtools.sms import twilio, mtech, africastalking
 from healthtools.search import run_query
 
 log = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def process_sms(args, adapter='mtech'):
     # TODO: Track event SMS RECEIVED here
 
     result, doc_type = run_query(msg)
-
+    
     sms_to_send = create_sms(result, doc_type)
 
     try:
@@ -39,6 +39,7 @@ def create_sms(result, doc_type):
     '''
 
     response = ''
+    result_count = 1
 
     if (not result or not doc_type):
         log.info('No result')
@@ -49,6 +50,13 @@ def create_sms(result, doc_type):
             '3. Nurses: NURSE SAMUEL AMAI\n' + \
             '4. NHIF Accredited hospital: NHIF KITALE\n' + \
             '5. Health Facility: HF KITALE'
+        return response
+
+    if (doc_type == 'nurses'):
+        response += 'We found ' + str(result['total']) + ' matches:'
+        for hit in result['hits'][:3]:
+             response += '\n' + "{}. {}".format(str(result_count), hit['name'])
+             result_count += 1
         return response
 
     # TODO: Figure out singular vs plural
