@@ -10,14 +10,7 @@ blueprint = Blueprint('sms_api', __name__)
 @blueprint.route('/sms', methods=['GET', 'POST'])
 @blueprint.route('/sms/<adapter>', methods=['GET', 'POST'])
 def index(adapter='mtech'):
-    arguments = request.args
-    if adapter == "africastalking":
-        arguments = {
-            'phoneNumber': request.values.get('from'),
-            'message': request.values.get('text')
-        }
-
-    result = process_sms(arguments, adapter)
+    result = process_sms(request, adapter)
 
     # Error with process_sms (process_sms returns false result)
     if(not result):

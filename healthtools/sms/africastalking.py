@@ -1,13 +1,12 @@
 import logging
 from africastalking.AfricasTalkingGateway import (AfricasTalkingGateway, AfricasTalkingGatewayException)
 from flask import current_app
-from settings import AFRICASTALKING
 
 log = logging.getLogger(__name__)
 
 def send_sms(msg, phone_no):
-    username =  AFRICASTALKING['SMS_AFRICASTALKING_USER']
-    apikey =  AFRICASTALKING['SMS_AFRICASTALKING_KEY']
+    username =  current_app.config.get('SMS_AFRICASTALKING_USER')
+    apikey =  current_app.config.get('SMS_AFRICASTALKING_KEY')
     to = phone_no
     message = msg
 

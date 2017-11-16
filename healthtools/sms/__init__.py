@@ -6,8 +6,13 @@ from healthtools.search import run_query
 log = logging.getLogger(__name__)
 
 
-def process_sms(args, adapter='mtech'):
-
+def process_sms(request, adapter='mtech'):
+    args = request.args
+    if adapter == "africastalking":
+        args = {
+            'phoneNumber': request.values.get('from'),
+            'message': request.values.get('text')
+        }
     msg = args.get('message')
     phone_no = args.get('phoneNumber')
 
@@ -20,7 +25,6 @@ def process_sms(args, adapter='mtech'):
     result, doc_type = run_query(msg)
     
     sms_to_send = create_sms(result, doc_type)
-
     try:
         response = eval(adapter+'.send_sms(sms_to_send, phone_no)')
     except Exception as e:
