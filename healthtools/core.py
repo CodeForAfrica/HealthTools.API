@@ -18,7 +18,7 @@ def create_app(config={}):
     app_name = app.config.get('APP_NAME')
 
     # TODO: Add Slack error log handler here
-
+    
     return app
 
 

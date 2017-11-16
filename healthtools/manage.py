@@ -4,7 +4,7 @@ from healthtools.core import create_app
 from healthtools.views import mount_app_blueprints
 
 
-log = logging.getLogger('healthtools')
+log = logging.getLogger(__name__)
 
 app = create_app()
 mount_app_blueprints(app)

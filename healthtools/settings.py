@@ -55,7 +55,8 @@ TGBOT = {
     'BOT_WEBHOOK_URL': os.getenv('HTOOLS_BOT_WEBHOOK_URL')
 }
 
-SLACK_URL = os.getenv('HTOOLS_SLACK_URL')
+# slack webhook url
+SLACK_URL = os.getenv('HEALTHTOOLS_SLACK_URL', None)
 
 ################################################################################
 
