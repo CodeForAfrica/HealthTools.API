@@ -23,8 +23,9 @@ def process_sms(request, adapter='mtech'):
     # TODO: Track event SMS RECEIVED here
 
     result, doc_type = run_query(msg)
-    
+
     sms_to_send = create_sms(result, doc_type)
+
     try:
         response = eval(adapter+'.send_sms(sms_to_send, phone_no)')
     except Exception as e:
