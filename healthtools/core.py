@@ -18,7 +18,13 @@ def create_app(config={}):
     app_name = app.config.get('APP_NAME')
 
     # TODO: Add Slack error log handler here
-
+    from .settings import SLACK_URL
+    if SLACK_URL:
+        from slack_logger import SlackFormatter, SlackHandler
+        slack_handler = SlackHandler(username='Healthtools API', url=SLACK_URL)
+        slack_handler.setLevel(logging.WARNING)
+        slack_handler.setFormatter(SlackFormatter())
+        app.logger.addHandler(slack_handler)
     return app
 
 
