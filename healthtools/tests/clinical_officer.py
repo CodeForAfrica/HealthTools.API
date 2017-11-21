@@ -14,10 +14,10 @@ class TestClinicalOfficersAPIWithDoctype(TestSetup):
     """
     def test_cos_endpoint_without_query(self):
         """
-        This tests running cos endpoint with valid doctype and no query
+        This tests running cos endpoint with valid doctype and no query should be accepted
         """
         response = self.client.get("search/clinical-officers?q=")
-        self.assertIn(b"ELIKANAH KEBAGENDI OMWENGA", response.data)
+        self.assertIn(b'"status": "OK"', response.data)
 
 
     def test_cos_endpoint_gets_clinical_officers(self):
@@ -32,7 +32,7 @@ class TestClinicalOfficersAPIWithDoctype(TestSetup):
         This tests running an endpoint with incorrect/unavailable doctype 
         """
         response = self.client.get("search/clinicalofficers?q=DABASO GARAMBODA")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"doc_type": false', response.data)
 
 
 class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
@@ -41,7 +41,7 @@ class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
     """
     def test_cos_endpoint_without_keyword_in_query(self):
         response = self.client.get("search?q=john")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_cos_endpoint_gets_clinical_officers(self):
         response = self.client.get("search?q=clinical oficer DABASO GARAMBODA")
@@ -52,7 +52,7 @@ class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
         This tests running cos endpoint with correct available keyword only
         """
         response = self.client.get("search?q=CO")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 
     def test_cos_endpoint_without_query(self):
@@ -60,7 +60,7 @@ class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
         This tests running cos endpoint without query
         """
         response = self.client.get("search?q=")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 
     def test_cos_endpoint_with_nonkeyword(self):
@@ -68,4 +68,4 @@ class TestClinicalOfficersAPIWithoutDoctype(TestSetup):
         This tests running cos endpoint with a keyword that is unavailable.
         """
         response = self.client.get("search?q=maji john")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)

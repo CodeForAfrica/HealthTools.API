@@ -19,7 +19,7 @@ class TestNurseRegistery(TestSetup):
 
     def test_gets_nurses_from_nc_registry_handle_inexistent_nurse(self):
         nurses = get_nurses_from_nc_registry("ihoafiho39023u8")
-        self.assertEqual(len(nurses), 0)
+        self.assertEqual(len(nurses['hits']), 0)
 
 
 class TestNursesAPI(TestSetup):
@@ -32,7 +32,7 @@ class TestNursesAPI(TestSetup):
         This tests running nurses endpoint with valid doctype and no query
         """
         response = self.client.get("search/nurses?q=")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": null', response.data)
 
     def test_nurses_endpoint_gets_nurses(self):
         response = self.client.get("search/nurses?q=Marie")
@@ -50,14 +50,14 @@ class TestNursesAPI(TestSetup):
         This tests running an endpoint with incorrect/unavailable doctype 
         """
         response = self.client.get("search/nurse?q=Marie")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nurses_endpoint_with_unavailable_query(self):
         """
         This tests running nurses endpoint with correct doctype but unavailable query
         """
         response = self.client.get("search/nurses?q=1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"total": 0', response.data)
 
 class TestNursesAPIWithoutDoctypes(TestSetup):
     """
@@ -65,7 +65,7 @@ class TestNursesAPIWithoutDoctypes(TestSetup):
     """
     def test_nurses_endpoint_endpoint_without_keyword_in_query(self):
         response = self.client.get("search?q=Marie")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nurses_endpoint_gets_nurses(self):
         response = self.client.get("search?q=nurse Marie")
@@ -77,27 +77,27 @@ class TestNursesAPIWithoutDoctypes(TestSetup):
         This tests running nurses endpoint with correct available keyword but unavailable query
         """
         response = self.client.get("search?q=Registered Nurse 1234")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nurses_cs_endpoint_with_keyword_only(self):
         """
         This tests running nurses endpoint with correct available keyword only
         """
         response = self.client.get("search?q=nursing officer")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nurses_endpoint_without_query(self):
         """
         This tests running nurses endpoint without query
         """
         response = self.client.get("search?q=")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nurses_endpoint_with_nonkeyword(self):
         """
         This tests running nurses endpoint with a keyword that is unavailable.
         """
         response = self.client.get("search?q=kijana Marie")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     

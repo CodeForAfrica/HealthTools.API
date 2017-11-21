@@ -20,7 +20,7 @@ class TestNhifInpatientAPIWithDoctype(TestSetup):
         This tests running nhif-inpatient endpoint with valid doctype and no query
         """
         response = self.client.get("search/nhif-inpatient?q=")
-        self.assertIn(b"MARIE STOPES KENYA LIMITED", response.data)
+        self.assertIn(b'"status": "OK"', response.data)
 
     def test_nhif_inpatient_endpoint_gets_nhif_inpatient(self):
         """
@@ -34,7 +34,7 @@ class TestNhifInpatientAPIWithDoctype(TestSetup):
         This tests running an endpoint with incorrect/unavailable doctype 
         """
         response = self.client.get("search/nhifinpatient?q=MATHARE")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 
 class TestNhifInpatientAPIWithoutDoctype(TestSetup):
@@ -44,7 +44,7 @@ class TestNhifInpatientAPIWithoutDoctype(TestSetup):
 
     def test_nhif_inpatient_endpoint_without_keyword_in_query(self):
         response = self.client.get("search?q=Kilifi")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nhif_inpatient_endpoint_gets_nhif_inpatient(self):
         response = self.client.get("search?q=bima inpatient Kilifi")
@@ -52,21 +52,22 @@ class TestNhifInpatientAPIWithoutDoctype(TestSetup):
 
     def test_nhif_inpatient_endpoint_with_keyword_only(self):
         """
-        This tests running nhif-inpatient endpoint with correct available keyword only
+        This tests running nhif-inpatient endpoint with correct available keyword only,
+        should return no record for unknown keywords
         """
         response = self.client.get("search?q=inpatient insurance")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"total": 0', response.data)
 
     def test_nhif_inpatient_endpoint_without_query(self):
         """
         This tests running nhif-inpatient endpoint without query
         """
         response = self.client.get("search?q=")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_nhif_inpatient_endpoint_with_nonkeyword(self):
         """
         This tests running nhif-inpatient endpoint with a keyword that is unavailable.
         """
         response = self.client.get("search?q=maji Kilifi")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)

@@ -21,7 +21,7 @@ def get_nurses_from_nc_registry(query):
     nurses = {'hits': [], 'total': 0}
     try:
         response = requests.get(url)
-        if 'No results' in response.content:
+        if b'No results' in response.content:
             return nurses
 
         # make soup for parsing out of response and get the table

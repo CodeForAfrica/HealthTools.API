@@ -20,7 +20,7 @@ class TestHealthFacilitiesAPIWithDoctype(TestSetup):
         This tests running health-facilities endpoint with valid doctype and no query
         """
         response = self.client.get("search/health-facilities?q=")
-        self.assertIn(b"Tamba Pwani", response.data)
+        self.assertIn(b'"status": "OK"', response.data)
 
     def test_health_facilities_endpoint_gets_health_facilities(self):
         """
@@ -34,7 +34,7 @@ class TestHealthFacilitiesAPIWithDoctype(TestSetup):
         This tests running an endpoint with incorrect/unavailable doctype 
         """
         response = self.client.get("search/healthfacilities?q=Kitale")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 
 class TestHealthFacilitiesAPIWithoutDoctype(TestSetup):
@@ -44,7 +44,7 @@ class TestHealthFacilitiesAPIWithoutDoctype(TestSetup):
 
     def test_health_facilities_endpoint_without_keyword_in_query(self):
         response = self.client.get("search?q=kakamega")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_health_facilities_endpoint_gets_health_facilities(self):
         response = self.client.get("search?q=dispensary Kilifi")
@@ -55,18 +55,18 @@ class TestHealthFacilitiesAPIWithoutDoctype(TestSetup):
         This tests running health-facilities endpoint with correct available keyword only
         """
         response = self.client.get("search?q=hf")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_health_facilities_endpoint_without_query(self):
         """
         This tests running health-facilities endpoint without query
         """
         response = self.client.get("search?q=")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_health_facilities_endpoint_with_nonkeyword(self):
         """
         This tests running health-facilities endpoint with a keyword that is unavailable.
         """
         response = self.client.get("search?q=maji Mombasa")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)

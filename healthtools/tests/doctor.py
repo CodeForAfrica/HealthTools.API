@@ -18,7 +18,7 @@ class TestDoctorsAPIWithDoctype(TestSetup):
         This tests running doctors endpoint with valid doctype and no query
         """
         response = self.client.get("search/doctors?q=")
-        self.assertIn(b"DR NARAYAN VIJAYA KUMAR", response.data)
+        self.assertIn(b'"status": "OK"', response.data)
 
 
     def test_doctors_endpoint_gets_doctors(self):
@@ -33,7 +33,7 @@ class TestDoctorsAPIWithDoctype(TestSetup):
         This tests running an endpoint with incorrect/unavailable doctype 
         """
         response = self.client.get("search/doctor?q=john")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 class TestDoctorsAPIWithoutDoctype(TestSetup):
     """
@@ -41,7 +41,7 @@ class TestDoctorsAPIWithoutDoctype(TestSetup):
     """
     def test_doctors_endpoint_without_keyword_in_query(self):
         response = self.client.get("search?q=john")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
     def test_doctors_endpoint_gets_doctors(self):
         response = self.client.get("search?q=daktari John")
@@ -52,7 +52,7 @@ class TestDoctorsAPIWithoutDoctype(TestSetup):
         This tests running doctors endpoint with correct available keyword only
         """
         response = self.client.get("search?q=daktari")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 
     def test_doctors_endpoint_without_query(self):
@@ -60,7 +60,7 @@ class TestDoctorsAPIWithoutDoctype(TestSetup):
         This tests running doctors endpoint without query
         """
         response = self.client.get("search?q=")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)
 
 
     def test_doctors_endpoint_with_nonkeyword(self):
@@ -68,4 +68,4 @@ class TestDoctorsAPIWithoutDoctype(TestSetup):
         This tests running doctors endpoint with a keyword that is unavailable.
         """
         response = self.client.get("search?q=maji john")
-        self.assertIn(b'"status": "FAILED"', response.data)
+        self.assertIn(b'"result": false', response.data)

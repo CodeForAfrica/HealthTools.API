@@ -1,0 +1,7 @@
+from .clinical_officer import TestClinicalOfficersAPIWithDoctype, TestClinicalOfficersAPIWithoutDoctype
+from .doctor import TestDoctorsAPIWithDoctype, TestDoctorsAPIWithoutDoctype
+from .health_facilities import TestHealthFacilitiesAPIWithDoctype, TestHealthFacilitiesAPIWithoutDoctype
+from .nhif_inpatient import TestNhifInpatientAPIWithDoctype,TestNhifInpatientAPIWithoutDoctype 
+from .nhif_outpatient import TestNhifOutpatientAPIWithDoctype, TestNhifOutpatientAPIWithoutDoctype
+from .nhif_outpatient_cs import TestNhifOutpatientAPIWithDoctype, TestNhifOutpatientAPIWithoutDoctype
+from .nurse import TestNurseRegistery, TestNursesAPI, TestNursesAPIWithoutDoctypes
