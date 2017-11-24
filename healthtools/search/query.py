@@ -1,7 +1,8 @@
 import logging
+import memcache
 from wit import Wit 
 from nested_lookup import nested_lookup
-from healthtools.settings import WIT_ACCESS_TOKEN
+from healthtools.settings import WIT_ACCESS_TOKEN, MEMCACHED_URL
 
 from healthtools.documents import DOCUMENTS, doc_exists
 from healthtools.search import elastic, nurses
@@ -10,6 +11,7 @@ log = logging.getLogger(__name__)
 
 def run_query(query, doc_type=None):
 
+    mc = memcache.Client([MEMCACHED_URL])
     search_type = None
 
     if doc_type == 'wit':
@@ -24,7 +26,12 @@ def run_query(query, doc_type=None):
     if not doc_type:
         return False, False
 
+    mc_key = remove_keywords(query + doc_type).replace(" ", "")
+    result = mc.get(mc_key)
+    if result:
+        return result, doc_type
     result = run_search(query, doc_type, search_type)
+    mc.set(mc_key, result)
 
     return result, doc_type
 
