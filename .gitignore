@@ -94,7 +94,4 @@ ENV/
 # OS X
 *.DS_Store
 
-
-# Telegram Bot SSL settings
-cert.pem
-private.key
+.idea/
