@@ -2,6 +2,7 @@ import logging
 
 from werkzeug.local import LocalProxy
 from flask import Flask, current_app
+from flask_cors import CORS
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 
@@ -16,6 +17,8 @@ def create_app(config={}):
     app.config.from_object(settings)
     app.config.update(config)
     app_name = app.config.get('APP_NAME')
+
+    CORS(app)
 
     # TODO: Add Slack error log handler here
 
