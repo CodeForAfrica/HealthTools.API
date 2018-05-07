@@ -1,7 +1,7 @@
 import logging
 from flask import Blueprint, request, jsonify
 
-from healthtools.search import run_query
+from healthtools.search.query import run_query
 
 blueprint = Blueprint('search_api', __name__)
 log = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def index(doc_type=None):
             'result': {'hits': [], 'total': 0},
             'doc_type': doc_type,
             'status': 'FAILED',
-            'msg': ''  # TODO: Pass run_query message here.
+            'msg': str(err)
         })
         log.error('Search failed \n' + str(err))
 

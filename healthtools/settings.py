@@ -28,7 +28,7 @@ ELASTICSEARCH_PORT = os.getenv('HTOOLS_ES_PORT', '9200')
 ELASTICSEARCH_INDEX = os.getenv('HTOOLS_ES_INDEX', 'healthtools-dev')
 
 
-# TODO: Updates needed below
+# TODO: Updates needed below for name structure et al.
 
 # Google Analytics tracking id
 GA_TRACKING_ID = os.getenv('HTOOLS_GA_TRACKING_ID', 'UA-44795600-33')

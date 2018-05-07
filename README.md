@@ -6,7 +6,7 @@ _Providing actionable health information._
 
 The HealthTools API is a free to access, open, and structured service for newsrooms, civic organizations, and governments to access health information.
 
-This API provides a simple wrapper around Elasticsearch data being made available through the [HealthTools Scrapers](https://github.com/CodeForAfrica-SCRAPERS/healthtools_ke) and as a cached proxy for websites unable to be reliably scraped such as Kenya's nursing council website.
+This API provides a simple wrapper around Elasticsearch data being made available through the [HealthTools Scraper](https://github.com/CodeForAfrica-SCRAPERS/healthtools_ke) and as a cached proxy for websites unable to be reliably scraped such as Kenya's nursing council website.
 
 ## Usage
 
@@ -30,15 +30,33 @@ Specification for the API are:
 
 <!-- TODO: add standards we are using for API provision -->
 
+## Requirments
+
+<!-- TODO: Add requirements for the API to run e.g Elastic-->
+
+---
+
 ## Development
 
-Clone the repo from github `$ git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
+To get started with developing on HealthTools.API, do the following:
 
-Change directory into package `$ cd HealthTools.API`
+```sh
+$ git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
+$ cd HealthTools.API
+$ pip install -r requirements.txt
+```
 
-Install the dependencies by running `$ pip install -r requirements.txt`
+### Configuration
 
-Run the server by running `$ python healthtools\manage.py runserver`
+TODO
+
+### Run server
+
+Finally run the Flask server:
+
+```sh
+$ python healthtools\manage.py
+```
 
 ### Tests
 

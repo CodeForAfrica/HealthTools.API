@@ -4,6 +4,9 @@ from healthtools.core import es, es_index
 log = logging.getLogger(__name__)
 
 def search(query, doc_type):
+    if doc_type in ['doctors', 'doctors-foreign']:
+        doc_type = 'doctors,doctors-foreign'
+    
     try:
         result = es.search(
             index=es_index,
