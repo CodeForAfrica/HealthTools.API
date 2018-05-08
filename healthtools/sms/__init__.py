@@ -39,6 +39,7 @@ def create_sms(result, doc_type):
     '''
 
     response = ''
+    result_count = 1
 
     if (not result or not doc_type):
         log.info('No result')
@@ -52,8 +53,11 @@ def create_sms(result, doc_type):
         return response
 
     # TODO: Figure out singular vs plural
-    response += 'We found ' + str(result['total']) + ' matches:'
+    response += 'Here are the top 3 matches your query returned'
     for hit in result['hits'][:3]:
-        response += '\n' + hit['_source']['name']
 
+        response += '\n' + '{}. {}'.format(str(result_count), hit['_source']['name'])
+        result_count += 1
+    response += '\nFind the full list at http://health.the-star.co.ke/'
+    log.info(response)
     return response
