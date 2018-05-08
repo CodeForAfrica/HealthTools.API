@@ -8,32 +8,23 @@ from healthtools.search import elastic, nurses
 
 log = logging.getLogger(__name__)
 
-def run_query(query, doc_type=None):
+def run_query(query, doc_type=None, page=1, per_page=10):
 
-    search_type = None
-
-    if doc_type == 'wit':
-        doc_type, query = determine_doc_type_using_wit(query)
-    if doc_type is not 'nurses':
-         search_type = 'elastic'
-    else:
-        search_type = 'nurses'
-        return doc_type, search_type
     doc_type, search_type = determine_doc_type(query, doc_type)
 
     if not doc_type:
         return False, False
 
-    result = run_search(query, doc_type, search_type)
+    result = run_search(query, doc_type, search_type, page, per_page)
 
     return result, doc_type
 
 
-def run_search(query, doc_type, search_type):
+def run_search(query, doc_type, search_type, page, per_page):
     if search_type == 'nurses':
         result = nurses.search(remove_keywords(query))
     else:
-        result = elastic.search(remove_keywords(query), doc_type)
+        result = elastic.search(remove_keywords(query), doc_type, page, per_page)
     return result
 
 
@@ -48,6 +39,10 @@ def determine_doc_type(query, doc_type=None):
     # Determine if doc_type exists
     if doc_type and doc_exists(doc_type):
         return doc_type, DOCUMENTS[doc_type]['search_type']
+    
+    # Is doc_type to trying to use wit?
+    if doc_type == 'wit':
+        return determine_doc_type_using_wit(query)
 
     # Determine doc_type from query
     query = format_query(query)

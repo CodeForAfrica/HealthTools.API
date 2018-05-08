@@ -3,7 +3,7 @@ from healthtools.core import es, es_index
 
 log = logging.getLogger(__name__)
 
-def search(query, doc_type):
+def search(query, doc_type, page=1, per_page=10):
 
     # Search both doc types for doctors
     # TODO: Make search preference on selected
@@ -12,11 +12,17 @@ def search(query, doc_type):
     # NHIF defaults to NHIF Inpatient
     if doc_type == 'nhif':
         doc_type = 'nhif-inpatient'
+    
+    # Determine page offset
+    page_offset = (page-1) * per_page
 
     try:
         result = es.search(
             index=es_index,
-            body={'query': match_all_text(query)},
+            body={
+                'from': page_offset, 'size' : per_page,
+                'query': match_all_text(query)
+            },
             doc_type=doc_type
         )
         

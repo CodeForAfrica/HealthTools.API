@@ -10,10 +10,14 @@ log = logging.getLogger(__name__)
 @blueprint.route('/search/<doc_type>', methods=['GET'], strict_slashes=False)
 def index(doc_type=None):
     query = request.args.get('q')
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
 
     try:
-        result, doc_type = run_query(query, doc_type)
+        result, doc_type = run_query(query, doc_type, page, per_page)
         response = jsonify({
+            'page': page,
+            'per_page': per_page,
             'result': result,
             'doc_type': doc_type,
             'status': 'OK'
