@@ -55,8 +55,8 @@ def create_sms(result, doc_type):
     # TODO: Figure out singular vs plural
     response += 'Here are the top 3 matches your query returned'
     for hit in result['hits'][:3]:
-
-        response += '\n' + '{}. {}'.format(str(result_count), hit['_source']['name'])
+        
+        response += '\n' + '{}. {}'.format(str(result_count), hit['_source']['name'].encode('utf-8'))
         result_count += 1
     response += '\nFind the full list at http://health.the-star.co.ke/'
     log.info(response)
