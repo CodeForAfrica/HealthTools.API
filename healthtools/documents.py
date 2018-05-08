@@ -22,21 +22,24 @@ DOCUMENTS = {
                      'sanatorium', 'health centre'],
         'sms_field': 'name'
     },
+    # Default NHIF response
     'nhif-inpatient': {
         'search_type': 'elastic',
-        'keywords': ['inpatient', 'nhif-inpatient', 'nhif inpatient'
+        'keywords': ['nhif', 'inpatient', 'nhif-inpatient', 'nhif inpatient'
+                     'nhif in', 'nhif-in', 'nhif-inn', 'nhifin',
                      'bima-inpatient', 'bima inpatient', 
                      'inpatient insurance', 'inpatient insurance fund', 
                      'inpatient health insurance', 'inpatient hospital fund'],
-        'sms_field': 'name'
+        'sms_field': 'hospital'
     },
     'nhif-outpatient': {
         'search_type': 'elastic',
-        'keywords': ['outpatient', 'nhif-outpatient', 'nhif outpatient'
+        'keywords': ['outpatient', 'nhif-outpatient', 'nhif outpatient',
+                     'nhif out', 'nhif-out', 'nhif-outt', 'nhifout',
                      'outpatient insurance', 'bima-outpatient',
                      'bima outpatient', 'outpatient insurance fund',
                      'outpatient health insurance', 'outpatient hospital fund'],
-        'sms_field': 'name'
+        'sms_field': 'hospital'
     },
     'nhif-outpatient-cs': {
         'search_type': 'elastic',
@@ -51,14 +54,21 @@ DOCUMENTS = {
                      'outpatient-cs health insurance', 'outpatient-cs hospital fund', 
                      'outpatient cs hospital fund'
                      ],
-        'sms_field': 'name'
+        'sms_field': 'hospital'
     },
 
 
 }
 
+# Duplicate for robust
+DOCUMENTS['doctors-foreign'] = DOCUMENTS['doctors']
+DOCUMENTS['nhif'] = DOCUMENTS['nhif-inpatient']
+
 def get_docs():
     return DOCUMENTS
+
+def get_sms_field(doc_type):
+    return DOCUMENTS[doc_type]['sms_field']
 
 def doc_exists(doc_type):
     for doc in DOCUMENTS:

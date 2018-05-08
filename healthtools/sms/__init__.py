@@ -2,6 +2,7 @@ import logging
 
 from healthtools.sms import twilio, mtech
 from healthtools.search import run_query
+from healthtools.documents import get_sms_field
 
 log = logging.getLogger(__name__)
 
@@ -48,15 +49,17 @@ def create_sms(result, doc_type):
             '1. Doctors: DR. SAMUEL AMAI\n' + \
             '2. Clinical Officers: CO SAMUEL AMAI\n' + \
             '3. Nurses: NURSE SAMUEL AMAI\n' + \
-            '4. NHIF Accredited hospital: NHIF KITALE\n' + \
+            '4. NHIF Accredited hospital: NHIF OUTPATIENT KITALE\n' + \
             '5. Health Facility: HF KITALE'
         return response
 
     # TODO: Figure out singular vs plural
     response += 'Here are the top 3 matches your query returned'
     for hit in result['hits'][:3]:
-        
-        response += '\n' + '{}. {}'.format(str(result_count), hit['_source']['name'].encode('utf-8'))
+        response += '\n' + '{}. {}'.format(
+            str(result_count),
+            hit['_source'][get_sms_field(doc_type)].encode('utf-8')
+        )
         result_count += 1
     response += '\nFind the full list at http://health.the-star.co.ke/'
     log.info(response)

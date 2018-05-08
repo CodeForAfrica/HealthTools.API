@@ -4,9 +4,15 @@ from healthtools.core import es, es_index
 log = logging.getLogger(__name__)
 
 def search(query, doc_type):
+
+    # Search both doc types for doctors
+    # TODO: Make search preference on selected
     if doc_type in ['doctors', 'doctors-foreign']:
         doc_type = 'doctors,doctors-foreign'
-    
+    # NHIF defaults to NHIF Inpatient
+    if doc_type == 'nhif':
+        doc_type = 'nhif-inpatient'
+
     try:
         result = es.search(
             index=es_index,
