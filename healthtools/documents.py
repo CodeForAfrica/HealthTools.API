@@ -5,7 +5,7 @@ DOCUMENTS = {
         'sms_field': 'name'
     },
     'clinical-officers': {
-        'search_type': 'elastic',
+        'search_type': 'clinicalofficers',
         'keywords': ['CO', 'clinical officer', 'clinic officer', 'clinical',
                      'clinical oficer'],
         'sms_field': 'name'

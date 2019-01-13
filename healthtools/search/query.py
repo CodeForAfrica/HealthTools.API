@@ -4,7 +4,7 @@ from nested_lookup import nested_lookup
 from healthtools.settings import WIT_ACCESS_TOKEN
 
 from healthtools.documents import DOCUMENTS, doc_exists
-from healthtools.search import elastic, nurses
+from healthtools.search import elastic, nurses, clinicalofficers
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +23,8 @@ def run_query(query, doc_type=None, page=1, per_page=10):
 def run_search(query, doc_type, search_type, page, per_page):
     if search_type == 'nurses':
         result = nurses.search(remove_keywords(query))
+    elif search_type == 'clinicalofficers':
+        result = clinicalofficers.search(remove_keywords(query))
     else:
         result = elastic.search(remove_keywords(query), doc_type, page, per_page)
     return result
