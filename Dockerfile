@@ -11,4 +11,4 @@ RUN pip install -e .
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:8000", "healthtools.manage:app"]
+CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:8000", "--reload", "healthtools.manage:app"]
