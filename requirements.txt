@@ -3,7 +3,6 @@ elasticsearch==5.5.3
 emoji==0.5.0
 flask-cors==3.0.4
 gunicorn==19.7.1
-healthtools==0.0.3
 nested-lookup==0.1.5
 pip-chill==0.1.8
 pipreqs==0.4.9
