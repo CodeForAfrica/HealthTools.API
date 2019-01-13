@@ -51,24 +51,23 @@ Specification for the API are:
 
 To get started with developing on HealthTools.API, do the following:
 
-```sh
-$ git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
-$ cd HealthTools.API
-$ pip install -r requirements.txt
-$ python setup.py develop
+```shell
+git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
+cd HealthTools.API
+docker-compose build web
+docker-compose up web
+
+# Load latest data
+docker-compose exec web flask htools loaddata
 ```
 
-### Configuration
+### Reset Index
 
-TODO
-
-### Run server
-
-Finally run the Flask server:
-
-```sh
-$ python healthtools\manage.py
+To reset the elasticsearch index, run:
+```shell
+docker-compose exec web flask htools resetindex
 ```
+
 
 ### Tests
 

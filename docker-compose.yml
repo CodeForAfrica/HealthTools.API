@@ -22,6 +22,7 @@ services:
       - "./:/htools-api"
     environment:
       - PYTHONDONTWRITEBYTECODE="True"
+      - FLASK_APP=healthtools/manage.py
       - HTOOLS_ES_HOST=elasticsearch
       - HTOOLS_MEMCACHED_URL=memcached:11211
 

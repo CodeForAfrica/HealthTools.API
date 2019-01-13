@@ -10,5 +10,10 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['ez_setup', 'examples', 'test']),
     include_package_data=True,
-    install_requires=[]
+    install_requires=[],
+    entry_points={
+        'flask.commands': [
+            'htools=healthtools.commands:htools_cli'
+        ],
+    },
 )

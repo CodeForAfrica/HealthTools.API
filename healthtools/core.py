@@ -60,7 +60,6 @@ es_index = LocalProxy(get_es_index)
 
 
 # Work-around: https://github.com/sam-washington/requests-aws4auth/issues/24
-
 class AWS4AuthNotUnicode(AWS4Auth):
     def __call__(self, req):
         req = super(AWS4AuthNotUnicode, self).__call__(req)
