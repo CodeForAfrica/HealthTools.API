@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='healthtools',
-    version='0.0.3',
+    version='0.0.4',
     keywords='healthtools',
     author='Code for Africa',
     author_email='support@codeforafrica.org',
