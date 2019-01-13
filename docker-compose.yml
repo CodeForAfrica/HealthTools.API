@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  elasticsearch:
+    image: elasticsearch:5.6.10
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+  
+  memcached:
+    image: memcached:1.5
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - elasticsearch
+      - memcached
+    volumes:
+      - "./:/htools-api"
+    environment:
+      - PYTHONDONTWRITEBYTECODE="True"
+      - HTOOLS_ES_HOST=elasticsearch
+      - HTOOLS_MEMCACHED_URL=memcached:11211
+
+volumes:
+  elasticsearch-data: {}
