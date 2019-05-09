@@ -59,9 +59,9 @@ def create_sms(result, doc_type):
     for hit in result['hits'][:3]:
         response += '\n' + '{}. {}'.format(
             str(result_count),
-            hit['_source'][get_sms_field(doc_type)].encode('utf-8')
+            hit['_source'][get_sms_field(doc_type)]
         )
         result_count += 1
-    response += '\nFind the full list at http://health.the-star.co.ke/'
+    response += '\nFind the full list at http://www.the-star.co.ke/health/'
     log.info(response)
     return response
