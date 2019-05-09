@@ -43,7 +43,7 @@ class TestNursesAPI(TestSetup):
         self.client.get("search/nurses?q=Marie")
         # second time should retrieve cached result
         response = self.client.get("search/nurses?q=Marie")
-        self.assertIn(b"X-Retrieved-From-Cache", response.headers.keys())
+        self.assertIn(b"X-Retrieved-From-Cache", list(response.headers.keys()))
 
     def test_nurses_endpoint_with_bad_endpoint(self):
         """

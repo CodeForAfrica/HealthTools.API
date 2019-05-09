@@ -1,3 +1,4 @@
+from builtins import str
 import logging
 
 from werkzeug.local import LocalProxy
@@ -63,5 +64,5 @@ es_index = LocalProxy(get_es_index)
 class AWS4AuthNotUnicode(AWS4Auth):
     def __call__(self, req):
         req = super(AWS4AuthNotUnicode, self).__call__(req)
-        req.headers = {str(name): value for name, value in req.headers.items()}
+        req.headers = {str(name): value for name, value in list(req.headers.items())}
         return req

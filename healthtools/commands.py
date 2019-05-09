@@ -1,5 +1,7 @@
+from future import standard_library
+standard_library.install_aliases()
 from elasticsearch import helpers
-import urllib2, json
+import urllib.request, urllib.error, urllib.parse, json
 from flask.cli import AppGroup
 
 from healthtools.manage import app
@@ -10,7 +12,7 @@ htools_cli = AppGroup('htools')
 @htools_cli.command('loaddata')
 def load_data():
     url = 'https://s3-eu-west-1.amazonaws.com/cfa-healthtools-ke/data/doctors.json'
-    response = urllib2.urlopen(url)
+    response = urllib.request.urlopen(url)
     helpers.bulk(es, json.load(response), index=es_index, doc_type='doctors')
 
 @htools_cli.command('resetindex')

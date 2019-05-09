@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import zip
 import requests
 import logging
 from bs4 import BeautifulSoup
@@ -20,8 +22,6 @@ def get_clinical_officers(query):
     clinicalofficers = {'hits': [], 'total': 0}
     try:
         response = requests.post(COC_REGISTER_URL, data = {'search_register':'1', 'search_text': query})
-        if 'No results' in response.content:
-            return clinicalofficers
 
         # make soup for parsing out of response and get the table
         soup = BeautifulSoup(response.content, 'html.parser')

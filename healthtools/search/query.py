@@ -81,7 +81,7 @@ def determine_doc_type_using_wit(query, doc_type=None):
     message_text = query
     resp = client.message(message_text)
     query = ''.join(nested_lookup('value', resp['entities']['query']))
-    doc_type = ''.join([var for var in (resp['entities'].keys()) if var != 'query'])
+    doc_type = ''.join([var for var in (list(resp['entities'].keys())) if var != 'query'])
     doc_type = doc_type.replace("_", "-") # changes underscore to hyphen
     if doc_exists(doc_type) == True:
         return doc_type, query

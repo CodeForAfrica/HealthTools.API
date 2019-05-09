@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import zip
 import requests
 import logging
 from bs4 import BeautifulSoup
@@ -20,9 +22,7 @@ def get_people(query):
     people = {'hits': [], 'total': 0}
     try:
         response = requests.post(FETCH_URL, data = {'search_register':'1', 'search_text': query})
-        if 'No results' in response.content:
-            return people
-
+        
         # make soup for parsing out of response and get the table
         soup = BeautifulSoup(response.content, 'html.parser')
         table = soup.find('table', {'class': 'datatables'}).find('tbody')

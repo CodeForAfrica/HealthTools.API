@@ -1,3 +1,4 @@
+from builtins import str
 import logging
 from healthtools.core import es, es_index
 
