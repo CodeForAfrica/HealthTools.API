@@ -54,6 +54,7 @@ To get started with developing on HealthTools.API, do the following:
 ```shell
 git clone https://github.com/CodeForAfricaLabs/HealthTools.API.git`
 cd HealthTools.API
+touch .env
 docker-compose build web
 docker-compose up web
 

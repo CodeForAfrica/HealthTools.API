@@ -20,11 +20,9 @@ services:
       - memcached
     volumes:
       - "./:/htools-api"
-    environment:
-      - PYTHONDONTWRITEBYTECODE="True"
-      - FLASK_APP=healthtools/manage.py
-      - HTOOLS_ES_HOST=elasticsearch
-      - HTOOLS_MEMCACHED_URL=memcached:11211
+    env_file:
+      - .env.default
+      - .env
 
 volumes:
   elasticsearch-data: {}
