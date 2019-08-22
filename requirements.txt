@@ -1,5 +1,5 @@
 beautifulsoup4==4.8.0
-elasticsearch==5.5.3
+elasticsearch==7.0.3
 flask-cors==3.0.8
 gunicorn==19.9.0
 nested-lookup==0.2.17
