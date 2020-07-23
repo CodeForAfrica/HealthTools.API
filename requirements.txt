@@ -8,4 +8,4 @@ python-memcached==1.59
 requests-aws4auth==1.0
 telegram==0.0.1
 twilio==6.30.0
-wit==5.1.0
+wit==6.0.0
