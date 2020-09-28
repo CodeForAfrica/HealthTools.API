@@ -8,5 +8,5 @@ pylint==
 python-memcached==1.59
 requests-aws4auth==1.0
 telegram==0.0.1
-twilio==6.30.0
+twilio==6.45.3
 wit==6.0.0
